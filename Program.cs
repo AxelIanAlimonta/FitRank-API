@@ -29,6 +29,13 @@ builder.Services.AddAutoMapper(cfg =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FitRankDbContext>();
+    db.Database.Migrate();
+}
+
+
 
 app.UseSwagger();
 app.UseSwaggerUI();
