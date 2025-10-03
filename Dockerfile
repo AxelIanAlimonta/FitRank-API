@@ -2,14 +2,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar todo
+# Copiar todo el código
 COPY . .
 
-# Restaurar dependencias
-WORKDIR /src/FitRank-API
-RUN dotnet restore
+# Restaurar dependencias desde la solución
+RUN dotnet restore FitRank-API.sln
 
-# Publicar
+# Publicar el proyecto
+WORKDIR /src/FitRank-API
 RUN dotnet publish -c Release -o /app/publish
 
 # Etapa 2: runtime
