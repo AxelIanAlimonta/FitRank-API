@@ -21,6 +21,12 @@ builder.Services.AddDbContext<FitRankDbContext>(options =>
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
 
+
+
+builder.Services.AddAutoMapper(cfg =>
+   cfg.AddMaps(typeof(FitRank_API.Application.Mappings.AssemblyMapping).Assembly));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
