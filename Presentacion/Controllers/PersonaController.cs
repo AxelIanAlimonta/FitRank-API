@@ -1,6 +1,7 @@
-﻿using FitRank_API.Application.Interfaces;
+﻿using FitRank_API.Application.DTOs.Persona;
+using FitRank_API.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using FitRank_API.Domain.Entities;
+
 
 namespace FitRank_API.Presentacion.Controllers;
 
@@ -33,14 +34,14 @@ public class PersonaController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] Persona persona)
+    public async Task<IActionResult> Add([FromBody] CreatePersonaDTO persona)
     {
-        await _personaService.AddAsync(persona);
-        return CreatedAtAction(nameof(GetById), new { id = persona.Id }, persona);
+        var personaCreada = await _personaService.AddAsync(persona);
+        return CreatedAtAction(nameof(GetById), new { id = personaCreada.Id }, personaCreada);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, [FromBody] Persona persona)
+    public async Task<IActionResult> Update(long id, [FromBody] UpdatePersonaDTO persona)
     {
         if (id != persona.Id)
         {

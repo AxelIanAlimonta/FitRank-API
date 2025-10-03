@@ -1,12 +1,12 @@
-﻿using FitRank_API.Domain.Entities;
+﻿using FitRank_API.Application.DTOs.Persona;
 
 namespace FitRank_API.Application.Interfaces;
 
 public interface IPersonaService
 {
-    Task<List<Persona>> GetAllAsync();
-    Task AddAsync(Persona persona);
-    Task UpdateAsync(Persona persona);
+    Task<List<PersonaDTO>> GetAllAsync();
+    Task<PersonaDTO> AddAsync(CreatePersonaDTO persona);
+    Task UpdateAsync(UpdatePersonaDTO persona);
     Task DeleteAsync(long id);
-    Task<Persona?> GetByIdAsync(long id);
+    Task<PersonaDTO?> GetByIdAsync(long id);
 }

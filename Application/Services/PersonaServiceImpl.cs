@@ -1,29 +1,42 @@
 ﻿using FitRank_API.Application.Interfaces;
 using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Entities;
+using FitRank_API.Application.DTOs.Persona;
+using AutoMapper;
 
 namespace FitRank_API.Application.Services
 {
     public class PersonaServiceImpl : IPersonaService
     {
+
         private readonly IPersonaRepository _personaRepository;
-        public PersonaServiceImpl(IPersonaRepository personaRepository)
+        private readonly IMapper _mapper;
+
+        public PersonaServiceImpl(IPersonaRepository personaRepository, IMapper mapper)
         {
             _personaRepository = personaRepository;
+            _mapper = mapper;
         }
 
-        public async Task<List<Domain.Entities.Persona>> GetAllAsync()
+        public async Task<List<PersonaDTO>> GetAllAsync()
         {
-            return await _personaRepository.GetAllAsync();
+            var personas = await _personaRepository.GetAllAsync();
+            return _mapper.Map<List<PersonaDTO>>(personas);
         }
 
-        public async Task AddAsync(Domain.Entities.Persona persona)
+        public async Task<PersonaDTO> AddAsync(CreatePersonaDTO persona)
         {
-            await _personaRepository.AddAsync(persona);
+            var newPersona = _mapper.Map<Persona>(persona);
+            await _personaRepository.AddAsync(newPersona);
+            return _mapper.Map<PersonaDTO>(newPersona);
+
         }
 
-        public async Task UpdateAsync(Domain.Entities.Persona persona)
+        public async Task UpdateAsync(UpdatePersonaDTO persona)
         {
-            await _personaRepository.UpdateAsync(persona);
+            var updatedPersona = _mapper.Map<Persona>(persona);
+            await _personaRepository.UpdateAsync(updatedPersona);
+
         }
 
         public async Task DeleteAsync(long id)
@@ -31,9 +44,10 @@ namespace FitRank_API.Application.Services
             await _personaRepository.DeleteAsync(id);
         }
 
-        public async Task<Domain.Entities.Persona?> GetByIdAsync(long id)
+        public async Task<PersonaDTO?> GetByIdAsync(long id)
         {
-            return await _personaRepository.GetByIdAsync(id);
+            var persona = await _personaRepository.GetByIdAsync(id);
+            return _mapper.Map<PersonaDTO?>(persona);
         }
 
 
