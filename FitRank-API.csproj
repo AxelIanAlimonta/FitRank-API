@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="Domain\Enums\" />
+    <Folder Include="NewFolder\" />
     <Folder Include="tests\IntegrationTests\" />
     <Folder Include="tests\ApiTests\" />
     <Folder Include="tests\UnitTests\" />
