@@ -1,0 +1,42 @@
+name: CI - Build Backend (sin tests)
+
+on:
+  push:
+    branches:
+      - main
+      - 'dev-*'
+  pull_request:
+    branches:
+      - main
+      - 'dev-*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Cache NuGet
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restaurar dependencias
+        run: dotnet restore ./FitRank-API.sln
+
+      - name: Build
+        run: dotnet build ./FitRank-API.sln --no-restore --configuration Release
+
+      - name: Saltar tests
+        run: echo "No hay proyecto de tests en esta rama, saltando tests..."
+

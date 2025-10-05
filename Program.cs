@@ -20,6 +20,8 @@ builder.Services.AddDbContext<FitRankDbContext>(options =>
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
+builder.Services.AddScoped<IRankingService, RankingServiceImpl>();
 
 
 
@@ -39,6 +41,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 
 
 app.UseHttpsRedirection();
