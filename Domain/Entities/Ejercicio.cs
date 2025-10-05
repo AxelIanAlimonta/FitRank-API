@@ -20,5 +20,7 @@
         public DayOfWeek DiaAsignado { get; set; }
         public string Observaciones { get; set; }
         public string VideoUrl { get; set; }
+
+
     }
 }
