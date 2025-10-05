@@ -1,6 +1,5 @@
 name: CI - Build & Test Backend
 
-
 on:
   push:
     branches:
@@ -12,15 +11,21 @@ on:
       - 'dev-*'
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-   
       - name: Checkout código
         uses: actions/checkout@v3
 
-      
+      - name: Cache NuGet
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Configurar .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -29,10 +34,14 @@ jobs:
       - name: Restaurar dependencias
         run: dotnet restore ./FitRank-API.sln
 
-      
       - name: Build
         run: dotnet build ./FitRank-API.sln --no-restore --configuration Release
 
-      
-      - name: Test
-        run: dotnet test ./FitRank-API.sln --no-build --verbosity normal
+      - name: Run tests with coverage
+        run: dotnet test ./FitRank-API.sln --no-build --verbosity normal --collect:"XPlat Code Coverage"
+
+      - name: Publicar resultados de tests
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: '**/TestResults/*.xml'
