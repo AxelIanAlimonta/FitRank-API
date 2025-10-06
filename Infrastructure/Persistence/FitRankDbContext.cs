@@ -20,5 +20,7 @@ public class FitRankDbContext : DbContext
     public DbSet<PuntuacionDiaria> PuntuacionesDiarias { get; set; }
     public DbSet<Ranking> Rankings { get; set; }
 
+    public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
+
 }
 
