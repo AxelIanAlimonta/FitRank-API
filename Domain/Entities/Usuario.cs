@@ -20,6 +20,7 @@
         public ICollection<Asistencia> Asistencias { get; set; }
         public ICollection<PuntuacionDiaria> PuntuacionesDiarias { get; set; }
         public ICollection<Ranking> Rankings { get; set; }
+        public ICollection<EjercicioRealizado> EjerciciosRealizados { get; set; }
 
     }
 }

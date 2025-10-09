@@ -6,6 +6,7 @@ using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Repositories;
 using FitRank_API.Application.Interfaces;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -22,6 +23,12 @@ builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 builder.Services.AddScoped<IRankingService, RankingServiceImpl>();
+builder.Services.AddScoped<IEjercicioRealizado, EjercicioRealizadoService>();
+builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl>();
+
+builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
+
+
 
 
 

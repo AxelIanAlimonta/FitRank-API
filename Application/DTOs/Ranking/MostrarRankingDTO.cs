@@ -5,6 +5,7 @@
       
         public string userName { get; set; }
         public double TotalPuntos { get; set; }
-        public string Nivel { get; set; }   
+        public string Nivel { get; set; }
+      
     }
 }

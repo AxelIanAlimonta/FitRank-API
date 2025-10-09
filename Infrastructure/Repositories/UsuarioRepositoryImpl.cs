@@ -11,6 +11,13 @@ namespace FitRank_API.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public async Task<Usuario> GetByIdAsync(int usuarioId)
+        {
+           return await _context.Usuarios.FindAsync(usuarioId); 
+
+        }
+
         public List<Usuario> GetUsuariosConPuntuaciones()
         {
            var usuarios = _context.Usuarios
