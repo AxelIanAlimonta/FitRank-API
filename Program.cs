@@ -20,6 +20,8 @@ builder.Services.AddDbContext<FitRankDbContext>(options =>
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
+builder.Services.AddScoped<ILogroService, LogroServiceImpl>();
+builder.Services.AddScoped<ILogroRepositorio, LogroRepositorio>();
 
 
 
