@@ -17,16 +17,19 @@ namespace FitRank_API.Application.Services
         private readonly IPuntuacionDiariaRepository _puntuacionDiariaRepository;
         private readonly IMapper _mapper;
         private readonly FitRankDbContext _context;
+        private readonly CalculoDivisionService _calculoDivisionService;
 
         public RankingServiceImpl(IUsuarioRepository usuarioRepository,
                                   IPuntuacionDiariaRepository puntuacionDiariaRepository,
                                   IMapper mapper,
-                                  FitRankDbContext context)
+                                  FitRankDbContext context,
+                                  CalculoDivisionService calculoDivisionService)
         {
             _usuarioRepository = usuarioRepository;
             _puntuacionDiariaRepository = puntuacionDiariaRepository;
             _mapper = mapper;
             _context = context;
+            _calculoDivisionService = calculoDivisionService;
         }
 
 
@@ -77,21 +80,30 @@ namespace FitRank_API.Application.Services
                 .Include(er => er.Usuario)
                 .ToListAsync();
 
+            var ranking = new List<MostrarRankingPorGrupoMuscular>();
             // Agrupamos por usuario y luego por grupo muscular
-            var ranking = ejerciciosRealizados
-                .GroupBy(er => new { er.UsuarioId, er.Ejercicio.GrupoMuscular })
-                .Select(g => new MostrarRankingPorGrupoMuscular
-                {
-                    userName = g.First().Usuario.Username,
-                    Nivel = g.First().Usuario.Nivel.ToString(),
-                    GrupoMuscular = g.Key.GrupoMuscular,
-                    TotalPuntos = g.Sum(er => er.PuntosObtenidos),
-                    Nombre= g.First().Ejercicio.Nombre
-                })
-                .OrderByDescending(r => r.TotalPuntos)
-                .ToList();
+            var grupos = ejerciciosRealizados
+                .GroupBy(er => new { er.UsuarioId, er.Ejercicio.GrupoMuscular });
 
-            return ranking;
+                foreach(var grupo in grupos){
+                   var usuario = grupo.First().Usuario;
+                var grupoMuscular = grupo.Key.GrupoMuscular;
+
+                string division = await _calculoDivisionService.CalcularDivisionPorGrupoAsync(usuario, grupoMuscular);
+
+                ranking.Add(new MostrarRankingPorGrupoMuscular
+                {
+                    userName = usuario.Username,
+                    Nivel = usuario.Nivel,
+                    GrupoMuscular = grupoMuscular,
+                    TotalPuntos = grupo.Sum(er => er.PuntosObtenidos),
+                    Nombre = grupo.First().Ejercicio.Nombre,
+                    DivisionPorGrupo = division
+                }); 
+            }
+
+
+            return ranking.OrderByDescending(r => r.TotalPuntos).ToList();
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using FitRank_API.Domain.Entities;
+using FitRank_API.Domain.Enums;
 
 namespace FitRank_API.Domain.Strategy
 {
@@ -7,10 +8,10 @@ namespace FitRank_API.Domain.Strategy
 
         public static ICalculoDePuntos SeleccionarCalculo(Ejercicio ejercicio)
         {
-            return ejercicio.GrupoMuscular.ToLower() switch
+            return ejercicio.GrupoMuscular switch
             {
-                "gluteo" => new CalculoGluteo(),
-                "pecho" => new CalculoPecho(),
+                GrupoMuscular.Gluteos => new CalculoGluteo(),
+                GrupoMuscular.Pecho => new CalculoPecho(),
 
                 _ => throw new ArgumentException("Tipo de ejercicio no reconocido"),
             };

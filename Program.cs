@@ -27,6 +27,8 @@ builder.Services.AddScoped<IEjercicioRealizado, EjercicioRealizadoService>();
 builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl>();
 
 builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
+builder.Services.AddScoped<CalculoDivisionService>();
+
 
 
 builder.Services.AddCors(options =>

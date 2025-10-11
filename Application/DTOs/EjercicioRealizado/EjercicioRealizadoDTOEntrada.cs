@@ -1,4 +1,5 @@
 ﻿using FitRank_API.Domain.Entities;
+using FitRank_API.Domain.Enums;
 
 namespace FitRank_API.Application.DTOs.EjercicioRealizado
 {
@@ -12,6 +13,7 @@ namespace FitRank_API.Application.DTOs.EjercicioRealizado
         public double Peso { get; set; }
         public string TipoEntrenamiento { get; set; }
         public string Observacion { get; set; }
+        public Dificultad Dificultad { get; set; }
 
     }
 }

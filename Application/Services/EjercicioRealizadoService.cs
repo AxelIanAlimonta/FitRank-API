@@ -57,15 +57,54 @@ namespace FitRank_API.Application.Services
             if (ejercicio == null)
                 throw new Exception("Ejercicio no encontrado");
 
-            double puntos = CalcularPuntosEjercicio(dto, usuario, ejercicio);
+            bool puedeSumar = await puedeSumarPuntos(usuario, ejercicio);
+            string mensaje;
+            double puntos = 0;
+
+            if (puedeSumar)
+            {
+                double factorDificultad = await _context.ConfiguracionesDificultad
+                .Where(c => c.Dificultad == ejercicio.Dificultad)
+                .Select(c => c.Multiplicador)
+                .FirstOrDefaultAsync();
+
+                var configGrupo = await _context.ConfiguracionesGrupoMuscular
+                .Where(c => c.GrupoMuscular == ejercicio.GrupoMuscular)
+                .Select(c => new { c.MultiplicadorPeso, c.MultiplicadorRepeticiones })
+                .FirstOrDefaultAsync();
+
+                double multiplicadorPeso = configGrupo?.MultiplicadorPeso ?? 0.1;
+                double multiplicadorReps = configGrupo?.MultiplicadorRepeticiones ?? 0.1;
+
+
+                var resultado = CalcularPuntosEjercicio(dto, usuario, ejercicio, factorDificultad, multiplicadorPeso, multiplicadorReps);
+
+                puntos = resultado.Puntos;
+
+                mensaje = $"Ejercicio registrado correctamente. Obtuviste {puntos:F2} puntos.";
+
+                if (resultado.PesoAjustado)
+                {
+                    Console.WriteLine(resultado.MensajeAdvertencia);
+                }
+            }
+            else
+            {
+                puntos = 0;
+                mensaje = $"Ejercicio registrado, pero no sumaste puntos porque ya entrenaste {ejercicio.GrupoMuscular} más de dos veces esta semana.";
+            }
 
             EjercicioRealizado ejercicioRealizado = ConstruirEjercicioRealizado(dto, puntos);
-
             _context.Entry(ejercicioRealizado).Reference(er => er.Ejercicio).IsModified = false;
-
             await _ejercicioRealizadoRepository.AddEjercicioRealizado(ejercicioRealizado);
-
+            
             await GestionarPuntosDiariosAsync(dto, puntos);
+
+            var divisionService = new CalculoDivisionService(_context);
+            string nuevaDivision = await divisionService.CalcularDivisionAsync(usuario);
+            usuario.Nivel = nuevaDivision;
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
 
 
             // Crear DTO de salida manualmente solo con los cálculos que querés mostrar
@@ -79,18 +118,28 @@ namespace FitRank_API.Application.Services
             return dtoSalida;
         }
 
-        private static double CalcularPuntosEjercicio(EjercicioRealizadoDTOEntrada dto, Usuario usuario, Ejercicio ejercicio)
+        private static ResultadoCalculo CalcularPuntosEjercicio(EjercicioRealizadoDTOEntrada dto, Usuario usuario, Ejercicio ejercicio, double factorDificultad, double multiplicadorPeso, double multiplicadorReps)
         {
-            var estrategia = SeleccionDeCalculo.SeleccionarCalculo(ejercicio);
-            double puntos = estrategia.CalcularPuntos(
+            
+
+            double factorUsuario = (usuario.PesoKg / 70.0) * 0.5 + (usuario.AlturaCm / 175.0) * 0.5;
+
+
+            //var estrategia = SeleccionDeCalculo.SeleccionarCalculo(ejercicio);
+            var calculo =  new CalculoGenerico();
+            var resultado = calculo.CalcularPuntos(
                 ejercicio,
                 dto.Series,
                 dto.Repeticiones,
                 dto.Peso,
                 dto.TipoEntrenamiento,
-                usuario
+                usuario,
+                factorDificultad,
+                factorUsuario,
+                multiplicadorPeso,
+                multiplicadorReps
             );
-            return puntos;
+            return resultado;
         }
 
         private static EjercicioRealizado ConstruirEjercicioRealizado(EjercicioRealizadoDTOEntrada dto, double puntos)
@@ -143,7 +192,7 @@ namespace FitRank_API.Application.Services
                 UsuarioId = er.UsuarioId,
                 EjercicioId = er.EjercicioId,
                 NombreEjercicio = er.Ejercicio?.Nombre,
-                GrupoMuscular = er.Ejercicio?.GrupoMuscular,
+                GrupoMuscular = er.Ejercicio?.GrupoMuscular ?? Domain.Enums.GrupoMuscular.Pecho,
                 Series = er.Series,
                 Repeticiones = er.Repeticiones,
                 Peso = er.Peso,
@@ -151,6 +200,26 @@ namespace FitRank_API.Application.Services
                 FechaRegistro = er.FechaRegistro,
                 Observacion = er.ObservacionDelUsuario
             });
+        }
+
+        private async Task<bool> puedeSumarPuntos(Usuario usuario, Ejercicio ejercicio)
+        {
+            var grupo = ejercicio.GrupoMuscular;
+
+            var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+            var finSemana = inicioSemana.AddDays(6);
+
+            var diasEntrenados = await _context.EjerciciosRealizados
+                .Where(er => er.UsuarioId == usuario.Id &&
+                             er.FechaRegistro >= inicioSemana &&
+                             er.FechaRegistro <= finSemana &&
+                             er.Ejercicio.GrupoMuscular == grupo)
+                .Select(er => er.FechaRegistro.Date)
+                .Distinct()
+                .CountAsync();
+
+
+            return diasEntrenados <= 2;
         }
     }
 

@@ -1,5 +1,9 @@
-﻿namespace FitRank_API.Domain.Entities
+﻿using FitRank_API.Domain.Enums;
+
+namespace FitRank_API.Domain.Entities
 {
+
+
     public class EjercicioRealizado
     {
         public int Id { get; set; }
@@ -16,6 +20,7 @@
         public int Series { get; set; }
         public int Repeticiones { get; set; }
         public double Peso { get; set; }
+        public Dificultad Dificultad { get; set; }
 
         public double PuntosObtenidos { get; set; }
         public string ObservacionDelUsuario { get; set; }
