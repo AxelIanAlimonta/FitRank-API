@@ -12,6 +12,12 @@ namespace FitRank_API.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task AgregarUsuario(Usuario usuario)
+        {
+            await _context.Usuarios.AddAsync(usuario);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Usuario> GetByIdAsync(int usuarioId)
         {
            return await _context.Usuarios.FindAsync(usuarioId); 
@@ -21,7 +27,7 @@ namespace FitRank_API.Infrastructure.Repositories
         public List<Usuario> GetUsuariosConPuntuaciones()
         {
            var usuarios = _context.Usuarios
-                .Where(u => u.PuntuacionesDiarias.Any())
+                .Where(u => u.puntuacionesDiarias.Any())
                 .ToList();
             return usuarios;
         }

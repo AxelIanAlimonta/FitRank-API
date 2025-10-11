@@ -1,5 +1,6 @@
 ﻿namespace FitRank_API.Infrastructure.Persistence;
 
+using FitRank_API.Application.DTOs.EjercicioRealizado;
 using FitRank_API.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,5 +23,7 @@ public class FitRankDbContext : DbContext
 
     public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
 
-}
 
+
+    
+}

@@ -45,11 +45,10 @@ namespace FitRank_API.Application.Services
 
         public async Task<EjercicioRealizadoDTOSalida> RegistrarEjercicioAsync(EjercicioRealizadoDTOEntrada dto)
         {
-            var usuario = await _context.Usuarios
-                .Include(u => u.EjerciciosRealizados)
-                .ThenInclude(er => er.Ejercicio)
-                .FirstOrDefaultAsync(u => u.Id == dto.UsuarioId);
-
+              var usuario = await _context.Usuarios
+            .Include(u => u.ejerciciosRealizados)
+            .ThenInclude(er => er.Ejercicio) 
+            .FirstOrDefaultAsync(u => u.id == dto.UsuarioId);
             if (usuario == null)
                 throw new Exception("Usuario no encontrado");
 

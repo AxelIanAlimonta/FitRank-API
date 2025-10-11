@@ -25,9 +25,20 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 builder.Services.AddScoped<IRankingService, RankingServiceImpl>();
 builder.Services.AddScoped<IEjercicioRealizado, EjercicioRealizadoService>();
 builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl>();
+builder.Services.AddScoped<IUsuarioService, UsuarioServiceImpl>();
 
 builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // Angular dev server
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 
 
@@ -37,15 +48,14 @@ builder.Services.AddAutoMapper(cfg =>
 
 
 var app = builder.Build();
-
+    
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<FitRankDbContext>();
     db.Database.Migrate();
 }
 
-
-
+app.UseCors("AllowAngularDev");
 app.UseSwagger();
 app.UseSwaggerUI();
 

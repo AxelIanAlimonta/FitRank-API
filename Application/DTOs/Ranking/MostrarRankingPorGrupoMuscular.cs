@@ -2,7 +2,7 @@
 {
     public class MostrarRankingPorGrupoMuscular
     {
-        public string userName { get; set; }
+        public string username { get; set; }
         public double TotalPuntos { get; set; }
         public string Nivel { get; set; }
         public string GrupoMuscular { get; set; }

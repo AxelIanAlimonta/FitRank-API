@@ -51,11 +51,12 @@ namespace FitRank_API.Application.Services
                 var usuario = await _usuarioRepository.GetByIdAsync(item.UsuarioId);
                 if (usuario != null)
                 {
+                    
                     ranking.Add(new MostrarRankingDTO
                     {
-                        userName = usuario.Username,
+                        username = usuario.username,
                         TotalPuntos = item.PuntosTotales,
-                        Nivel = usuario.Nivel,
+                        Nivel = usuario.nivel,
 
 
 
@@ -82,8 +83,8 @@ namespace FitRank_API.Application.Services
                 .GroupBy(er => new { er.UsuarioId, er.Ejercicio.GrupoMuscular })
                 .Select(g => new MostrarRankingPorGrupoMuscular
                 {
-                    userName = g.First().Usuario.Username,
-                    Nivel = g.First().Usuario.Nivel.ToString(),
+                    username = g.First().Usuario.username,
+                    Nivel = g.First().Usuario.nivel.ToString(),
                     GrupoMuscular = g.Key.GrupoMuscular,
                     TotalPuntos = g.Sum(er => er.PuntosObtenidos),
                     Nombre= g.First().Ejercicio.Nombre

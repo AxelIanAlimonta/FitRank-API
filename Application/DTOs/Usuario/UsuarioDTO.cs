@@ -1,8 +1,9 @@
 ﻿using FitRank_API.Application.DTOs.EjercicioRealizado;
+using FitRank_API.Domain.Entities;
 
-namespace FitRank_API.Domain.Entities
+namespace FitRank_API.Application.DTOs.Usuario
 {
-    public class Usuario
+    public class UsuarioDTO
     {
         public int id { get; set; }
         public string nombre { get; set; }
@@ -23,9 +24,8 @@ namespace FitRank_API.Domain.Entities
         public ICollection<Rutina> rutinas { get; set; }
         public ICollection<Asistencia> asistencias { get; set; }
         public ICollection<PuntuacionDiaria> puntuacionesDiarias { get; set; }
-
-        public ICollection<EjercicioRealizado> ejerciciosRealizados { get; set; }
-
+     
+        public ICollection<EjercicioRealizadoDTOEntrada> ejerciciosRealizados { get; set; }
 
     }
 }

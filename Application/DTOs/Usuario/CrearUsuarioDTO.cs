@@ -1,10 +1,10 @@
-﻿using FitRank_API.Application.DTOs.EjercicioRealizado;
+﻿using FitRank_API.Domain.Entities;
 
-namespace FitRank_API.Domain.Entities
+namespace FitRank_API.Application.DTOs.Usuario
 {
-    public class Usuario
+    public class CrearUsuarioDTO
     {
-        public int id { get; set; }
+
         public string nombre { get; set; }
         public string apellidos { get; set; }
         public int dni { get; set; }
@@ -20,12 +20,6 @@ namespace FitRank_API.Domain.Entities
         public string username { get; set; }
 
         public string email { get; set; }
-        public ICollection<Rutina> rutinas { get; set; }
-        public ICollection<Asistencia> asistencias { get; set; }
-        public ICollection<PuntuacionDiaria> puntuacionesDiarias { get; set; }
-
-        public ICollection<EjercicioRealizado> ejerciciosRealizados { get; set; }
-
 
     }
 }

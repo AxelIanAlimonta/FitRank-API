@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251010171945_ModificaUsuario")]
+    partial class ModificaUsuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,48 @@ namespace FitRank_API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("FitRank_API.Application.DTOs.EjercicioRealizado.EjercicioRealizadoDTOEntrada", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EjercicioId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Observacion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("Peso")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("Repeticiones")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Series")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TipoEntrenamiento")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("fecha")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("EjercicioRealizadoDTOEntrada");
+                });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Asistencia", b =>
                 {
@@ -361,6 +406,15 @@ namespace FitRank_API.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("FitRank_API.Application.DTOs.EjercicioRealizado.EjercicioRealizadoDTOEntrada", b =>
+                {
+                    b.HasOne("FitRank_API.Domain.Entities.Usuario", null)
+                        .WithMany("ejerciciosRealizados")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FitRank_API.Domain.Entities.Asistencia", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
@@ -404,7 +458,7 @@ namespace FitRank_API.Migrations
                         .IsRequired();
 
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
-                        .WithMany("ejerciciosRealizados")
+                        .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

@@ -3,7 +3,7 @@
     public class MostrarRankingDTO
     {
       
-        public string userName { get; set; }
+        public string username { get; set; }
         public double TotalPuntos { get; set; }
         public string Nivel { get; set; }
       
