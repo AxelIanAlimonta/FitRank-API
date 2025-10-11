@@ -20,8 +20,8 @@ builder.Services.AddDbContext<FitRankDbContext>(options =>
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
-
-
+builder.Services.AddScoped<IRutinaServicio, RutinaServicioImpl>();
+builder.Services.AddScoped<IRutinaRepositorio, RutinaRepositorioImpl>();
 
 builder.Services.AddAutoMapper(cfg =>
    cfg.AddMaps(typeof(FitRank_API.Application.Mappings.AssemblyMapping).Assembly));
