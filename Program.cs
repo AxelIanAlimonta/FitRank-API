@@ -22,6 +22,11 @@ builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
 builder.Services.AddScoped<ILogroService, LogroServiceImpl>();
 builder.Services.AddScoped<ILogroRepositorio, LogroRepositorio>();
+builder.Services.AddScoped<ISocioService, SocioServiceImpl>();
+builder.Services.AddScoped<ISocioRepositorio, SocioRepositorio>();
+builder.Services.AddScoped<IGimnasioService, GimnasioServiceImpl>();
+builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorio>();
+
 
 
 

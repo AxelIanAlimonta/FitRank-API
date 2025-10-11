@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.Logro;
 using FitRank_API.Application.Interfaces;
+using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.Services
@@ -16,25 +17,26 @@ namespace FitRank_API.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IReadOnlyList<LogroDto>> ListarActivosAsync(CancellationToken ct = default)
+        public async Task<int> CrearLogroAsync(LogroCreateDto logroDto)
         {
-            var list = await _repo.ListarActivosAsync(ct);
-            return _mapper.Map<IReadOnlyList<LogroDto>>(list);
+            var logroEntity = _mapper.Map<Logro>(logroDto);
+            return await _repo.CrearLogroAsync(logroEntity);
+        }
+        public async Task<IReadOnlyList<LogroDto>> ListarAsync()
+        {
+            var logros = await _repo.ListarAsync();
+            return _mapper.Map<List<LogroDto>>(logros);
         }
 
-        public async Task<IReadOnlyList<LogroUsuarioDto>> MisLogrosAsync(int socioId, CancellationToken ct = default)
+        public async Task SetActivoAsync(int logroId, bool activo)
         {
-            var list = await _repo.MisLogrosAsync(socioId, ct);
-            return _mapper.Map<IReadOnlyList<LogroUsuarioDto>>(list);
+            await _repo.SetActivoAsync(logroId, activo);
         }
 
-        public Task OtorgarSiNoExisteAsync(int socioId, int logroId, CancellationToken ct = default)
+        public async Task<LogroDto?> ObtenerPorIdAsync(int logroId)
         {
-            return _repo.OtorgarSiNoExisteAsync(socioId, logroId, ct);
-        }
-        public Task SetActivoAsync(int logroId, bool activo, CancellationToken ct = default)
-        {
-            return _repo.SetActivoAsync(logroId, activo, ct);
+            var logro = await _repo.ObtenerPorIdAsync(logroId);
+            return logro == null ? null : _mapper.Map<LogroDto>(logro);
         }
     }
 }

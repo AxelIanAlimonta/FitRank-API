@@ -10,6 +10,11 @@ namespace FitRank_API.Domain.Entities
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        public int GimnasioId { get; set; }
+        [ForeignKey(nameof(GimnasioId))]
+        public Gimnasio Gimnasio { get; set; } = null!;
+
         [Required, MaxLength(120)]
         public string Nombre { get; set; } = null!;
 

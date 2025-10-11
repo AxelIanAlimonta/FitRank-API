@@ -1,4 +1,5 @@
-﻿using FitRank_API.Application.Interfaces;
+﻿using FitRank_API.Application.DTOs.Logro;
+using FitRank_API.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Presentacion.Controllers
@@ -14,39 +15,36 @@ namespace FitRank_API.Presentacion.Controllers
             _logroService = logroService;
         }
 
-        //GET logros activos
+        //GET /logros
         [HttpGet]
-        public async Task<IActionResult> GetLogrosActivos(CancellationToken ct)
+        public async Task<IActionResult> GetLogrosActivos()
         {
-            var logros = await _logroService.ListarActivosAsync(ct);
+            var logros = await _logroService.ListarAsync();
             return Ok(logros);
         }
 
-        //GET Historial por socio
-        [HttpGet("historial")]
-        public async Task<IActionResult> GetMisLogros([FromQuery] int socioId, CancellationToken ct)
+        //GET /logros/{id}
+        [HttpGet("{logroId:int}")]
+        public async Task<IActionResult> ObtenerLogroPorId([FromRoute] int logroId)
         {
-            var logros = await _logroService.MisLogrosAsync(socioId, ct);
-            return Ok(logros);
+            var logro = await _logroService.ObtenerPorIdAsync(logroId);
+            if (logro == null)
+            {
+                return NotFound();
+            }
+            return Ok(logro);
         }
 
-        //POST Otorgar logro
-        [HttpPost("{logroId:int}/otorgar")]
-        public async Task<IActionResult> OtorgarLogro([FromRoute] int logroId, [FromQuery] int socioId, CancellationToken ct)
+        //POST /logros
+        [HttpPost]
+        public async Task<ActionResult> Post([FromBody] LogroCreateDto logroDto)
         {
-            if (socioId <= 0 || logroId <= 0)
+            if (logroDto == null)
             {
-                return BadRequest("Los IDs de socio y logro deben ser mayores que cero.");
+                return BadRequest("El logro no puede ser nulo.");
             }
-            try
-            {
-                await _logroService.OtorgarSiNoExisteAsync(socioId, logroId, ct);
-                return NoContent();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var logroId = await _logroService.CrearLogroAsync(logroDto);
+            return CreatedAtAction(nameof(ObtenerLogroPorId), new { logroId = logroId }, logroDto);
         }
     }
 }

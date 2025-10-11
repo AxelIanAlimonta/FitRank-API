@@ -30,13 +30,9 @@ namespace FitRank_API.Domain.Entities
         [ForeignKey(nameof(LogroId))]
         public Logro? Logro { get; set; }
 
-        // Helper para crear el otorgamiento desde un catálogo de Logro
-        public static SocioRealizaLogro Crear(int socioId, Logro logro)
-            => new()
-            {
-                SocioId = socioId,
-                LogroId = logro.Id,
-                PuntosOtorgados = logro.PuntosOtorgados
-            };
+        [Required]
+        public int GimnasioId { get; set; }
+        [ForeignKey(nameof(GimnasioId))]
+        public Gimnasio? Gimnasio { get; set; }
     }
 }

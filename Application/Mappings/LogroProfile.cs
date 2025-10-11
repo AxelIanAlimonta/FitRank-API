@@ -8,16 +8,25 @@ namespace FitRank_API.Application.Mappings
     {
         public LogroProfile()
         {
-            // Entidad → DTO
+            // Lectura: Entidad -> LogroDto (PuntosOtorgados -> Puntos)
             CreateMap<Logro, LogroDto>()
-                .ForMember(dest => dest.Puntos, opt => opt.MapFrom(src => src.PuntosOtorgados));
+                .ForMember(d => d.Puntos, o => o.MapFrom(s => s.PuntosOtorgados));
 
-            // Entidad SocioRealizaLogro → DTO de logros del socio
+            // Escritura: LogroCreateDto -> Entidad (Puntos -> PuntosOtorgados)
+            CreateMap<LogroCreateDto, Logro>()
+                .ForMember(d => d.Id, o => o.Ignore())
+                .ForMember(d => d.PuntosOtorgados, o => o.MapFrom(s => s.Puntos));
+
+            // Update: LogroUpdateDto -> Entidad
+            CreateMap<LogroUpdateDto, Logro>()
+                .ForMember(d => d.PuntosOtorgados, o => o.MapFrom(s => s.Puntos));
+
+            // Logros realizados por socio: Entidad -> DTO
             CreateMap<SocioRealizaLogro, LogroUsuarioDto>()
-                .ForMember(dest => dest.LogroId, opt => opt.MapFrom(src => src.LogroId))
-                .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Logro!.Nombre))
-                .ForMember(dest => dest.PuntosOtorgados, opt => opt.MapFrom(src => src.PuntosOtorgados))
-                .ForMember(dest => dest.FechaOtorgado, opt => opt.MapFrom(src => src.FechaOtorgado));
+                .ForMember(d => d.LogroId, o => o.MapFrom(s => s.LogroId))
+                .ForMember(d => d.Nombre, o => o.MapFrom(s => s.Logro!.Nombre))
+                .ForMember(d => d.PuntosOtorgados, o => o.MapFrom(s => s.PuntosOtorgados))
+                .ForMember(d => d.FechaOtorgado, o => o.MapFrom(s => s.FechaOtorgado));
         }
     }
 }
