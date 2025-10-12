@@ -28,6 +28,7 @@ builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl
 builder.Services.AddScoped<IUsuarioService, UsuarioServiceImpl>();
 
 builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
+builder.Services.AddScoped<CalculoDivisionService>();
 
 builder.Services.AddCors(options =>
 {
@@ -41,6 +42,16 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // el origen de tu Angular
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 
 builder.Services.AddAutoMapper(cfg =>
@@ -59,6 +70,7 @@ app.UseCors("AllowAngularDev");
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseCors("AllowAngularDev");
 
 
 app.UseHttpsRedirection();

@@ -1,4 +1,6 @@
-﻿namespace FitRank_API.Domain.Entities
+﻿using FitRank_API.Domain.Enums;
+
+namespace FitRank_API.Domain.Entities
 {
     public class Ejercicio
     {
@@ -10,7 +12,8 @@
         public Maquina Maquina { get; set; }
 
         public string Nombre { get; set; }
-        public string GrupoMuscular { get; set; }
+        public GrupoMuscular GrupoMuscular { get; set; }
+        public Dificultad Dificultad { get; set; }
         public int Series { get; set; }
         public int Repeticiones { get; set; }
         public double Peso { get; set; }

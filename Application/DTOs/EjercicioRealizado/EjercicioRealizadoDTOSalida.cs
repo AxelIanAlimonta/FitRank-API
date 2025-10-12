@@ -1,4 +1,6 @@
-﻿namespace FitRank_API.Application.DTOs.EjercicioRealizado
+﻿using FitRank_API.Domain.Enums;
+
+namespace FitRank_API.Application.DTOs.EjercicioRealizado
 {
     public class EjercicioRealizadoDTOSalida
     {
@@ -10,8 +12,8 @@
 
             // Asegúrate de declarar estas propiedades
             public string NombreEjercicio { get; set; }
-            public string GrupoMuscular { get; set; }
-
+            public GrupoMuscular GrupoMuscular { get; set; }
+            public string Mensaje { get; set; }
             public int Series { get; set; }
             public int Repeticiones { get; set; }
             public double Peso { get; set; }

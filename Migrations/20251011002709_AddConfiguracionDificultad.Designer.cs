@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251011002709_AddConfiguracionDificultad")]
+    partial class AddConfiguracionDificultad
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,28 +99,6 @@ namespace FitRank_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ConfiguracionesDivisiones");
-                });
-
-            modelBuilder.Entity("FitRank_API.Domain.Entities.ConfiguracionGrupoMuscular", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GrupoMuscular")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("MultiplicadorPeso")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("MultiplicadorRepeticiones")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ConfiguracionesGrupoMuscular");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Ejercicio", b =>
@@ -221,6 +202,10 @@ namespace FitRank_API.Migrations
 
                     b.Property<int>("Series")
                         .HasColumnType("integer");
+
+                    b.Property<string>("TipoDeEntrenamiento")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("integer");
@@ -371,16 +356,42 @@ namespace FitRank_API.Migrations
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Usuario", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("alturaCm")
+                    b.Property<int>("AlturaCm")
                         .HasColumnType("integer");
 
-                    b.Property<string>("apellidos")
+                    b.Property<string>("Apellidos")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("FechaNacimiento")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Nivel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("PesoKg")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -388,40 +399,11 @@ namespace FitRank_API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("dni")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("estado")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("fechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("nivel")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("nombre")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("pesoKg")
-                        .HasColumnType("double precision");
-
                     b.Property<string>("telefono")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Usuarios");
                 });
@@ -429,7 +411,7 @@ namespace FitRank_API.Migrations
             modelBuilder.Entity("FitRank_API.Domain.Entities.Asistencia", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
-                        .WithMany("asistencias")
+                        .WithMany("Asistencias")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -469,7 +451,7 @@ namespace FitRank_API.Migrations
                         .IsRequired();
 
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
-                        .WithMany("ejerciciosRealizados")
+                        .WithMany("EjerciciosRealizados")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -484,7 +466,7 @@ namespace FitRank_API.Migrations
             modelBuilder.Entity("FitRank_API.Domain.Entities.PuntuacionDiaria", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
-                        .WithMany("puntuacionesDiarias")
+                        .WithMany("PuntuacionesDiarias")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -495,7 +477,7 @@ namespace FitRank_API.Migrations
             modelBuilder.Entity("FitRank_API.Domain.Entities.Ranking", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
-                        .WithMany()
+                        .WithMany("Rankings")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -506,7 +488,7 @@ namespace FitRank_API.Migrations
             modelBuilder.Entity("FitRank_API.Domain.Entities.Rutina", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
-                        .WithMany("rutinas")
+                        .WithMany("Rutinas")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -526,13 +508,15 @@ namespace FitRank_API.Migrations
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Usuario", b =>
                 {
-                    b.Navigation("asistencias");
+                    b.Navigation("Asistencias");
 
-                    b.Navigation("ejerciciosRealizados");
+                    b.Navigation("EjerciciosRealizados");
 
-                    b.Navigation("puntuacionesDiarias");
+                    b.Navigation("PuntuacionesDiarias");
 
-                    b.Navigation("rutinas");
+                    b.Navigation("Rankings");
+
+                    b.Navigation("Rutinas");
                 });
 #pragma warning restore 612, 618
         }
