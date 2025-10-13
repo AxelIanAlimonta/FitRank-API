@@ -6,8 +6,8 @@ namespace FitRank_API.Application.Interfaces
     {
         Task<RutinaDTO> CrearRutinaAsync(CrearRutinaDTO dto);
         Task<RutinaDTO> ObtenerRutinaAsync(int id);
-        Task<List<RutinaDTO>> ListarRutinasAsync();
-        Task<RutinaDTO> ActualizarRutinaAsync(int id, ActualizarRutinaDTO dto);
+        Task<List<RutinaDTO>> ListarRutinasAsync(int idUsuario);
+        Task<RutinaDTO> ActualizarRutinaAsync(int idRutina, ActualizarRutinaDTO dto);
         Task<bool> EliminarRutinaAsync(int id);
     }
 }

@@ -23,8 +23,24 @@ builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
 builder.Services.AddScoped<IRutinaServicio, RutinaServicioImpl>();
 builder.Services.AddScoped<IRutinaRepositorio, RutinaRepositorioImpl>();
 
+builder.Services.AddScoped<IEjercicioServicio, EjercicioServicioImpl>();
+builder.Services.AddScoped<IEjercicioRepositorio, EjercicioRepositorioImpl>();
+
 builder.Services.AddAutoMapper(cfg =>
    cfg.AddMaps(typeof(FitRank_API.Application.Mappings.AssemblyMapping).Assembly));
+
+// BORRAR TESTEANDO
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // el origen de tu frontend
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+//HASTA ACA
 
 
 var app = builder.Build();
@@ -35,7 +51,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-
+//BORRRAR TESTENADO
+app.UseCors("AllowAngularDev");
+//HASTA ACA
 
 app.UseSwagger();
 app.UseSwaggerUI();

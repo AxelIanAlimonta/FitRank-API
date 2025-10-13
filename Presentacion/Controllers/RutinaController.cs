@@ -19,7 +19,6 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPost]
         public async Task<IActionResult> CrearRutina([FromBody] CrearRutinaDTO dto)
         {
-            
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -32,9 +31,11 @@ namespace FitRank_API.Presentacion.Controllers
                     Rutina = rutinaCreada
                 });
             }
-            catch
+            catch (Exception ex)
+            //catch
             {
-                return BadRequest("No se pudo crear la rutina");
+                //return BadRequest("No se pudo crear la rutina");
+                return BadRequest($"No se pudo crear la rutina: {ex.Message} | {ex.InnerException?.Message}");
             }
         }
 
@@ -48,10 +49,10 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(rutina);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ListarRutinas()
+        [HttpGet("mis-rutinas")]
+        public async Task<IActionResult> ListarRutinas([FromQuery] int idUsuario)
         {
-            var rutinas = await _rutinaServicio.ListarRutinasAsync();
+            var rutinas = await _rutinaServicio.ListarRutinasAsync(idUsuario);
             return Ok(rutinas);
         }
 
@@ -74,12 +75,6 @@ namespace FitRank_API.Presentacion.Controllers
             {
                 return BadRequest($"No fue posible actualizar la rutina: {ex.Message}");
             }
-            /*
-            catch
-            {
-                return BadRequest("No fue posible actualizar la rutina");
-            }
-            */
         }
 
         [HttpDelete("{id}")]

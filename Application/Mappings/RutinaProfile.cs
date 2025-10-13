@@ -35,6 +35,30 @@ namespace FitRank_API.Application.Mappings
             // Ejercicios reales
             CreateMap<EjercicioEntity, Ejercicio>().ReverseMap();
 
+            CreateMap<Ejercicio, EjercicioDTO>();
+            CreateMap<Dia, DiaDTO>();
+
+            // Rutina <-> ActualizarRutinaDTO
+            CreateMap<ActualizarRutinaDTO, Rutina>();
+            CreateMap<Rutina, ActualizarRutinaDTO>();
+
+            // Bloques
+            CreateMap<ActualizarBloqueRutinaDTO, BloqueRutina>();
+            CreateMap<BloqueRutina, ActualizarBloqueRutinaDTO>();
+
+            // Dias de bloques
+            CreateMap<ActualizarBloqueDiaDTO, BloqueDia>();
+            CreateMap<BloqueDia, ActualizarBloqueDiaDTO>();
+
+            // Ejercicios de bloques
+            CreateMap<ActualizarEjercicioBloqueDTO, EjercicioBloque>();
+            CreateMap<EjercicioBloque, ActualizarEjercicioBloqueDTO>();
+
+            // DTOs de creación
+            CreateMap<CrearRutinaDTO, Rutina>();
+            CreateMap<CrearBloqueRutinaDTO, BloqueRutina>();
+            CreateMap<CrearEjercicioBloqueDTO, EjercicioBloque>();
+
         }
     }
 }

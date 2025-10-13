@@ -2,7 +2,7 @@
 {
     public class EjercicioBloqueDTO
     {
-        public int IdEjercicio { get; set; }
+        public EjercicioDTO ejercicio { get; set; }
         public int Orden { get; set; }
         public int Series { get; set; }
         public int Repeticiones { get; set; }

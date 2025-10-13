@@ -44,9 +44,10 @@ namespace FitRank_API.Infrastructure.Repositories
             return _mapper.Map<Rutina>(entity);
         }
 
-        public async Task<List<Rutina>> ListarRutinasAsync()
+        public async Task<List<Rutina>> ListarRutinasAsync(int idUsuario)
         {
             var entities = await _context.Rutinas
+                .Where(r => r.IdUsuario == idUsuario)
              .Include(r => r.Bloques)
                  .ThenInclude(b => b.Dias)
                      .ThenInclude(bd => bd.Dia)
@@ -80,7 +81,6 @@ namespace FitRank_API.Infrastructure.Repositories
 
             return _mapper.Map<Rutina>(entity);
         }
-
 
         public async Task EliminarRutinaAsync(Rutina rutina)
         {

@@ -36,9 +36,9 @@ namespace FitRank_API.Application.Services
             return _mapper.Map<RutinaDTO>(rutina);
         }
 
-        public async Task<List<RutinaDTO>> ListarRutinasAsync()
+        public async Task<List<RutinaDTO>> ListarRutinasAsync(int idUsuario)
         {
-            var rutinas = await _rutinaRepositorio.ListarRutinasAsync();
+            var rutinas = await _rutinaRepositorio.ListarRutinasAsync(idUsuario);
             return _mapper.Map<List<RutinaDTO>>(rutinas);
         }
 
