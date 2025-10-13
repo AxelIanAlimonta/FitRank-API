@@ -11,7 +11,7 @@ namespace FitRank_API.Infrastructure.Repositories
     {
         private readonly FitRankDbContext _context;
 
-        public EjercicioRealizadoImpl(FitRankDbContext context)
+        public EjercicioRealizadoImpl(FitRankDbContext context) 
         {
             _context = context;
         }

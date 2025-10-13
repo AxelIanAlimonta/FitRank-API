@@ -1,0 +1,8 @@
+﻿namespace FitRank_API.Application.DTOs.Auth.ValidarAuth
+{
+    public class ActivarResponseDto
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Mensaje { get; set; } = string.Empty;
+    }
+}

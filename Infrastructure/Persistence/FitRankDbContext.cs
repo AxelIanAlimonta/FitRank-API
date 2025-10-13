@@ -27,9 +27,11 @@ public class FitRankDbContext : DbContext
     public DbSet<ConfiguracionDificultad> ConfiguracionesDificultad { get; set; }
     public DbSet<ConfiguracionGrupoMuscular> ConfiguracionesGrupoMuscular { get; set; }
 
+    public DbSet<Invitacion> Invitaciones { get; set; }
 
 
-protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     base.OnModelCreating(modelBuilder);
 
@@ -38,6 +40,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         foreach (var property in entityType.GetProperties())
         {
+
             if (property.ClrType == typeof(DateTime))
             {
                 property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
@@ -55,6 +58,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         }
     }
 }
+    
 
 
 }

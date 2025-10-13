@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251013174557_Modificaciones")]
+    partial class Modificaciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -166,7 +169,7 @@ namespace FitRank_API.Migrations
                     b.Property<int>("Repeticiones")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("RutinaId")
+                    b.Property<int>("RutinaId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Series")
@@ -430,9 +433,6 @@ namespace FitRank_API.Migrations
                     b.Property<DateTime?>("CuotaPagadaHasta")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("EsActivado")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -442,13 +442,7 @@ namespace FitRank_API.Migrations
                     b.Property<string>("Rol")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("TokenExpira")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("TokenRecuperacion")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("alturaCm")
+                    b.Property<int>("alturaCm")
                         .HasColumnType("integer");
 
                     b.Property<string>("apellidos")
@@ -467,25 +461,29 @@ namespace FitRank_API.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("estado")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("fechaNacimiento")
+                    b.Property<DateTime>("fechaNacimiento")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("nivel")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("nombre")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double?>("pesoKg")
+                    b.Property<double>("pesoKg")
                         .HasColumnType("double precision");
 
                     b.Property<string>("telefono")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("username")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("id");
@@ -514,7 +512,9 @@ namespace FitRank_API.Migrations
 
                     b.HasOne("FitRank_API.Domain.Entities.Rutina", "Rutina")
                         .WithMany("Ejercicios")
-                        .HasForeignKey("RutinaId");
+                        .HasForeignKey("RutinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Maquina");
 

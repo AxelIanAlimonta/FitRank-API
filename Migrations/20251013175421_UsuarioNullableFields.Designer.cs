@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251013175421_UsuarioNullableFields")]
+    partial class UsuarioNullableFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -430,9 +433,6 @@ namespace FitRank_API.Migrations
                     b.Property<DateTime?>("CuotaPagadaHasta")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("EsActivado")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -440,12 +440,6 @@ namespace FitRank_API.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Rol")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("TokenExpira")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("TokenRecuperacion")
                         .HasColumnType("text");
 
                     b.Property<int?>("alturaCm")

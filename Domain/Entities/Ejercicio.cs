@@ -5,8 +5,8 @@ namespace FitRank_API.Domain.Entities
     public class Ejercicio
     {
         public int Id { get; set; }
-        public int RutinaId { get; set; }
-        public Rutina Rutina { get; set; }
+        public int? RutinaId { get; set; }
+        public Rutina? Rutina { get; set; }
 
         public int MaquinaId { get; set; }
         public Maquina Maquina { get; set; }

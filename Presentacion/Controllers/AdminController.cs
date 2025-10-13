@@ -1,0 +1,90 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using FitRank_API.Application.DTOs.Auth;
+using FitRank_API.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using FitRank_API.Application.DTOs.Auth.invitacion;
+using FitRank_API.Application.DTOs.Qr;
+
+namespace FitRank_API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]  
+    public class AdminController : ControllerBase
+    {
+        private readonly IAdminService _adminService;
+
+        public AdminController(IAdminService adminService)
+        {
+            _adminService = adminService;
+        }
+
+       
+        [HttpPost("generar-invitacion")]
+        public async Task<ActionResult<InvitacionResponseDto>> GenerarInvitacion([FromBody] GenerarInvitacionDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            
+            var adminIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int adminId))
+                return Unauthorized(new { Mensaje = "Admin ID no válido" });
+
+            var result = await _adminService.GenerarInvitacionAsync(dto, adminId);
+            if (!result.Success)
+                return BadRequest(new { Mensaje = result.Mensaje });
+
+            return Ok(result);
+        }
+
+       
+        [HttpPost("fallback-efectivo")]
+        public async Task<ActionResult<InvitacionResponseDto>> FallbackEfectivo([FromBody] FallbackEfectivoDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var adminIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int adminId))
+                return Unauthorized(new { Mensaje = "Admin ID no válido" });
+
+            var result = await _adminService.FallbackEfectivoAsync(dto, adminId);
+            if (!result.Success)
+                return BadRequest(new { Mensaje = result.Mensaje });
+
+            return Ok(result);
+        }
+
+        
+        [HttpPost("enviar-email-qr")]
+        public async Task<ActionResult<EmailResponseDto>> EnviarEmailQr([FromBody] EmailDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _adminService.EnviarEmailQrAsync(dto);
+            if (!result.Success)
+                return BadRequest(new { Mensaje = result.Mensaje });
+
+            return Ok(result);
+        }
+
+      
+        [HttpPost("validar-qr")]
+        public async Task<ActionResult<QrValidationResponseDto>> ValidarQr([FromBody] QrValidationDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var adminIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int? adminId = string.IsNullOrEmpty(adminIdClaim) ? null : int.Parse(adminIdClaim);
+
+            var result = await _adminService.ValidarQrAsync(dto, adminId);
+            if (!result.Valido)
+                return BadRequest(new { Mensaje = result.Mensaje });
+
+            return Ok(result);
+        }
+    }
+}

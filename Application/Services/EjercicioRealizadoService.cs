@@ -120,9 +120,10 @@ namespace FitRank_API.Application.Services
 
         private static ResultadoCalculo CalcularPuntosEjercicio(EjercicioRealizadoDTOEntrada dto, Usuario usuario, Ejercicio ejercicio, double factorDificultad, double multiplicadorPeso, double multiplicadorReps)
         {
-            
+            double peso = usuario.pesoKg ?? 70.0;    // default 70 kg
+            double altura = usuario.alturaCm ?? 175; // default 175 cm
 
-            double factorUsuario = (usuario.pesoKg / 70.0) * 0.5 + (usuario.alturaCm / 175.0) * 0.5;
+            double factorUsuario = (peso / 70.0) * 0.5 + (altura / 175.0) * 0.5;
 
 
             //var estrategia = SeleccionDeCalculo.SeleccionarCalculo(ejercicio);

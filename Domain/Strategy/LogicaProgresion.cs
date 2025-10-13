@@ -17,9 +17,11 @@ namespace FitRank_API.Domain.Strategy
                 return ejercicio.Peso;
 
             double pesoAnterior = ultimoRegistro.Peso;
+            double peso = usuario.pesoKg ?? 70.0;    // default 70 kg
+            double altura = usuario.alturaCm ?? 175; // default 175 cm
 
             //IMC Aproximado
-            double imc  = usuario.pesoKg / Math.Pow(usuario.alturaCm / 100.0, 2);
+            double imc  = peso / Math.Pow(altura / 100.0, 2);
 
             double factorFisico = 1.0;
 
