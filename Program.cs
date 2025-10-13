@@ -34,6 +34,15 @@ builder.Services.AddAutoMapper(cfg =>
    cfg.AddMaps(typeof(FitRank_API.Application.Mappings.AssemblyMapping).Assembly));
 
 
+builder.Services.AddCors(opt =>
+{
+    opt.AddDefaultPolicy(p => p
+        .WithOrigins("http://localhost:4200") // front
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -42,7 +51,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-
+app.UseCors();
 
 app.UseSwagger();
 app.UseSwaggerUI();
