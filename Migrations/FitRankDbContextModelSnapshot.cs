@@ -261,6 +261,91 @@ namespace FitRank_API.Migrations
                     b.ToTable("Maquinas");
                 });
 
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Gimnasio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Gimnasios");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.GimnasioLogro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("GimnasioId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LogroId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LogroId");
+
+                    b.HasIndex("GimnasioId", "LogroId")
+                        .IsUnique();
+
+                    b.ToTable("GimnasioLogro");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Logro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<int>("PuntosOtorgados")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Logro");
+                });
+
             modelBuilder.Entity("FitRank_API.Domain.Entities.Persona", b =>
                 {
                     b.Property<long>("Id")
@@ -533,6 +618,161 @@ namespace FitRank_API.Migrations
                     b.Navigation("puntuacionesDiarias");
 
                     b.Navigation("rutinas");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<DateTime>("FechaNacimiento")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("GimnasioId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GimnasioId");
+
+                    b.ToTable("Socio");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.SocioRealizaLogro", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("FechaOtorgado")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("GimnasioId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LogroId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PuntosOtorgados")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SocioId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GimnasioId");
+
+                    b.HasIndex("LogroId");
+
+                    b.HasIndex("SocioId", "LogroId")
+                        .IsUnique();
+
+                    b.ToTable("SocioRealizaLogro");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.GimnasioLogro", b =>
+                {
+                    b.HasOne("FitRank_API.Domain.Entities.Gimnasio", "Gimnasio")
+                        .WithMany("Logros")
+                        .HasForeignKey("GimnasioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitRank_API.Domain.Entities.Logro", "Logro")
+                        .WithMany()
+                        .HasForeignKey("LogroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gimnasio");
+
+                    b.Navigation("Logro");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
+                {
+                    b.HasOne("FitRank_API.Domain.Entities.Gimnasio", "Gimnasio")
+                        .WithMany("Socios")
+                        .HasForeignKey("GimnasioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gimnasio");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.SocioRealizaLogro", b =>
+                {
+                    b.HasOne("FitRank_API.Domain.Entities.Gimnasio", "Gimnasio")
+                        .WithMany()
+                        .HasForeignKey("GimnasioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitRank_API.Domain.Entities.Logro", "Logro")
+                        .WithMany("Otorgamientos")
+                        .HasForeignKey("LogroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitRank_API.Domain.Entities.Socio", "Socio")
+                        .WithMany("LogrosOtorgados")
+                        .HasForeignKey("SocioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gimnasio");
+
+                    b.Navigation("Logro");
+
+                    b.Navigation("Socio");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Gimnasio", b =>
+                {
+                    b.Navigation("Logros");
+
+                    b.Navigation("Socios");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Logro", b =>
+                {
+                    b.Navigation("Otorgamientos");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
+                {
+                    b.Navigation("LogrosOtorgados");
                 });
 #pragma warning restore 612, 618
         }

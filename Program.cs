@@ -26,6 +26,12 @@ builder.Services.AddScoped<IRankingService, RankingServiceImpl>();
 builder.Services.AddScoped<IEjercicioRealizado, EjercicioRealizadoService>();
 builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl>();
 builder.Services.AddScoped<IUsuarioService, UsuarioServiceImpl>();
+builder.Services.AddScoped<ILogroService, LogroServiceImpl>();
+builder.Services.AddScoped<ILogroRepositorio, LogroRepositorio>();
+builder.Services.AddScoped<ISocioService, SocioServiceImpl>();
+builder.Services.AddScoped<ISocioRepositorio, SocioRepositorio>();
+builder.Services.AddScoped<IGimnasioService, GimnasioServiceImpl>();
+builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorio>();
 
 builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
 builder.Services.AddScoped<CalculoDivisionService>();
@@ -66,7 +72,8 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-app.UseCors("AllowAngularDev");
+
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
