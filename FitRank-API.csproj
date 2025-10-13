@@ -9,9 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
+<<<<<<< HEAD
     <PackageReference Include="bcrypt.net-next" Version="4.0.3" />
     <PackageReference Include="mercadopago-sdk" Version="1.8.0" />
     <PackageReference Include="microsoft.aspNetcore.authentication.jwtbearer" Version="9.0.9" />
+=======
+    <PackageReference Include="Microsoft.Azure.Search.Service" Version="10.1.0" />
+>>>>>>> dc7b51971f1b64fdbf6e918e741d0dc3557c52ba
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
       <PrivateAssets>all</PrivateAssets>

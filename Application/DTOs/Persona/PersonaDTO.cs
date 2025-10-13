@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FitRank_API.Application.DTOs.Persona;
-
 public class PersonaDTO
 {
 
