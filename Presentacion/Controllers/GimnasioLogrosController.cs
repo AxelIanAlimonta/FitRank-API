@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FitRank_API.Presentacion.Controllers
 {
     [ApiController]
-    [Route("gimnasios/{gimnasioId}")]
+    [Route("api/gimnasios/{gimnasioId:int}/logros")]
     public class GimnasioLogrosController : ControllerBase
     {
         private readonly IGimnasioService _gimnasioService;
@@ -16,7 +16,7 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         //GET /gimnasios/{gimnasioId}/logros
-        [HttpGet("logros")]
+        [HttpGet("activos")]
         public async Task<ActionResult<IReadOnlyList<LogroDto>>> GetLogrosPorGimnasio([FromRoute] int gimnasioId)
         {
             var logros = await _gimnasioService.ListarLogrosActivosAsync(gimnasioId);
