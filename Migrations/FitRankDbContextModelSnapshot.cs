@@ -837,6 +837,225 @@ namespace FitRank_API.Migrations
                 {
                     b.Navigation("LogrosOtorgados");
                 });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.BloqueDiaEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdBloqueRutina")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDia")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdBloqueRutina");
+
+                    b.HasIndex("IdDia");
+
+                    b.ToTable("BloquesDias");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.BloqueRutinaEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("IdRutina")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdRutina");
+
+                    b.ToTable("BloquesRutinas");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.DiaEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Dias");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.EjercicioBloqueEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdBloqueRutina")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdEjercicio")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("Peso")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Repeticiones")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rir")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Series")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdBloqueRutina");
+
+                    b.HasIndex("IdEjercicio");
+
+                    b.ToTable("EjerciciosBloques");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.EjercicioEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ejercicios");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.RutinaEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FrecuenciaSemanal")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Rutinas");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.BloqueDiaEntity", b =>
+                {
+                    b.HasOne("FitRank_API.Infrastructure.Persistence.BloqueRutinaEntity", "BloqueRutina")
+                        .WithMany("Dias")
+                        .HasForeignKey("IdBloqueRutina")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitRank_API.Infrastructure.Persistence.DiaEntity", "Dia")
+                        .WithMany("BloquesDias")
+                        .HasForeignKey("IdDia")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BloqueRutina");
+
+                    b.Navigation("Dia");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.BloqueRutinaEntity", b =>
+                {
+                    b.HasOne("FitRank_API.Infrastructure.Persistence.RutinaEntity", "Rutina")
+                        .WithMany("Bloques")
+                        .HasForeignKey("IdRutina")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rutina");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.EjercicioBloqueEntity", b =>
+                {
+                    b.HasOne("FitRank_API.Infrastructure.Persistence.BloqueRutinaEntity", "BloqueRutina")
+                        .WithMany("Ejercicios")
+                        .HasForeignKey("IdBloqueRutina")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitRank_API.Infrastructure.Persistence.EjercicioEntity", "Ejercicio")
+                        .WithMany("EjerciciosBloques")
+                        .HasForeignKey("IdEjercicio")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BloqueRutina");
+
+                    b.Navigation("Ejercicio");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.BloqueRutinaEntity", b =>
+                {
+                    b.Navigation("Dias");
+
+                    b.Navigation("Ejercicios");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.DiaEntity", b =>
+                {
+                    b.Navigation("BloquesDias");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.EjercicioEntity", b =>
+                {
+                    b.Navigation("EjerciciosBloques");
+                });
+
+            modelBuilder.Entity("FitRank_API.Infrastructure.Persistence.RutinaEntity", b =>
+                {
+                    b.Navigation("Bloques");
+                });
 #pragma warning restore 612, 618
         }
     }

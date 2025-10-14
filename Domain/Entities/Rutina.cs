@@ -12,5 +12,7 @@
         public int DiasPorSemana { get; set; }
 
         public ICollection<Ejercicio> Ejercicios { get; set; }
+        public int FrecuenciaSemanal {  get; set; } // 1/2/3, cuantas veces se hace la rutina completa
+        public List<BloqueRutina> bloques { get; set; } = new(); // fullBody, torso, etc.
     }
 }

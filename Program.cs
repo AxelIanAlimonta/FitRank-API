@@ -80,6 +80,8 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod();
         });
 });
+builder.Services.AddScoped<IRutinaServicio, RutinaServicioImpl>();
+builder.Services.AddScoped<IRutinaRepositorio, RutinaRepositorioImpl>();
 
 // JWT Authentication
 var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "tu_secreto_super_seguro_32_chars_minimo");
@@ -103,6 +105,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FitRank API", Version = "v1" });
+builder.Services.AddScoped<IEjercicioServicio, EjercicioServicioImpl>();
+builder.Services.AddScoped<IEjercicioRepositorio, EjercicioRepositorioImpl>();
 
     // Config para JWT Bearer
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -134,6 +138,19 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAutoMapper(cfg =>
    cfg.AddMaps(typeof(FitRank_API.Application.Mappings.AssemblyMapping).Assembly));
+
+// BORRAR TESTEANDO
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // el origen de tu frontend
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+//HASTA ACA
 
 
 var app = builder.Build();
