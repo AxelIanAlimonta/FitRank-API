@@ -31,55 +31,16 @@ public class FitRankDbContext : DbContext
 
     public DbSet<Invitacion> Invitaciones { get; set; }
 
+    //Rutina Jero
+    public DbSet<BloqueRutinaEntity> BloquesRutinas { get; set; }
+    public DbSet<BloqueDiaEntity> BloquesDias { get; set; }
+    public DbSet<EjercicioBloqueEntity> EjerciciosBloques { get; set; }
+    public DbSet<DiaEntity> Dias { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     base.OnModelCreating(modelBuilder);
-
-    // 🔹 Forzar que todos los DateTime se guarden como UTC
-    foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-    {
-        foreach (var property in entityType.GetProperties())
-        {
-
-            if (property.ClrType == typeof(DateTime))
-            {
-                property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
-                    v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
-                ));
-            }
-            else if (property.ClrType == typeof(DateTime?))
-            {
-                property.SetValueConverter(new ValueConverter<DateTime?, DateTime?>(
-                    v => v.HasValue ? (v.Value.Kind == DateTimeKind.Utc ? v.Value : v.Value.ToUniversalTime()) : v,
-                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v
-                ));
-            }
-        }
-    }
-}
-    
-
-
-}
-    public FitRankDbContext(DbContextOptions<FitRankDbContext> options)
-        : base(options)
-    {
-    }
-
-    public DbSet<Persona> Personas { get; set; }
-    public DbSet<RutinaEntity> Rutinas { get; set; } // Quiero una tabla en la BDD llamada "Rutinas" para la clase RutinaEntity
-    public DbSet<BloqueRutinaEntity> BloquesRutinas { get; set; }
-    public DbSet<BloqueDiaEntity> BloquesDias { get; set; }
-    public DbSet<EjercicioEntity> Ejercicios { get; set; }
-    public DbSet<EjercicioBloqueEntity> EjerciciosBloques { get; set; }
-    public DbSet<DiaEntity> Dias { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    { //Mapeo de las clases
-        base.OnModelCreating(modelBuilder);
 
         // Rutina -> BloqueRutina (1:N)
         modelBuilder.Entity<BloqueRutinaEntity>()
@@ -115,6 +76,37 @@ public class FitRankDbContext : DbContext
             .WithMany(e => e.EjerciciosBloques)
             .HasForeignKey(eb => eb.IdEjercicio)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // 🔹 Forzar que todos los DateTime se guarden como UTC
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+    {
+        foreach (var property in entityType.GetProperties())
+        {
+
+            if (property.ClrType == typeof(DateTime))
+            {
+                property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
+                    v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                ));
+            }
+            else if (property.ClrType == typeof(DateTime?))
+            {
+                property.SetValueConverter(new ValueConverter<DateTime?, DateTime?>(
+                    v => v.HasValue ? (v.Value.Kind == DateTimeKind.Utc ? v.Value : v.Value.ToUniversalTime()) : v,
+                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v
+                ));
+            }
+        }
+    }
+}
+    
+
+
+
+    public FitRankDbContext(DbContextOptions<FitRankDbContext> options)
+        : base(options)
+    {
     }
    }
 
