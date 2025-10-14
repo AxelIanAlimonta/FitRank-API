@@ -44,7 +44,4 @@ public class PersonaRepositoryImpl : IPersonaRepository
         _context.Personas.Update(persona);
         await _context.SaveChangesAsync();
     }
-
-
-
 }

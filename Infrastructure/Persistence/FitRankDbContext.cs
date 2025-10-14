@@ -39,14 +39,54 @@ public class FitRankDbContext : DbContext
 
     public DbSet<Invitacion> Invitaciones { get; set; }
 
+    //Rutina Jero
+    public DbSet<BloqueRutinaEntity> BloquesRutinas { get; set; }
+    public DbSet<BloqueDiaEntity> BloquesDias { get; set; }
+    public DbSet<EjercicioBloqueEntity> EjerciciosBloques { get; set; }
+    public DbSet<DiaEntity> Dias { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     base.OnModelCreating(modelBuilder);
 
-    // 🔹 Forzar que todos los DateTime se guarden como UTC
-    foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        // Rutina -> BloqueRutina (1:N)
+        modelBuilder.Entity<BloqueRutinaEntity>()
+            .HasOne(b => b.Rutina)
+            .WithMany(r => r.Bloques)
+            .HasForeignKey(b => b.IdRutina)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // BloqueRutina -> BloqueDia (1:N)
+        modelBuilder.Entity<BloqueDiaEntity>()
+            .HasOne(bd => bd.BloqueRutina)
+            .WithMany(b => b.Dias)
+            .HasForeignKey(bd => bd.IdBloqueRutina)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // BloqueDia -> Dia (1:1)
+        modelBuilder.Entity<BloqueDiaEntity>()
+            .HasOne(bd => bd.Dia)
+            .WithMany(d => d.BloquesDias)
+            .HasForeignKey(bd => bd.IdDia)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // BloqueRutina -> EjercicioBloque (1:N)
+        modelBuilder.Entity<EjercicioBloqueEntity>()
+            .HasOne(eb => eb.BloqueRutina)
+            .WithMany(b => b.Ejercicios)
+            .HasForeignKey(eb => eb.IdBloqueRutina)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Ejercicio -> EjercicioBloque (1:N)
+        modelBuilder.Entity<EjercicioBloqueEntity>()
+            .HasOne(eb => eb.Ejercicio)
+            .WithMany(e => e.EjerciciosBloques)
+            .HasForeignKey(eb => eb.IdEjercicio)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 🔹 Forzar que todos los DateTime se guarden como UTC
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
     {
         foreach (var property in entityType.GetProperties())
         {
@@ -71,4 +111,10 @@ public class FitRankDbContext : DbContext
     
 
 
-}
+
+    public FitRankDbContext(DbContextOptions<FitRankDbContext> options)
+        : base(options)
+    {
+    }
+   }
+
