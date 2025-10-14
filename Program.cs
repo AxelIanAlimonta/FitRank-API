@@ -43,6 +43,8 @@ builder.Services.AddScoped<IRankingService, RankingServiceImpl>();
 builder.Services.AddScoped<IEjercicioRealizado, EjercicioRealizadoService>();
 builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl>();
 builder.Services.AddScoped<IUsuarioService, UsuarioServiceImpl>();
+builder.Services.AddScoped<IEjercicioService, EjercicioServiceImpl>();
+builder.Services.AddScoped<IEjercicioRepositorio, EjercicioRepositorioImpl>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -137,7 +139,7 @@ builder.Services.AddAutoMapper(cfg =>
 
 
 var app = builder.Build();
-    
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<FitRankDbContext>();

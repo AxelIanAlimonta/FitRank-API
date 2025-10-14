@@ -1,16 +1,13 @@
-﻿using FitRank_API.Domain.Enums;
+﻿using FitRank_API.Domain.Entities;
+using FitRank_API.Domain.Enums;
 
-namespace FitRank_API.Domain.Entities;
+namespace FitRank_API.Application.DTOs.Ejercicionamespace;
 
-public class Ejercicio
+public class CrearEjercicioDTO
 {
-    public long Id { get; set; }
-    public int? RutinaId { get; set; } //Esto se quitaria en algun futuro
-    public Rutina? Rutina { get; set; } //Esto se quitaria en algun futuro
-
+    
+    public int? RutinaId { get; set; }
     public int? MaquinaId { get; set; }
-    public Maquina? Maquina { get; set; }
-
     public string Nombre { get; set; }
     public GrupoMuscular GrupoMuscular { get; set; }
     public Dificultad Dificultad { get; set; }
@@ -24,6 +21,4 @@ public class Ejercicio
     public string Observaciones { get; set; }
     public string VideoUrl { get; set; }
     public string TipoEntrenamiento { get; set; }
-
-    public ICollection<Bloque> Bloques { get; set; } // Relacion con bloque
 }

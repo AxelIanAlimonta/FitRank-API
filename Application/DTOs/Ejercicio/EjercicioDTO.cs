@@ -1,11 +1,11 @@
 ﻿using FitRank_API.Domain.Enums;
 
-namespace FitRank_API.Application.DTOs.EjercicioNamespace
+namespace FitRank_API.Application.DTOs.Ejercicionamespace
 {
     public class EjercicioDTO
     {
-        public int Id { get; set; }
-        public int MaquinaId { get; set; }
+        public long Id { get; set; }
+        public int? MaquinaId { get; set; }
         public string Nombre { get; set; }
         public GrupoMuscular GrupoMuscular { get; set; }
         public Dificultad Dificultad { get; set; }

@@ -1,4 +1,5 @@
-﻿using FitRank_API.Application.DTOs.EjercicioNamespace;
+﻿
+using FitRank_API.Application.DTOs.Ejercicionamespace;
 
 namespace FitRank_API.Application.DTOs.RutinaNamespace
 {
@@ -10,9 +11,7 @@ namespace FitRank_API.Application.DTOs.RutinaNamespace
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
         public int DiasPorSemana { get; set; }
-
         public ICollection<BloqueDTO> Bloques { get; set; }
-
         public ICollection<EjercicioDTO> Ejercicios { get; set; }
     }
 }

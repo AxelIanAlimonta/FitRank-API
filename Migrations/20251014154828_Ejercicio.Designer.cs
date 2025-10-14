@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014154828_Ejercicio")]
+    partial class Ejercicio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,9 +76,6 @@ namespace FitRank_API.Migrations
                     b.Property<int>("EjercicioId")
                         .HasColumnType("integer");
 
-                    b.Property<long>("EjercicioId1")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Notas")
                         .HasColumnType("text");
 
@@ -96,7 +96,7 @@ namespace FitRank_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EjercicioId1");
+                    b.HasIndex("EjercicioId");
 
                     b.HasIndex("RutinaId");
 
@@ -169,11 +169,11 @@ namespace FitRank_API.Migrations
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Ejercicio", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DescansoSegundos")
                         .HasColumnType("integer");
@@ -193,7 +193,7 @@ namespace FitRank_API.Migrations
                     b.Property<int>("GrupoMuscular")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaquinaId")
+                    b.Property<int>("MaquinaId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Nombre")
@@ -253,9 +253,6 @@ namespace FitRank_API.Migrations
                     b.Property<int>("EjercicioId")
                         .HasColumnType("integer");
 
-                    b.Property<long>("EjercicioId1")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("timestamp with time zone");
 
@@ -284,7 +281,7 @@ namespace FitRank_API.Migrations
 
                     b.HasIndex("BloqueId");
 
-                    b.HasIndex("EjercicioId1");
+                    b.HasIndex("EjercicioId");
 
                     b.HasIndex("UsuarioId");
 
@@ -726,7 +723,7 @@ namespace FitRank_API.Migrations
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Ejercicio", "Ejercicio")
                         .WithMany("Bloques")
-                        .HasForeignKey("EjercicioId1")
+                        .HasForeignKey("EjercicioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -745,7 +742,9 @@ namespace FitRank_API.Migrations
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Maquina", "Maquina")
                         .WithMany("Ejercicios")
-                        .HasForeignKey("MaquinaId");
+                        .HasForeignKey("MaquinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FitRank_API.Domain.Entities.Rutina", "Rutina")
                         .WithMany("Ejercicios")
@@ -770,7 +769,7 @@ namespace FitRank_API.Migrations
 
                     b.HasOne("FitRank_API.Domain.Entities.Ejercicio", "Ejercicio")
                         .WithMany()
-                        .HasForeignKey("EjercicioId1")
+                        .HasForeignKey("EjercicioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
