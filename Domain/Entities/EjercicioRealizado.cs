@@ -18,6 +18,9 @@ namespace FitRank_API.Domain.Entities
         public int EjercicioId { get; set; }
         public Ejercicio Ejercicio { get; set; }
 
+        public int BloqueId { get; set; } //DUDAS SI DEJARLO
+        public Bloque bloque { get; set; } //DUDAS SI DEJARLO
+
         public int Series { get; set; }
         public int Repeticiones { get; set; }
         public double Peso { get; set; }

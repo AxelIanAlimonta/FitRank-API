@@ -12,5 +12,7 @@
         public int DiasPorSemana { get; set; }
 
         public ICollection<Ejercicio> Ejercicios { get; set; }
+        
+        public ICollection <Bloque> bloques { get; set; } //Nueva relacion con bloques especificos de la rutina
     }
 }
