@@ -56,6 +56,9 @@ builder.Services.AddScoped<ISocioRepositorio, SocioRepositorio>();
 builder.Services.AddScoped<IGimnasioService, GimnasioServiceImpl>();
 builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorio>();
 
+builder.Services.AddScoped<IRutinaRepository, RutinaRepositorioImpl>();
+builder.Services.AddScoped<IRutinaService, RutinaServicesImpl>();
+
 
 builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
 builder.Services.AddScoped<CalculoDivisionService>();

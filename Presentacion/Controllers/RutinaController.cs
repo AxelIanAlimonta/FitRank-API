@@ -1,5 +1,6 @@
 ﻿
 using FitRank_API.Application.DTOs.RutinaNamespace;
+using FitRank_API.Application.DTOs.RutinaNameSpace;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,25 @@ namespace FitRank_API.Presentacion.Controllers
         public RutinaController(IRutinaService rutinaService)
         {
             _rutinaService = rutinaService;
+        }
+
+        //crearRutina
+        [HttpPost] // api/rutina
+        public async Task<IActionResult> CrearRutina([FromBody] CrearRutinaDTO nuevaRutina)
+        {
+            if (nuevaRutina == null)
+            {
+                return BadRequest(new { mensaje = "Los datos de la rutina no son válidos." });
+            }
+
+            var rutinaCreada = await _rutinaService.CrearRutinaAsync(nuevaRutina);
+
+            if (rutinaCreada == null)
+            {
+                return BadRequest(new { mensaje = "No se pudo crear la rutina." });
+            }
+
+            return Ok(new { mensaje = $"Rutina '{rutinaCreada.Nombre}' creada correctamente." });
         }
 
         //listar rutinas
@@ -63,10 +83,12 @@ namespace FitRank_API.Presentacion.Controllers
 
         //editarRutina
         [HttpPut("{id}")] // api/rutina/2
-        public async Task<IActionResult> EditarRutina(int id, [FromBody] RutinaDTO rutinaActualizada)
+        public async Task<IActionResult> EditarRutina(int id, [FromBody] EditarRutinaDTO rutinaActualizada)
         {
-            if (rutinaActualizada == null || id != rutinaActualizada.Id)
+            if (rutinaActualizada == null)
+            {
                 return BadRequest(new { mensaje = "Los datos de la rutina no son válidos o el ID no coincide." });
+            }
 
             var rutinaEditada = await _rutinaService.EditarRutinaAsync(id, rutinaActualizada);
 
@@ -90,71 +112,6 @@ namespace FitRank_API.Presentacion.Controllers
             }
 
             return Ok(new { mensaje = $"Rutina con ID {id} eliminada correctamente." });
-        }
-
-        //agregarBloque
-        [HttpPost("{rutinaId}/bloque")] // api/rutina/bloque
-        public async Task<IActionResult> AgregarBloque(int rutinaId, [FromBody] BloqueDTO nuevoBloque)
-        {
-            if (nuevoBloque == null)
-            {
-                return BadRequest(new { mensaje = "El bloque proporcionado no es válido." });
-            }
-
-            var bloqueAgregado = await _rutinaService.AgregarBloqueAsync(rutinaId, nuevoBloque);
-
-            if (bloqueAgregado == null)
-            {
-                return NotFound(new { mensaje = $"No se encontró la rutina con ID {rutinaId} para agregar el bloque." });
-            }
-
-            return Ok(bloqueAgregado);
-        }
-
-        //obtenerBloquePorId
-        [HttpGet("bloque/{id}")] // api/rutina/bloque/2
-        public async Task<IActionResult> ObtenerBloquePorId(int id)
-        {
-            var bloque = await _rutinaService.ObtenerBloquePorIdAsync(id);
-
-            if (bloque == null)
-            {
-                return NotFound(new { mensaje = $"No se encontró el bloque con ID {id}." });
-            }
-
-            return Ok(bloque);
-        }
-
-        //editarBloque
-        [HttpPut("bloque/{id}")] // api/rutina/bloque/5
-        public async Task<IActionResult> EditarBloque(int id, [FromBody] BloqueDTO bloqueActualizado)
-        {
-            if (bloqueActualizado == null || id != bloqueActualizado.Id)
-            {
-                return BadRequest(new { mensaje = "Los datos del bloque no son válidos o el ID no coincide." });
-            }
-
-            var bloqueEditado = await _rutinaService.EditarBloqueAsync(id, bloqueActualizado);
-
-            if (bloqueEditado == null)
-            {
-                return NotFound(new { mensaje = $"No se encontró el bloque con ID {id} para actualizar." });
-            }
-
-            return Ok(bloqueEditado);
-        }
-
-        //eliminarBloque
-        [HttpDelete("bloque/{id}")] // api/rutina/bloque/5
-        public async Task<IActionResult> EliminarBloque(int id)
-        {
-            var bloqueEliminado = await _rutinaService.EliminarBloqueAsync(id);
-
-            if (!bloqueEliminado)
-            {
-                return NotFound(new { mensaje = $"No se encontró el bloque con ID {id} para eliminar." });
-            }
-            return Ok(new { mensaje = $"El bloque con ID {id} fue eliminado correctamente." });
         }
     }
 }
