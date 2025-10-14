@@ -16,9 +16,9 @@ namespace FitRank_API.Application.Services
             _mapper = (Mapper)mapper;
         }
 
-        public async Task<IReadOnlyList<LogroUsuarioDto>> MisLogrosAsync(int socioId)
+        public async Task<IReadOnlyList<LogroUsuarioDto>> MisLogrosAsync(int socioId, int gimnasioId)
         {
-            var logros = await _socioRepositorio.MisLogrosAsync(socioId);
+            var logros = await _socioRepositorio.MisLogrosAsync(socioId, gimnasioId);
             return _mapper.Map<IReadOnlyList<LogroUsuarioDto>>(logros);
         }
     }

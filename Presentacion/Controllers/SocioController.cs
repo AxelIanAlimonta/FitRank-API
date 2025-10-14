@@ -16,10 +16,10 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         //GET /socios/{socioId}/logros
-        [HttpGet("{socioId:int}/logros")]
-        public async Task<ActionResult<IReadOnlyList<LogroUsuarioDto>>> MisLogros([FromRoute] int socioId)
+        [HttpGet("{socioId:int}/gimnasios/{gimnasioId:int}/logros")]
+        public async Task<ActionResult<IReadOnlyList<LogroUsuarioDto>>> MisLogros([FromRoute] int socioId, [FromRoute] int gimnasioId)
         {
-            var logros = await _socioService.MisLogrosAsync(socioId);
+            var logros = await _socioService.MisLogrosAsync(socioId, gimnasioId);
             return Ok(logros);
         }
     }

@@ -1,5 +1,5 @@
-﻿using FitRank_API.Application.DTOs.EjercicioRealizado;
-using FitRank_API.Domain.Entities;
+﻿using FitRank_API.Domain.Entities;
+using FitRank_API.Application.DTOs.EjercicioRealizado;
 
 namespace FitRank_API.Application.DTOs.Usuario
 {

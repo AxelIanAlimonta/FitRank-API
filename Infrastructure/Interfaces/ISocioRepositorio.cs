@@ -4,6 +4,6 @@ namespace FitRank_API.Infrastructure.Interfaces
 {
     public interface ISocioRepositorio
     {
-        Task<List<SocioRealizaLogro>> MisLogrosAsync(int socioId);
+        Task<List<SocioRealizaLogro>> MisLogrosAsync(int socioId, int gimnasioId);
     }
 }

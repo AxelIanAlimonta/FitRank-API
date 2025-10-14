@@ -13,7 +13,7 @@ namespace FitRank_API.Infrastructure.Repositories
             _context = context;
         }
 
-        public Task<List<SocioRealizaLogro>> MisLogrosAsync(int socioId)
+        public Task<List<SocioRealizaLogro>> MisLogrosAsync(int socioId, int gimnasioId)
             =>
             _context.SocioRealizaLogros.AsNoTracking()
                 .Where(srl => srl.SocioId == socioId)
