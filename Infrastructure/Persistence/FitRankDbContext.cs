@@ -6,8 +6,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 public class FitRankDbContext : DbContext
+
+
 {
-    public DbSet<Logro> Logros => Set<Logro>();
+  
+        public FitRankDbContext(DbContextOptions<FitRankDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Logro> Logros => Set<Logro>();
     public DbSet<SocioRealizaLogro> SocioRealizaLogros => Set<SocioRealizaLogro>();
     public DbSet<Socio> Socios => Set<Socio>();
     public DbSet<Gimnasio> Gimnasios => Set<Gimnasio>();
