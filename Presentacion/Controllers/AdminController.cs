@@ -19,26 +19,22 @@ namespace FitRank_API.Controllers
             _adminService = adminService;
         }
 
-       
         [HttpPost("generar-invitacion")]
         public async Task<ActionResult<InvitacionResponseDto>> GenerarInvitacion([FromBody] GenerarInvitacionDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            
-            var adminIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int adminId))
-                return Unauthorized(new { Mensaje = "Admin ID no válido" });
-
+            int adminId = 1; // Si necesitás pasar un admin fijo al servicio
             var result = await _adminService.GenerarInvitacionAsync(dto, adminId);
+
             if (!result.Success)
                 return BadRequest(new { Mensaje = result.Mensaje });
 
             return Ok(result);
         }
 
-       
+
         [HttpPost("fallback-efectivo")]
         public async Task<ActionResult<InvitacionResponseDto>> FallbackEfectivo([FromBody] FallbackEfectivoDto dto)
         {

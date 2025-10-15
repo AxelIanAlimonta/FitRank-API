@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using FitRank_API.Infrastructure.Persistence;
 using System;
 using FitRank_API.Application.Services;
@@ -43,8 +43,6 @@ builder.Services.AddScoped<IRankingService, RankingServiceImpl>();
 builder.Services.AddScoped<IEjercicioRealizado, EjercicioRealizadoService>();
 builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl>();
 builder.Services.AddScoped<IUsuarioService, UsuarioServiceImpl>();
-builder.Services.AddScoped<IEjercicioService, EjercicioServiceImpl>();
-builder.Services.AddScoped<IEjercicioRepositorio, EjercicioRepositorioImpl>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -55,9 +53,6 @@ builder.Services.AddScoped<ISocioService, SocioServiceImpl>();
 builder.Services.AddScoped<ISocioRepositorio, SocioRepositorio>();
 builder.Services.AddScoped<IGimnasioService, GimnasioServiceImpl>();
 builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorio>();
-
-builder.Services.AddScoped<IRutinaRepository, RutinaRepositorioImpl>();
-builder.Services.AddScoped<IRutinaService, RutinaServicesImpl>();
 
 
 builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
@@ -100,6 +95,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
+// ✅ Agregar política de Admin
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy =>
+        policy.RequireRole("Admin")); // Solo usuarios con rol Admin
+});
+
 // SendGrid para emails
 builder.Services.AddSingleton<ISendGridClient>(provider =>
     new SendGridClient(builder.Configuration["SendGrid:ApiKey"] ?? "SG.tu_clave")
@@ -132,7 +134,7 @@ builder.Services.AddSwaggerGen(c =>
                       Id = "Bearer"
                   }
               },
-              Array.Empty<string>()  // Para roles, si quer�s, agrega {"Admin"}
+              Array.Empty<string>()  // Para roles, si querés, agrega {"Admin"}
           }
       });
 });
