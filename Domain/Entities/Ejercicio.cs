@@ -25,5 +25,4 @@ public class Ejercicio
     public string VideoUrl { get; set; }
     public string TipoEntrenamiento { get; set; }
 
-    public ICollection<Bloque> Bloques { get; set; } // Relacion con bloque
 }

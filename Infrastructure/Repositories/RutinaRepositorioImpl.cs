@@ -8,10 +8,12 @@ namespace FitRank_API.Infrastructure.Repositories
     public class RutinaRepositorioImpl: IRutinaRepository
     {
         private readonly FitRankDbContext _context;
+     
 
         public RutinaRepositorioImpl(FitRankDbContext context)
         {
             _context = context;
+         
         }
         //RUTINAS
         public async Task<Rutina> CrearRutinaAsync(Rutina rutina)
@@ -45,9 +47,70 @@ namespace FitRank_API.Infrastructure.Repositories
 
         public async Task<Rutina> ActualizarRutinaAsync(Rutina rutina)
         {
-            _context.Rutinas.Update(rutina);
+            var rutinaExistente = await _context.Rutinas
+                .Include(r => r.Ejercicios)
+                .FirstOrDefaultAsync(r => r.Id == rutina.Id);
+
+            if (rutinaExistente == null)
+                return null;
+
+            rutinaExistente.Nombre = rutina.Nombre;
+            rutinaExistente.FechaInicio = rutina.FechaInicio;
+            rutinaExistente.FechaFin = rutina.FechaFin;
+            rutinaExistente.DiasPorSemana = rutina.DiasPorSemana;
+
+            // Eliminar ejercicios que ya no están en la rutina recibida
+            var ejerciciosAEliminar = rutinaExistente.Ejercicios
+                .Where(e => !rutina.Ejercicios.Any(re => re.Id == e.Id))
+                .ToList();
+
+            foreach (var ejercicio in ejerciciosAEliminar)
+            {
+                rutinaExistente.Ejercicios.Remove(ejercicio);
+                _context.Ejercicios.Remove(ejercicio);
+            }
+
+            // Actualizar o agregar ejercicios
+            foreach (var ejercicio in rutina.Ejercicios)
+            {
+                var ejercicioExistente = rutinaExistente.Ejercicios
+                    .FirstOrDefault(e => e.Id == ejercicio.Id);
+
+                if (ejercicioExistente != null)
+                {
+                    // Actualizar propiedades
+                    ejercicioExistente.Nombre = ejercicio.Nombre;
+                    ejercicioExistente.Series = ejercicio.Series;
+                    ejercicioExistente.Repeticiones = ejercicio.Repeticiones;
+                    ejercicioExistente.Peso = ejercicio.Peso;
+                    ejercicioExistente.MaquinaId = ejercicio.MaquinaId;
+                }
+                else
+                {
+                    // Si el ejercicio tiene Id, buscarlo en el contexto local
+                    Ejercicio ejercicioAdjunto = null;
+                    if (ejercicio.Id > 0)
+                    {
+                        ejercicioAdjunto = _context.Ejercicios.Local
+                            .FirstOrDefault(e => e.Id == ejercicio.Id)
+                            ?? await _context.Ejercicios.FindAsync(ejercicio.Id);
+                    }
+
+                    if (ejercicioAdjunto != null)
+                    {
+                        // Ya existe y está rastreado, lo agregamos a la rutina
+                        rutinaExistente.Ejercicios.Add(ejercicioAdjunto);
+                    }
+                    else
+                    {
+                        // Es nuevo, lo agregamos directamente
+                        rutinaExistente.Ejercicios.Add(ejercicio);
+                    }
+                }
+            }
+
             await _context.SaveChangesAsync();
-            return rutina;
+            return rutinaExistente;
         }
 
         public async Task<bool> EliminarRutinaAsync(int id)

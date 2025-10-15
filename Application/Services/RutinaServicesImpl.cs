@@ -45,13 +45,9 @@ namespace FitRank_API.Application.Services
 
         public async Task<EditarRutinaDTO> EditarRutinaAsync(int id, EditarRutinaDTO rutinaActualizada)
         {
-            var rutina = await _rutinaRepository.ObtenerRutinaPorIdAsync(id);
-            if (rutina == null)
-            {
-                return null;
-            }
 
-            _mapper.Map(rutinaActualizada, rutina); //Copia los valores del DTO sobre el objeto entidad
+            var rutina = _mapper.Map<Rutina>(rutinaActualizada);
+            //_mapper.Map(rutinaActualizada, rutina); //Copia los valores del DTO sobre el objeto entidad
 
             var rutinaEditada = await _rutinaRepository.ActualizarRutinaAsync(rutina);
             return _mapper.Map<EditarRutinaDTO>(rutinaEditada);

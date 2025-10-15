@@ -5,6 +5,7 @@ namespace FitRank_API.Application.DTOs.Ejercicionamespace
     public class EjercicioDTO
     {
         public long Id { get; set; }
+        public int? RutinaId { get; set; }
         public int? MaquinaId { get; set; }
         public string Nombre { get; set; }
         public GrupoMuscular GrupoMuscular { get; set; }

@@ -43,6 +43,8 @@ builder.Services.AddScoped<IRankingService, RankingServiceImpl>();
 builder.Services.AddScoped<IEjercicioRealizado, EjercicioRealizadoService>();
 builder.Services.AddScoped<IEjercicioRealizadoRepository, EjercicioRealizadoImpl>();
 builder.Services.AddScoped<IUsuarioService, UsuarioServiceImpl>();
+builder.Services.AddScoped<IEjercicioService, EjercicioServiceImpl>();
+builder.Services.AddScoped<IEjercicioRepositorio, EjercicioRepositorioImpl>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -54,9 +56,13 @@ builder.Services.AddScoped<ISocioRepositorio, SocioRepositorio>();
 builder.Services.AddScoped<IGimnasioService, GimnasioServiceImpl>();
 builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorio>();
 
+builder.Services.AddScoped<IRutinaRepository, RutinaRepositorioImpl>();
+builder.Services.AddScoped<IRutinaService, RutinaServicesImpl>();
+
 
 builder.Services.AddScoped<IPuntuacionDiariaRepository, PuntuacionDiariaImpl>();
 builder.Services.AddScoped<CalculoDivisionService>();
+
 
 builder.Services.AddCors(options =>
 {
