@@ -9,7 +9,7 @@ public class FitRankDbContext : DbContext
         : base(options)
     {
     }
-
     public DbSet<Persona> Personas { get; set; }
+    public DbSet<Socio> Socios { get; set; }
 }
 
