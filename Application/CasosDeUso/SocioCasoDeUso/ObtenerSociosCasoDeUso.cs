@@ -15,10 +15,10 @@ public class ObtenerSociosCasoDeUso
         _socioRepositorio = socioRepositorio;
         _mapper = mapper;
     }
-    public async Task<IEnumerable<SocioDTO>> Ejecutar()
+    public async Task<List<SocioDTO>> Ejecutar()
     {
         var socios = await _socioRepositorio.ObtenerTodosAsync();
-        return _mapper.Map<IEnumerable<SocioDTO>>(socios);
+        return _mapper.Map<List<SocioDTO>>(socios);
 
     }
 }

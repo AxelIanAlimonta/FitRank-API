@@ -6,8 +6,8 @@ public interface IGrupoMuscularRepositorio
 {
     Task<List<GrupoMuscular>> ObtenerTodosAsync();
     Task<GrupoMuscular?> ObtenerPorIdAsync(long id);
-    Task AgregarAsync(GrupoMuscular grupoMuscular);
-    Task ActualizarAsync(GrupoMuscular grupoMuscular);
+    Task<GrupoMuscular?> AgregarAsync(GrupoMuscular grupoMuscular);
+    Task<GrupoMuscular?> ActualizarAsync(GrupoMuscular grupoMuscular);
     Task EliminarAsync(long id);
 
 

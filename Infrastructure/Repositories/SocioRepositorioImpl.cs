@@ -13,7 +13,7 @@ public class SocioRepositorioImpl : ISocioRepositorio
         _context = context;
     }
 
-    public async Task<IEnumerable<Socio>> ObtenerTodosAsync()
+    public async Task<List<Socio>> ObtenerTodosAsync()
     {
         return await _context.Socios.ToListAsync();
     }
