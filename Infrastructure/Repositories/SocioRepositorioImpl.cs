@@ -13,25 +13,25 @@ public class SocioRepositorioImpl : ISocioRepositorio
         _context = context;
     }
 
-    public async Task<IEnumerable<Socio>> ObtenerTodosLosSociosAsync()
+    public async Task<IEnumerable<Socio>> ObtenerTodosAsync()
     {
         return await _context.Socios.ToListAsync();
     }
 
     // ObtenerSocioPorIdAsync
-    public async Task<Socio?> ObtenerSocioPorIdAsync(long id)
+    public async Task<Socio?> ObtenerPorIdAsync(long id)
     {
         return await _context.Socios.FindAsync(id);
     }
 
-    public async Task<Socio> AgregarSocioAsync(Socio socio)
+    public async Task<Socio> AgregarAsync(Socio socio)
     {
         _context.Socios.Add(socio);
         await _context.SaveChangesAsync();
         return socio;
     }
 
-    public async Task<Socio?> ActualizarSocioAsync(Socio socio)
+    public async Task<Socio?> ActualizarAsync(Socio socio)
     {
         var socioExistente = await _context.Socios.FindAsync(socio.Id);
         if (socioExistente == null)
@@ -48,7 +48,7 @@ public class SocioRepositorioImpl : ISocioRepositorio
     }
 
     //eliminar socio
-    public async Task<bool> EliminarSocioAsync(long id)
+    public async Task<bool> EliminarAsync(long id)
     {
         var socioExistente = await _context.Socios.FindAsync(id);
         if (socioExistente == null)

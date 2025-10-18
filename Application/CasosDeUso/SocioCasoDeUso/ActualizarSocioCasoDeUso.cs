@@ -19,7 +19,7 @@ public class ActualizarSocioCasoDeUso
     public async Task<SocioDTO> Ejecutar(SocioDTO socioDTO)
     {
         var socio = _mapper.Map<Socio>(socioDTO);
-        var socioActualizado = await _socioRepositorio.ActualizarSocioAsync(socio);
+        var socioActualizado = await _socioRepositorio.ActualizarAsync(socio);
         return _mapper.Map<SocioDTO>(socioActualizado);
     }
 

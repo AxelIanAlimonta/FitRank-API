@@ -19,7 +19,7 @@ public class AgregarSocioCasoDeUso
     public async Task<SocioDTO> Ejecutar(AgregarSocioDTO socio)
     {
         var socioEntidad = _mapper.Map<Socio>(socio);
-        var socioCreado = await _socioRepositorio.AgregarSocioAsync(socioEntidad);
+        var socioCreado = await _socioRepositorio.AgregarAsync(socioEntidad);
         return _mapper.Map<SocioDTO>(socioCreado);
 
     }

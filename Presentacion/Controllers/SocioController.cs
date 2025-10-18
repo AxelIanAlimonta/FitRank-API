@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 //using casos de uso
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
-using FitRank_API.Domain.Entities;
 using FitRank_API.Application.DTOs.SocioDTOs;
 
 
@@ -33,14 +31,14 @@ public class SocioController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> obtenerSocios()
+    public async Task<IActionResult> obtenerTodos()
     {
         var socios = await _obtenerSociosCasoDeUso.Ejecutar();
         return Ok(socios);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> obtenerSocioPorId(long id)
+    public async Task<IActionResult> obtenerPorId(long id)
     {
         var socio = await _obtenerSocioPorIdCasoDeUso.Ejecutar(id);
         if (socio == null)
@@ -51,16 +49,16 @@ public class SocioController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> agregarSocio([FromBody] AgregarSocioDTO socio)
+    public async Task<IActionResult> agregar([FromBody] AgregarSocioDTO socio)
     {
         var nuevoSocio = await _agregarSocioCasoDeUso.Ejecutar(socio);
-        return CreatedAtAction(nameof(obtenerSocioPorId), new { id = nuevoSocio.Id }, nuevoSocio);
+        return CreatedAtAction(nameof(obtenerPorId), new { id = nuevoSocio.Id }, nuevoSocio);
 
 
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> actualizarSocio(long id, [FromBody] SocioDTO socio)
+    public async Task<IActionResult> actualizar(long id, [FromBody] SocioDTO socio)
     {
         if (id != socio.Id)
         {
@@ -75,7 +73,7 @@ public class SocioController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> eliminarSocio(long id)
+    public async Task<IActionResult> eliminar(long id)
     {
         var resultado = await _eliminarSocioCasoDeUso.Ejecutar(id);
         if (!resultado)
