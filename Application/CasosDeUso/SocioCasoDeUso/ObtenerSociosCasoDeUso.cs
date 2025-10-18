@@ -17,7 +17,7 @@ public class ObtenerSociosCasoDeUso
     }
     public async Task<IEnumerable<SocioDTO>> Ejecutar()
     {
-        var socios = await _socioRepositorio.ObtenerTodosLosSociosAsync();
+        var socios = await _socioRepositorio.ObtenerTodosAsync();
         return _mapper.Map<IEnumerable<SocioDTO>>(socios);
 
     }

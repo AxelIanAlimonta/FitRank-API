@@ -4,9 +4,9 @@ namespace FitRank_API.Infrastructure.Interfaces;
 
 public interface ISocioRepositorio
 {
-    Task<IEnumerable<Socio>> ObtenerTodosLosSociosAsync();
-    Task<Socio?> ObtenerSocioPorIdAsync(long id);
-    Task<Socio> AgregarSocioAsync(Socio socio);
-    Task<Socio?> ActualizarSocioAsync(Socio socio);
-    Task<bool> EliminarSocioAsync(long id);
+    Task<IEnumerable<Socio>> ObtenerTodosAsync();
+    Task<Socio?> ObtenerPorIdAsync(long id);
+    Task<Socio> AgregarAsync(Socio socio);
+    Task<Socio?> ActualizarAsync(Socio socio);
+    Task<bool> EliminarAsync(long id);
 }
