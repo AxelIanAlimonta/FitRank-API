@@ -5,6 +5,7 @@ using FitRank_API.Application.Services;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Repositories;
 using FitRank_API.Application.Interfaces;
+using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<FitRankDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ISocioRepositorio, SocioRepositorioImpl>();
+builder.Services.AddScoped<ObtenerSociosCasoDeUso>();
+builder.Services.AddScoped<AgregarSocioCasoDeUso>();
+builder.Services.AddScoped<ObtenerSocioPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarSocioCasoDeUso>();
+builder.Services.AddScoped<EliminarSocioCasoDeUso>();
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();

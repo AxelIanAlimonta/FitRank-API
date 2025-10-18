@@ -1,0 +1,28 @@
+﻿using AutoMapper;
+using FitRank_API.Application.DTOs.SocioDTOs;
+using FitRank_API.Domain.Entities;
+using FitRank_API.Infrastructure.Interfaces;
+
+namespace FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
+
+public class ObtenerSocioPorIdCasoDeUso
+{
+
+    private readonly ISocioRepositorio _socioRepositorio;
+    private readonly IMapper _mapper;
+
+    public ObtenerSocioPorIdCasoDeUso(ISocioRepositorio socioRepositorio, IMapper mapper)
+    {
+        _socioRepositorio = socioRepositorio;
+        _mapper = mapper;
+    }
+
+
+    public async Task<SocioDTO?> Ejecutar(long id)
+    {
+        var socio = await _socioRepositorio.ObtenerSocioPorIdAsync(id);
+        return _mapper.Map<SocioDTO?>(socio);
+
+    }
+
+}
