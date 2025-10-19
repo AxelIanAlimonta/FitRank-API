@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FitRank_API.Application.DTOs.PuntajeDTOs;
+using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso
@@ -16,8 +18,8 @@ namespace FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso
 
         public async Task<ObtenerPuntajeDTO?> Ejecutar(ActualizarPuntajeDTO puntajeActualizado)
         {
-            var puntajeEntidad = _mapper.Map<Domain.Entities.Puntaje>(puntajeActualizado);
-            var puntajeActualizadoEntidad = await _puntajeRepositorio.Actualizar(puntajeEntidad);
+            var puntajeEntidad = _mapper.Map<Puntaje>(puntajeActualizado);
+            var puntajeActualizadoEntidad = await _puntajeRepositorio.ActualizarAsync(puntajeEntidad);
             if (puntajeActualizadoEntidad == null)
             {
                 return null;

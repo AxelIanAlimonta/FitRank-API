@@ -4,10 +4,10 @@ namespace FitRank_API.Infrastructure.Interfaces
 {
     public interface ISerieRealizadaRepositorio
     {
-        Task<List<SerieRealizada>> ObtenerTodas();
-        Task<SerieRealizada?> ObtenerPorId(long id);
-        Task<SerieRealizada> Agregar(SerieRealizada rutina);
-        Task<SerieRealizada?> Actualizar(SerieRealizada rutina);
-        Task<bool> Eliminar(long id);
+        Task<List<SerieRealizada>> ObtenerTodasAsync();
+        Task<SerieRealizada?> ObtenerPorIdAsync(long id);
+        Task<SerieRealizada> AgregarAsync(SerieRealizada rutina);
+        Task<SerieRealizada?> ActualizarAsync(SerieRealizada rutina);
+        Task<bool> EliminarAsync(long id);
     }
 }

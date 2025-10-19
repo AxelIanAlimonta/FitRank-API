@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FitRank_API.Application.DTOs.SerieRealizadaDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso
@@ -12,10 +13,11 @@ namespace FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso
             _serieRealizadaRepositorio = serieRealizadaRepositorio;
             _mapper = mapper;
         }
-        public async Task<List<ObtenerSerieRealizadaDTO>> Ejecutar()
+        
+        public async Task<IEnumerable<ObtenerSerieRealizadaDTO>> Ejecutar()
         {
-            var seriesRealizadasEntidad = await _serieRealizadaRepositorio.ObtenerTodos();
-            return _mapper.Map<List<ObtenerSerieRealizadaDTO>>(seriesRealizadasEntidad);
+            var seriesRealizadasEntidad =  await _serieRealizadaRepositorio.ObtenerTodasAsync();
+            return _mapper.Map<IEnumerable<ObtenerSerieRealizadaDTO>>(seriesRealizadasEntidad);
         }
     }
 }

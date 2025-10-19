@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FitRank_API.Application.DTOs.SerieRealizadaDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso
@@ -17,7 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso
         public async Task<ObtenerSerieRealizadaDTO> Ejecutar(AgregarSerieRealizadaDTO nuevaSerieRealizada)
         {
             var serieRealizadaEntidad = _mapper.Map<Domain.Entities.SerieRealizada>(nuevaSerieRealizada);
-            var serieRealizadaAgregada = await _serieRealizadaRepositorio.Agregar(serieRealizadaEntidad);
+            var serieRealizadaAgregada = await _serieRealizadaRepositorio.AgregarAsync(serieRealizadaEntidad);
             return _mapper.Map<ObtenerSerieRealizadaDTO>(serieRealizadaAgregada);
         }
     }

@@ -11,6 +11,6 @@ public class EliminarEjercicioRealizadoCasoDeUso
     }
     public async Task<bool> Ejecutar(long id)
     {
-        return await _ejercicioRealizadoRepositorio.Eliminar(id);
+        return await _ejercicioRealizadoRepositorio.EliminarAsync(id);
     }
 }

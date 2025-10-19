@@ -13,6 +13,9 @@ using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
+using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
+using FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +88,27 @@ builder.Services.AddScoped<AgregarEjercicioAsignadoCasoDeUso>();
 builder.Services.AddScoped<ObtenerEjercicioAsignadoPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarEjercicioAsignadoCasoDeUso>();
 builder.Services.AddScoped<EliminarEjercicioAsignadoCasoDeUso>();
+
+builder.Services.AddScoped<IEjercicioRealizadoRepositorio, EjercicioRealizadoRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodosLosEjercicioRealizadoCasoDeUso>();
+builder.Services.AddScoped<ObtenerEjercicioRealizadoPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarEjercicioRealizadoCasoDeUso>();
+builder.Services.AddScoped<ActualizarEjercicioRealizadoCasoDeUso>();
+builder.Services.AddScoped<EliminarEjercicioRealizadoCasoDeUso>();
+
+builder.Services.AddScoped<ISerieRealizadaRepositorio, SerieRealizadaRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodasLasSerieRealizadaCasoDeUso>();
+builder.Services.AddScoped<ObtenerSerieRealizadaPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarSerieRealizadaCasoDeUso>();
+builder.Services.AddScoped<ActualizarSerieRealizadaCasoDeUso>();
+builder.Services.AddScoped<EliminarSerieRealizadaCasoDeUso>();
+
+builder.Services.AddScoped<IPuntajeRepositorio, PuntajeRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodosLosPuntajeCasoDeUso>();
+builder.Services.AddScoped<ObtenerPuntajePorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarPuntajeCasoDeUso>();
+builder.Services.AddScoped<ActualizarPuntajeCasoDeUso>();
+builder.Services.AddScoped<EliminarPuntajeCasoDeUso>();
 
 
 builder.Services.AddAutoMapper(cfg =>

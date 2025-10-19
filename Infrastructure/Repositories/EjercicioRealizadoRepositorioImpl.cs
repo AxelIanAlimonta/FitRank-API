@@ -13,34 +13,30 @@ public class EjercicioRealizadoRepositorioImpl : IEjercicioRealizadoRepositorio
         _context = context;
     }
 
-    public async Task<List<EjercicioRealizado>> ObtenerTodos()
+    public async Task<List<EjercicioRealizado>> ObtenerTodosAsync()
     {
-        return await _context.EjerciciosRealizados.Include(er => er.SeriesRealizadas)
-            .Include(er => er.Ejercicio)       
-            .Include(er => er.Socio)            
-            .Include(er => er.Rutina)
-            .Include(er => er.SesionRealizadaDeEjercicios)
-            .ToListAsync();
+       return await _context.EjerciciosRealizados.Include(e => e.Ejercicio)
+                                                 .Include(e => e.Socio)
+                                                 .Include(e => e.Rutina)
+                                                 .ToListAsync();
     }
 
-    public async Task<EjercicioRealizado?> ObtenerPorId(long id)
+    public async Task<EjercicioRealizado?> ObtenerPorIdAsync(long id)
     {
-        return await _context.EjerciciosRealizados.Include(er => er.SeriesRealizadas)
-            .Include(er => er.Ejercicio)
-            .Include(er => er.Socio)
-            .Include(er => er.Rutina)
-            .Include(er => er.SesionRealizadaDeEjercicios)
-            .FirstOrDefaultAsync(er => er.Id == id);
+        return await _context.EjerciciosRealizados.Include(e => e.Ejercicio)
+                                                 .Include(e => e.Socio)
+                                                 .Include(e => e.Rutina)
+                                                 .FirstOrDefaultAsync(e => e.Id == id);
     }
 
-    public async Task<EjercicioRealizado> Agregar(EjercicioRealizado ejercicioRealizado)
+    public async Task<EjercicioRealizado> AgregarAsync(EjercicioRealizado ejercicioRealizado)
     {
         _context.EjerciciosRealizados.Add(ejercicioRealizado);
         await _context.SaveChangesAsync();
         return ejercicioRealizado;
     }
 
-    public async Task<EjercicioRealizado?> Actualizar(EjercicioRealizado ejercicioRealizado)
+    public async Task<EjercicioRealizado?> ActualizarAsync(EjercicioRealizado ejercicioRealizado)
     {
         var existingEjercicioRealizado = await _context.EjerciciosRealizados.FindAsync(ejercicioRealizado.Id);
         if (existingEjercicioRealizado == null)
@@ -52,7 +48,7 @@ public class EjercicioRealizadoRepositorioImpl : IEjercicioRealizadoRepositorio
         return existingEjercicioRealizado;
     }
 
-    public async Task<bool> Eliminar(long id)
+    public async Task<bool> EliminarAsync(long id)
     {
         var ejercicioRealizado = await _context.EjerciciosRealizados.FindAsync(id);
         if (ejercicioRealizado == null)
@@ -63,4 +59,6 @@ public class EjercicioRealizadoRepositorioImpl : IEjercicioRealizadoRepositorio
         await _context.SaveChangesAsync();
         return true;
     }
+
+
 }

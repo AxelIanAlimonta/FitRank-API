@@ -15,7 +15,7 @@ public class ObtenerEjercicioRealizadoPorIdCasoDeUso
     }
     public async Task<ObtenerEjercicioRealizadoDTO?> Ejecutar(long id)
     {
-        var ejercicioRealizadoEntidad = await _ejercicioRealizadoRepositorio.ObtenerPorId(id);
+        var ejercicioRealizadoEntidad = await _ejercicioRealizadoRepositorio.ObtenerPorIdAsync(id);
         if (ejercicioRealizadoEntidad == null)
         {
             return null;

@@ -17,7 +17,7 @@ public class ObtenerTodosLosEjercicioRealizadoCasoDeUso
 
     public async Task<IEnumerable<ObtenerEjercicioRealizadoDTO>> Ejecutar()
     {
-        var ejerciciosRealizadosEntidad = await _ejercicioRealizadoRepositorio.ObtenerTodos();
+        var ejerciciosRealizadosEntidad = await _ejercicioRealizadoRepositorio.ObtenerTodosAsync();
         return _mapper.Map<IEnumerable<ObtenerEjercicioRealizadoDTO>>(ejerciciosRealizadosEntidad);
     }
 }
