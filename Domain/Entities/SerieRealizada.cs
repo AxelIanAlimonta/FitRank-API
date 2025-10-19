@@ -9,5 +9,4 @@ public class SerieRealizada
     public int NumeroDeSerie { set; get; }
     public long EjercicioRealizadoId { set; get; }
     public EjercicioRealizado? EjercicioRealizado { set; get; } // Propiedad de navegación
-    public Puntaje? Puntaje { set; get; } // Propiedad de navegación
 }
