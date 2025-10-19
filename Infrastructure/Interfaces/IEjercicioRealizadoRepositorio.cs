@@ -4,9 +4,9 @@ namespace FitRank_API.Infrastructure.Interfaces;
 
 public interface IEjercicioRealizadoRepositorio
 {
-    Task<List<EjercicioRealizado>> ObtenerTodos();
-    Task<EjercicioRealizado?> ObtenerPorId(long id);
-    Task<EjercicioRealizado> Agregar(EjercicioRealizado rutina);
-    Task<EjercicioRealizado?> Actualizar(EjercicioRealizado rutina);
-    Task<bool> Eliminar(long id);
+    Task<List<EjercicioRealizado>> ObtenerTodosAsync();
+    Task<EjercicioRealizado?> ObtenerPorIdAsync(long id);
+    Task<EjercicioRealizado> AgregarAsync(EjercicioRealizado rutina);
+    Task<EjercicioRealizado?> ActualizarAsync(EjercicioRealizado rutina);
+    Task<bool> EliminarAsync(long id);
 }

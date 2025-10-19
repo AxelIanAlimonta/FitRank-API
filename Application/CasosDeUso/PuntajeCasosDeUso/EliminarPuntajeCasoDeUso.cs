@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso
         }
         public async Task<bool> Ejecutar(long id)
         {
-            return await _puntajeRepositorio.Eliminar(id);
+            return await _puntajeRepositorio.EliminarAsync(id);
         }
     }
 }

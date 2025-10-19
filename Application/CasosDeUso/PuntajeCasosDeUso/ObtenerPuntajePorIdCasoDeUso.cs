@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FitRank_API.Application.DTOs.PuntajeDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso
@@ -12,9 +13,10 @@ namespace FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso
             _puntajeRepositorio = puntajeRepositorio;
             _mapper = mapper;
         }
-        public async Task<ObtenerPuntajeDTO?> Ejecutar(int idPuntaje)
+        
+        public async Task<ObtenerPuntajeDTO?> Ejecutar(long id)
         {
-            var puntajeEntidad = await _puntajeRepositorio.ObtenerPorId(idPuntaje);
+            var puntajeEntidad = await _puntajeRepositorio.ObtenerPorIdAsync(id);
             if (puntajeEntidad == null)
             {
                 return null;

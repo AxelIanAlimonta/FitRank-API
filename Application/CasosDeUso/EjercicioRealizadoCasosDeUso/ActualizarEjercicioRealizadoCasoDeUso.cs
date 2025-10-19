@@ -19,7 +19,7 @@ public class ActualizarEjercicioRealizadoCasoDeUso
     public async Task<ObtenerEjercicioRealizadoDTO?> Ejecutar(ActualizarEjercicioRealizadoDTO ejercicioRealizadoActualizado)
     {
         var ejercicioRealizadoEntidad = _mapper.Map<EjercicioRealizado>(ejercicioRealizadoActualizado);
-        var ejercicioRealizadoActualizadoEntidad = await _ejercicioRealizadoRepositorio.Actualizar(ejercicioRealizadoEntidad);
+        var ejercicioRealizadoActualizadoEntidad = await _ejercicioRealizadoRepositorio.ActualizarAsync(ejercicioRealizadoEntidad);
         if (ejercicioRealizadoActualizadoEntidad == null)
         {
             return null;

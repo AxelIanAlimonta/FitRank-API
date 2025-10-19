@@ -1,4 +1,8 @@
-﻿namespace FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso
+﻿using AutoMapper;
+using FitRank_API.Application.DTOs.SerieRealizadaDTOs;
+using FitRank_API.Infrastructure.Interfaces;
+
+namespace FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso
 {
     public class ObtenerSerieRealizadaPorIdCasoDeUso
     {
@@ -9,9 +13,10 @@
             _serieRealizadaRepositorio = serieRealizadaRepositorio;
             _mapper = mapper;
         }
-        public async Task<ObtenerSerieRealizadaDTO?> Ejecutar(int idSerieRealizada)
+        
+        public async Task<ObtenerSerieRealizadaDTO?> Ejecutar(long id)
         {
-            var serieRealizadaEntidad = await _serieRealizadaRepositorio.ObtenerPorId(idSerieRealizada);
+            var serieRealizadaEntidad = await _serieRealizadaRepositorio.ObtenerPorIdAsync(id);
             if (serieRealizadaEntidad == null)
             {
                 return null;

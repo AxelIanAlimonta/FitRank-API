@@ -4,10 +4,10 @@ namespace FitRank_API.Infrastructure.Interfaces
 {
     public interface IPuntajeRepositorio
     {
-        Task<List<Puntaje>> ObtenerTodas();
-        Task<Puntaje?> ObtenerPorId(long id);
-        Task<Puntaje> Agregar(Puntaje rutina);
-        Task<Puntaje?> Actualizar(Puntaje rutina);
-        Task<bool> Eliminar(long id);
+        Task<List<Puntaje>> ObtenerTodasAsync();
+        Task<Puntaje?> ObtenerPorIdAsync(long id);
+        Task<Puntaje> AgregarAsync(Puntaje rutina);
+        Task<Puntaje?> ActualizarAsync(Puntaje rutina);
+        Task<bool> EliminarAsync(long id);
     }
 }

@@ -13,25 +13,25 @@ namespace FitRank_API.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<Puntaje>> ObtenerTodas()
+        public async Task<List<Puntaje>> ObtenerTodasAsync()
         {
             return await _context.Puntajes
                 .Include(p => p.SerieRealizada)
                 .ToListAsync();
         }
-        public async Task<Puntaje?> ObtenerPorId(long id)
+        public async Task<Puntaje?> ObtenerPorIdAsync(long id)
         {
             return await _context.Puntajes
                 .Include(p => p.SerieRealizada)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
-        public async Task<Puntaje> Agregar(Puntaje puntaje)
+        public async Task<Puntaje> AgregarAsync(Puntaje puntaje)
         {
             _context.Puntajes.Add(puntaje);
             await _context.SaveChangesAsync();
             return puntaje;
         }
-        public async Task<Puntaje?> Actualizar(Puntaje puntaje)
+        public async Task<Puntaje?> ActualizarAsync(Puntaje puntaje)
         {
             var existingPuntaje = await _context.Puntajes.FindAsync(puntaje.Id);
             if (existingPuntaje == null)
@@ -42,7 +42,7 @@ namespace FitRank_API.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return existingPuntaje;
         }
-        public async Task<bool> Eliminar(long id)
+        public async Task<bool> EliminarAsync(long id)
         {
             var puntaje = await _context.Puntajes.FindAsync(id);
             if (puntaje == null)
