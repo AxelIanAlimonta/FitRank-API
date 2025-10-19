@@ -49,10 +49,11 @@ public class EjercicioController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AgregarEjercicio([FromBody] EjercicioDTO ejercicio)
+    public async Task<IActionResult> AgregarEjercicio([FromBody] AgregarEjercicioDTO ejercicio)
     {
         var nuevoEjercicio = await _agregarEjercicioCasoDeUso.EjecutarAsync(ejercicio);
         return CreatedAtAction(nameof(GetEjercicioPorId), new { id = nuevoEjercicio.Id }, nuevoEjercicio);
+
     }
 
     [HttpPut]
