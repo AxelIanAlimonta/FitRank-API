@@ -7,6 +7,7 @@ using FitRank_API.Infrastructure.Repositories;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
+using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,13 @@ builder.Services.AddScoped<EliminarGrupoMuscularCasoDeUso>();
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
 
+builder.Services.AddScoped<IDificultadRepositorio, DificultadRepositorioImpl>();
+// Add other repositories and use cases as needed
+builder.Services.AddScoped<ObtenerTodasLasDificultadesCasoDeUso>();
+builder.Services.AddScoped<ObtenerDificultadPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarDificultadCasoDeUso>();
+builder.Services.AddScoped<ActualizarDificultadCasoDeUso>();
+builder.Services.AddScoped<EliminarDificultadCasoDeUso>();
 
 
 builder.Services.AddAutoMapper(cfg =>
