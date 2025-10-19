@@ -9,8 +9,10 @@ public class EliminarSocioCasoDeUso
     {
         _socioRepositorio = socioRepositorio;
     }
+
     public async Task<bool> Ejecutar(long id)
     {
-        return await _socioRepositorio.EliminarSocioAsync(id);
+        return await _socioRepositorio.EliminarAsync(id);
     }
+
 }
