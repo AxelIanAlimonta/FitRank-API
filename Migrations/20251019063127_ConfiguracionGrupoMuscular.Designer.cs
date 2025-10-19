@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251019063127_ConfiguracionGrupoMuscular")]
+    partial class ConfiguracionGrupoMuscular
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,7 +33,10 @@ namespace FitRank_API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("GrupoMuscularId")
+                    b.Property<int>("GrupoMuscularId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("GrupoMuscularId1")
                         .HasColumnType("bigint");
 
                     b.Property<double>("Multiplicadopeso")
@@ -41,7 +47,7 @@ namespace FitRank_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GrupoMuscularId");
+                    b.HasIndex("GrupoMuscularId1");
 
                     b.ToTable("ConfiguracionesGrupoMuscular");
                 });
@@ -147,7 +153,7 @@ namespace FitRank_API.Migrations
                 {
                     b.HasOne("FitRank_API.Domain.Entities.GrupoMuscular", "GrupoMuscular")
                         .WithMany()
-                        .HasForeignKey("GrupoMuscularId")
+                        .HasForeignKey("GrupoMuscularId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

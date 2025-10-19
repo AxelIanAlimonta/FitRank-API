@@ -5,9 +5,9 @@ namespace FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios
 {
     public class EliminarSesionRealizadaDeEjerciciosCasoDeUso
     {
-        private readonly ISesionRealizadaDeEjercicios _sesionRealizadaDeEjercicios;
+        private readonly ISesionRealizadaDeEjerciciosRepositorio _sesionRealizadaDeEjercicios;
 
-        public EliminarSesionRealizadaDeEjerciciosCasoDeUso(ISesionRealizadaDeEjercicios SesionRealizadaDeEjercicios)
+        public EliminarSesionRealizadaDeEjerciciosCasoDeUso(ISesionRealizadaDeEjerciciosRepositorio SesionRealizadaDeEjercicios)
         {
             _sesionRealizadaDeEjercicios = SesionRealizadaDeEjercicios;
         }

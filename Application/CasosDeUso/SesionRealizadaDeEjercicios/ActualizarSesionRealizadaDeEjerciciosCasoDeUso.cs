@@ -6,10 +6,10 @@ namespace FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios
 {
     public class ActualizarSesionRealizadaDeEjerciciosCasoDeUso
     {
-        private readonly ISesionRealizadaDeEjercicios _sesionRealizadaDeEjercicios;
+        private readonly ISesionRealizadaDeEjerciciosRepositorio _sesionRealizadaDeEjercicios;
         private readonly IMapper _mapper;
 
-        public ActualizarSesionRealizadaDeEjerciciosCasoDeUso(ISesionRealizadaDeEjercicios SesionRealizadaDeEjercicios, IMapper mapper)
+        public ActualizarSesionRealizadaDeEjerciciosCasoDeUso(ISesionRealizadaDeEjerciciosRepositorio SesionRealizadaDeEjercicios, IMapper mapper)
         {
             _sesionRealizadaDeEjercicios = SesionRealizadaDeEjercicios;
             _mapper = mapper;
