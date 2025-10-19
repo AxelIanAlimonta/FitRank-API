@@ -17,6 +17,7 @@ using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieAsignadaCasoDeUso;
+using FitRank_API.Application.CasosDeUso.RutinaEjerciciosCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -117,6 +118,13 @@ builder.Services.AddScoped<ObtenerSerieAsignadaPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarSerieAsignadaCasoDeUso>();
 builder.Services.AddScoped<ActualizarSerieAsignadaCasoDeUso>();
 builder.Services.AddScoped<EliminarSerieAsignadaCasoDeUso>();
+
+builder.Services.AddScoped<IRutinaEjercicioRepositorio, RutinaEjercicioRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodasRutinasEjerciciosCasoDeUso>();
+builder.Services.AddScoped<ObtenerRutinaEjercicioPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarRutinaEjercicioCasoDeUso>();
+builder.Services.AddScoped<ActualizarRutinaEjercicioCasoDeUso>();
+builder.Services.AddScoped<EliminarRutinaEjercicioCasoDeUso>();
 
 
 
