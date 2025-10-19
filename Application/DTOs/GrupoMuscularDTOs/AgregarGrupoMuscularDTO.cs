@@ -2,5 +2,7 @@
 
 public class AgregarGrupoMuscularDTO
 {
-    public string Nombre { get; set; } = string.Empty;
+    public DateTime Fecha { get; set; }
+    public TimeSpan Duracion { get; set; }
+    public int NumeroDeSesion { get; set; }
 }

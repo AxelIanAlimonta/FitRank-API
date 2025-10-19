@@ -8,6 +8,7 @@ using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
+using FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,12 +40,18 @@ builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
 
 builder.Services.AddScoped<IDificultadRepositorio, DificultadRepositorioImpl>();
-// Add other repositories and use cases as needed
 builder.Services.AddScoped<ObtenerTodasLasDificultadesCasoDeUso>();
 builder.Services.AddScoped<ObtenerDificultadPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarDificultadCasoDeUso>();
 builder.Services.AddScoped<ActualizarDificultadCasoDeUso>();
 builder.Services.AddScoped<EliminarDificultadCasoDeUso>();
+
+builder.Services.AddScoped<ISesionRealizadaDeEjercicios, SesionRealizadaDeEjerciciosRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodasLasSesionesRealizadasDeEjerciciosCasoDeUso>();
+builder.Services.AddScoped<ObtenerSesionRealizadaDeEjerciciosPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarSesionRealizadaDeEjerciciosCasoDeUso>();
+builder.Services.AddScoped<ActualizarSesionRealizadaDeEjerciciosCasoDeUso>();
+builder.Services.AddScoped<EliminarSesionRealizadaDeEjerciciosCasoDeUso>();
 
 
 builder.Services.AddAutoMapper(cfg =>
