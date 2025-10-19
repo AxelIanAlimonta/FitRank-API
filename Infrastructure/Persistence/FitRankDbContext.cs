@@ -13,5 +13,6 @@ public class FitRankDbContext : DbContext
     public DbSet<Socio> Socios { get; set; }
     public DbSet<GrupoMuscular> GruposMusculares { get; set; }
     public DbSet<Dificultad> Dificultades { get; set; }
+    public DbSet<SesionRealizadaDeEjercicios> SesionRealizadaDeEjercicios { get; set; }
 }
 
