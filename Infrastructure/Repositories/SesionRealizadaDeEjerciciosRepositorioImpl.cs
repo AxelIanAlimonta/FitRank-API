@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRank_API.Infrastructure.Repositories
 {
-    public class SesionRealizadaDeEjerciciosRepositorioImpl : ISesionRealizadaDeEjercicios
+    public class SesionRealizadaDeEjerciciosRepositorioImpl : ISesionRealizadaDeEjerciciosRepositorio
     {
         private readonly FitRankDbContext _context;
 
