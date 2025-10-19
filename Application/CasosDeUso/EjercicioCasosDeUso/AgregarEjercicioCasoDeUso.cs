@@ -16,7 +16,7 @@ public class AgregarEjercicioCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<EjercicioDTO> EjecutarAsync(EjercicioDTO ejercicioDTO)
+    public async Task<EjercicioDTO> EjecutarAsync(AgregarEjercicioDTO ejercicioDTO)
     {
         var ejercicio = _mapper.Map<Ejercicio>(ejercicioDTO);
         var ejercicioAgregado = await _ejercicioRepositorio.AgregarEjercicioAsync(ejercicio);
