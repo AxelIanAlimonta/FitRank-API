@@ -6,6 +6,7 @@ using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Repositories;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
+using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,13 @@ builder.Services.AddScoped<AgregarSocioCasoDeUso>();
 builder.Services.AddScoped<ObtenerSocioPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarSocioCasoDeUso>();
 builder.Services.AddScoped<EliminarSocioCasoDeUso>();
+
+builder.Services.AddScoped<IGrupoMuscularRepositorio, GrupoMuscularRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodosLosGruposMuscularesCasoDeUso>();
+builder.Services.AddScoped<ObtenerGrupoMuscularPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarGrupoMuscularCasoDeUso>();
+builder.Services.AddScoped<ActualizarGrupoMuscularCasoDeUso>();
+builder.Services.AddScoped<EliminarGrupoMuscularCasoDeUso>();
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();

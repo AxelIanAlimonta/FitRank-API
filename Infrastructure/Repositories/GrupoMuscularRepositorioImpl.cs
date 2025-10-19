@@ -9,24 +9,29 @@ public class GrupoMuscularRepositorioImpl : IGrupoMuscularRepositorio
 {
 
     private readonly FitRankDbContext _context;
+
     public GrupoMuscularRepositorioImpl(FitRankDbContext context)
     {
         _context = context;
     }
+
     public async Task<List<GrupoMuscular>> ObtenerTodosAsync()
     {
         return await _context.GruposMusculares.ToListAsync();
     }
+
     public async Task<GrupoMuscular?> ObtenerPorIdAsync(long id)
     {
         return await _context.GruposMusculares.FindAsync(id);
     }
+
     public async Task<GrupoMuscular?> AgregarAsync(GrupoMuscular grupoMuscular)
     {
         var resultado = await _context.GruposMusculares.AddAsync(grupoMuscular);
         await _context.SaveChangesAsync();
         return resultado.Entity;
     }
+
     public async Task<GrupoMuscular?> ActualizarAsync(GrupoMuscular grupoMuscular)
     {
         var existente = await _context.GruposMusculares.FindAsync(grupoMuscular.Id);
@@ -34,10 +39,14 @@ public class GrupoMuscularRepositorioImpl : IGrupoMuscularRepositorio
         {
             return null;
         }
-        _context.Entry(existente).CurrentValues.SetValues(grupoMuscular);
+
+        existente.Nombre = grupoMuscular.Nombre;
+
         await _context.SaveChangesAsync();
         return existente;
     }
+
+
     public async Task EliminarAsync(long id)
     {
         var grupoMuscular = await _context.GruposMusculares.FindAsync(id);
