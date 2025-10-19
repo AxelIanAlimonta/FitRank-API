@@ -18,6 +18,7 @@ public class FitRankDbContext : DbContext
     public DbSet<Ejercicio> Ejercicios { get; set; }
     public DbSet<Rutina> Rutinas { get; set; }
     public DbSet<EjercicioAsignado> EjerciciosAsignados { get; set; }
+    public DbSet<SerieAsignada> SeriesAsignadas { get; set; }
     public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
     public DbSet<SerieRealizada> SeriesRealizadas { get; set; }
     public DbSet<Puntaje> Puntajes { get; set; }

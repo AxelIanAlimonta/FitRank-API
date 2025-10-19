@@ -16,6 +16,7 @@ using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
+using FitRank_API.Application.CasosDeUso.SerieAsignadaCasoDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -109,6 +110,14 @@ builder.Services.AddScoped<ObtenerPuntajePorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarPuntajeCasoDeUso>();
 builder.Services.AddScoped<ActualizarPuntajeCasoDeUso>();
 builder.Services.AddScoped<EliminarPuntajeCasoDeUso>();
+
+builder.Services.AddScoped<ISerieAsignadaRepositorio, SerieAsignadaRepositorioImpl>();
+builder.Services.AddScoped<ObtenerSeriesAsignadasCasoDeUso>();
+builder.Services.AddScoped<ObtenerSerieAsignadaPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarSerieAsignadaCasoDeUso>();
+builder.Services.AddScoped<ActualizarSerieAsignadaCasoDeUso>();
+builder.Services.AddScoped<EliminarSerieAsignadaCasoDeUso>();
+
 
 
 builder.Services.AddAutoMapper(cfg =>
