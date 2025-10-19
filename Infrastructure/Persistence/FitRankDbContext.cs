@@ -17,5 +17,8 @@ public class FitRankDbContext : DbContext
     public DbSet<ConfiguracionGrupoMuscular> ConfiguracionesGrupoMuscular { get; set; }
     public DbSet<Ejercicio> Ejercicios { get; set; }
     public DbSet<Rutina> Rutinas { get; set; }
+    public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
+    public DbSet<SerieRealizada> SeriesRealizadas { get; set; }
+    public DbSet<Puntaje> Puntajes { get; set; }
 }
 
