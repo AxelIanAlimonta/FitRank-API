@@ -11,6 +11,7 @@ using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios;
 using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,14 @@ builder.Services.AddScoped<ObtenerConfiguracionGrupoMuscularPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarConfiguracionGrupoMuscularCasoDeUso>();
 builder.Services.AddScoped<ActualizarConfiguracionGrupoMuscularCasoDeUso>();
 builder.Services.AddScoped<EliminarConfiguracionGrupoMuscularCasoDeUso>();
+
+builder.Services.AddScoped<IRutinaRepositorio, RutinaRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodasLasRutinasCasoDeUso>();
+builder.Services.AddScoped<OtenerRutinaPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarRutinaCasoDeUso>();
+builder.Services.AddScoped<ActualizarRutinaCasoDeUso>();
+builder.Services.AddScoped<EliminarRutinaCasoDeUso>();
+
 
 
 builder.Services.AddAutoMapper(cfg =>
