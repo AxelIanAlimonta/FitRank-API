@@ -19,16 +19,10 @@ public class FitRankDbContext : DbContext
     public DbSet<Rutina> Rutinas { get; set; }
     public DbSet<EjercicioAsignado> EjerciciosAsignados { get; set; }
     public DbSet<SerieAsignada> SeriesAsignadas { get; set; }
-<<<<<<< Updated upstream
     public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
     public DbSet<SerieRealizada> SeriesRealizadas { get; set; }
     public DbSet<Puntaje> Puntajes { get; set; }
-=======
-
     public DbSet<RutinaEjercicio> RutinasEjercicios { get; set; }
 
-
-
->>>>>>> Stashed changes
 }
 
