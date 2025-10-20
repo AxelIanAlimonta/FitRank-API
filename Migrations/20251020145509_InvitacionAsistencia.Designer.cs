@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251020145509_InvitacionAsistencia")]
+    partial class InvitacionAsistencia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,12 +52,15 @@ namespace FitRank_API.Migrations
                     b.Property<bool>("Presente")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("UsuarioId")
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UsuarioId1")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsuarioId");
+                    b.HasIndex("UsuarioId1");
 
                     b.ToTable("Asistencias");
                 });
@@ -534,6 +540,7 @@ namespace FitRank_API.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("nivel")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("pesoKg")
@@ -569,8 +576,8 @@ namespace FitRank_API.Migrations
             modelBuilder.Entity("FitRank_API.Domain.Entities.Asistencia", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
-                        .WithMany("asistencias")
-                        .HasForeignKey("UsuarioId")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -725,11 +732,6 @@ namespace FitRank_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Gimnasio");
-                });
-
-            modelBuilder.Entity("FitRank_API.Domain.Entities.Usuario", b =>
-                {
-                    b.Navigation("asistencias");
                 });
 #pragma warning restore 612, 618
         }

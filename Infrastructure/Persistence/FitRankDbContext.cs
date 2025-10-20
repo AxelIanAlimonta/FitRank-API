@@ -2,6 +2,7 @@
 
 using FitRank_API.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 public class FitRankDbContext : DbContext
 {
@@ -10,6 +11,7 @@ public class FitRankDbContext : DbContext
     {
     }
     public DbSet<Persona> Personas { get; set; }
+    public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Socio> Socios { get; set; }
     public DbSet<GrupoMuscular> GruposMusculares { get; set; }
     public DbSet<Dificultad> Dificultades { get; set; }
@@ -23,6 +25,37 @@ public class FitRankDbContext : DbContext
     public DbSet<SerieRealizada> SeriesRealizadas { get; set; }
     public DbSet<Puntaje> Puntajes { get; set; }
     public DbSet<RutinaEjercicio> RutinasEjercicios { get; set; }
+    public DbSet<Asistencia> Asistencias{ get; set; }
+    public DbSet<Invitacion> Invitaciones { get; set; }
 
-}
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // 🔹 Forzar que todos los DateTime se guarden como UTC
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
+                        v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                        v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                    ));
+                }
+                else if (property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(new ValueConverter<DateTime?, DateTime?>(
+                        v => v.HasValue ? (v.Value.Kind == DateTimeKind.Utc ? v.Value : v.Value.ToUniversalTime()) : v,
+                        v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v
+                    ));
+                }
+            }
+        }
+    }
+
+        }
 

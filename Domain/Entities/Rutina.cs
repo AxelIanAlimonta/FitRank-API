@@ -7,6 +7,6 @@ public class Rutina
     public int? Frecuencia { get; set; } = 1;
 
     public long DificultadId { get; set; }
-    public Dificultad Dificultad { get; set; } = new Dificultad();
+    public Dificultad Dificultad { get; set; }
 
 }
