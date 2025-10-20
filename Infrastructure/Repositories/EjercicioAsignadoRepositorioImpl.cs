@@ -60,6 +60,7 @@ public class EjercicioAsignadoRepositorioImpl : IEjercicioAsignadoRepositorio
         ejercicioExistente.RutinaId = ejercicioAsignado.RutinaId;
         ejercicioExistente.EjercicioId = ejercicioAsignado.EjercicioId;
         ejercicioExistente.SocioId = ejercicioAsignado.SocioId;
+        ejercicioExistente.Sesion = ejercicioAsignado.Sesion;
 
 
         await _context.SaveChangesAsync();
