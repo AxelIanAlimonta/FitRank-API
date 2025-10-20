@@ -1,25 +1,44 @@
-using Microsoft.EntityFrameworkCore;
-using FitRank_API.Infrastructure.Persistence;
-using System;
+﻿using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
+using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
+using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
+using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
+using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
+using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
+using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.RutinaEjerciciosCasosDeUso;
+using FitRank_API.Application.CasosDeUso.SerieAsignadaCasoDeUso;
+using FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios;
+using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.Services;
 using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Infrastructure.Repositories;
-using FitRank_API.Application.Interfaces;
-using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
-using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
-using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
-using FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios;
-using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
-using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
-using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
-using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
-using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
-using FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso;
-using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
-using FitRank_API.Application.CasosDeUso.SerieAsignadaCasoDeUso;
-using FitRank_API.Application.CasosDeUso.RutinaEjerciciosCasosDeUso;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using SendGrid;
+using System;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using FitRank_API.Application.Servicio;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
+// Logging expandido
+var jwtKeyFromConfig = builder.Configuration["Jwt:Key"];
+var qrSecretFromConfig = builder.Configuration["QrSecret"];
+var frontendUrlFromConfig = builder.Configuration["FrontendUrl"];
+Console.WriteLine("JWT Key length: " + (jwtKeyFromConfig?.Length ?? 0) + " chars");
+Console.WriteLine("QrSecret length: " + (qrSecretFromConfig?.Length ?? 0) + " chars");
+Console.WriteLine("FrontendUrl: '" + frontendUrlFromConfig + "'");
+if (string.IsNullOrEmpty(qrSecretFromConfig) || qrSecretFromConfig.Length < 32)
+{
+    Console.WriteLine("ERROR: QrSecret is invalid or missing! Check appsettings.json");
+}
 
 // Add services to the container.
 
@@ -125,6 +144,92 @@ builder.Services.AddScoped<ObtenerRutinaEjercicioPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarRutinaEjercicioCasoDeUso>();
 builder.Services.AddScoped<ActualizarRutinaEjercicioCasoDeUso>();
 builder.Services.AddScoped<EliminarRutinaEjercicioCasoDeUso>();
+
+builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
+builder.Services.AddScoped<IAdminService, AdminServiceImpl>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // Angular dev server
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // el origen de tu Angular
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+// JWT Authentication
+var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "tu_secreto_super_seguro_32_chars_minimo");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+// ✅ Agregar política de Admin
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy =>
+        policy.RequireRole("Admin")); // Solo usuarios con rol Admin
+});
+
+// SendGrid para emails
+builder.Services.AddSingleton<ISendGridClient>(provider =>
+    new SendGridClient(builder.Configuration["SendGrid:ApiKey"] ?? "SG.tu_clave")
+);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "FitRank API", Version = "v1" });
+
+    // Config para JWT Bearer
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Ejemplo: 'Bearer {tu_token}'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+
+    // Esto aplica el security a TODOS los endpoints
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+      {
+          {
+              new OpenApiSecurityScheme
+              {
+                  Reference = new OpenApiReference
+                  {
+                      Type = ReferenceType.SecurityScheme,
+                      Id = "Bearer"
+                  }
+              },
+              Array.Empty<string>()  // Para roles, si querés, agrega {"Admin"}
+          }
+      });
+});
+
+
 
 
 
