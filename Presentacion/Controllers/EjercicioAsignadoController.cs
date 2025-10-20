@@ -57,9 +57,17 @@ public class EjercicioAsignadoController : ControllerBase
         return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoEjercicioAsignado.Id }, nuevoEjercicioAsignado);
     }
 
+
+    //put
     [HttpPut]
-    public async Task<IActionResult> Actualizar([FromBody] ActualizarEjercicioAsignadoDTO ejercicioAsignadoDTO)
+    [Route("{id:long}")]
+    public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarEjercicioAsignadoDTO ejercicioAsignadoDTO)
     {
+        if (id != ejercicioAsignadoDTO.Id)
+        {
+            return BadRequest();
+        }
+
         var ejercicioAsignadoActualizado = await _actualizarEjercicioAsignadoCasoDeUso.Ejecutar(ejercicioAsignadoDTO);
         if (ejercicioAsignadoActualizado == null)
         {
@@ -67,6 +75,7 @@ public class EjercicioAsignadoController : ControllerBase
         }
         return Ok(ejercicioAsignadoActualizado);
     }
+
 
     [HttpDelete]
     [Route("{id:long}")]
