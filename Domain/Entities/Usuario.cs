@@ -18,7 +18,7 @@
         public DateTime? TokenExpira { get; set; }
         public bool EstaActivo { get; set; }
         public DateTime FechaNacimiento { get; set; }
-        public int Telefono { get; set; }
+        //public string Telefono { get; set; }
         public string? Estado { get; set; }
         public string Email { get; set; }
         public DateTime? CuotaPagadaHasta { get; set; }  // Ya nullable
