@@ -25,8 +25,9 @@ public class FitRankDbContext : DbContext
     public DbSet<SerieRealizada> SeriesRealizadas { get; set; }
     public DbSet<Puntaje> Puntajes { get; set; }
     public DbSet<RutinaEjercicio> RutinasEjercicios { get; set; }
-    public DbSet<Asistencia> Asistencias{ get; set; }
+    public DbSet<Asistencia> Asistencias { get; set; }
     public DbSet<Invitacion> Invitaciones { get; set; }
+    public DbSet<Logro> Logros { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,5 +58,5 @@ public class FitRankDbContext : DbContext
         }
     }
 
-        }
+}
 
