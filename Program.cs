@@ -4,6 +4,7 @@ using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
+using FitRank_API.Application.CasosDeUso.LogroCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
@@ -145,6 +146,13 @@ builder.Services.AddScoped<ObtenerRutinaEjercicioPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarRutinaEjercicioCasoDeUso>();
 builder.Services.AddScoped<ActualizarRutinaEjercicioCasoDeUso>();
 builder.Services.AddScoped<EliminarRutinaEjercicioCasoDeUso>();
+
+builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();
+builder.Services.AddScoped<ObtenerLogrosCasoDeUso>();
+builder.Services.AddScoped<ObtenerLogroPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarLogroCasoDeUso>();
+builder.Services.AddScoped<EliminarLogroCasoDeUso>();
+builder.Services.AddScoped<ActualizarLogroCasoDeUso>();
 
 builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 builder.Services.AddScoped<IAdminService, AdminServiceImpl>();
