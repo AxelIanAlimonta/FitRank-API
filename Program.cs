@@ -5,6 +5,7 @@ using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
+using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaEjerciciosCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieAsignadaCasoDeUso;
@@ -13,17 +14,17 @@ using FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.Services;
+using FitRank_API.Application.Servicio;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SendGrid;
 using System;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using FitRank_API.Application.Servicio;
 
 
 
@@ -148,6 +149,12 @@ builder.Services.AddScoped<EliminarRutinaEjercicioCasoDeUso>();
 builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 builder.Services.AddScoped<IAdminService, AdminServiceImpl>();
 
+builder.Services.AddScoped<IRankingRepositorio, RankingRepositorioImpl>();
+builder.Services.AddScoped<ObtenerRankingGeneralCasoDeUso>();
+builder.Services.AddScoped<ObtenerPosicionPorIdCasoDeUso>();
+
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularDev",
@@ -246,7 +253,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-
+app.UseCors("AllowAngularDev");
 app.UseSwagger();
 app.UseSwaggerUI();
 
