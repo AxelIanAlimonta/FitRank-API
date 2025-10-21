@@ -257,7 +257,7 @@ app.UseCors("AllowAngularDev");
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
+app.UseCors("AllowAngularDev");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
