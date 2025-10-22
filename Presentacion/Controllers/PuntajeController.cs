@@ -14,7 +14,7 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly AgregarPuntajeCasoDeUso _agregarPuntajeCasoDeUso;
         private readonly ActualizarPuntajeCasoDeUso _actualizarPuntajeCasoDeUso;
         private readonly EliminarPuntajeCasoDeUso _eliminarPuntajeCasoDeUso;
-        
+
         public PuntajeController(
             ObtenerTodosLosPuntajeCasoDeUso obtenerTodosLosPuntajeCasoDeUso,
             ObtenerPuntajePorIdCasoDeUso obtenerPuntajePorIdCasoDeUso,
@@ -54,6 +54,7 @@ namespace FitRank_API.Presentacion.Controllers
             var nuevoPuntaje = await _agregarPuntajeCasoDeUso.Ejecutar(puntaje);
             return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoPuntaje.Id }, nuevoPuntaje);
         }
+
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarPuntajeDTO puntaje)
