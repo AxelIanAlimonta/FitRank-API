@@ -16,13 +16,11 @@ namespace FitRank_API.Infrastructure.Repositories
         public async Task<List<Puntaje>> ObtenerTodasAsync()
         {
             return await _context.Puntajes
-                .Include(p => p.SerieRealizada)
                 .ToListAsync();
         }
         public async Task<Puntaje?> ObtenerPorIdAsync(long id)
         {
             return await _context.Puntajes
-                .Include(p => p.SerieRealizada)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
         public async Task<Puntaje> AgregarAsync(Puntaje puntaje)
@@ -38,7 +36,12 @@ namespace FitRank_API.Infrastructure.Repositories
             {
                 return null;
             }
-            _context.Entry(existingPuntaje).CurrentValues.SetValues(puntaje);
+            existingPuntaje.SocioId = puntaje.SocioId;
+            existingPuntaje.Motivo = puntaje.Motivo;
+            existingPuntaje.Fecha = puntaje.Fecha;
+            existingPuntaje.Valor = puntaje.Valor;
+
+
             await _context.SaveChangesAsync();
             return existingPuntaje;
         }
