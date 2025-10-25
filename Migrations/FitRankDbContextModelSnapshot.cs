@@ -487,27 +487,6 @@ namespace FitRank_API.Migrations
                     b.ToTable("SesionRealizadaDeEjercicios");
                 });
 
-            modelBuilder.Entity("FitRank_API.Domain.Entities.TuProyecto.Models.Torneo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ParticipantesJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Torneos");
-                });
-
             modelBuilder.Entity("FitRank_API.Domain.Entities.Usuario", b =>
                 {
                     b.Property<long>("Id")

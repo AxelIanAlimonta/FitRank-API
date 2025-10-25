@@ -1,7 +1,6 @@
 ﻿namespace FitRank_API.Infrastructure.Persistence;
 
 using FitRank_API.Domain.Entities;
-using FitRank_API.Domain.Entities.TuProyecto.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -30,7 +29,6 @@ public class FitRankDbContext : DbContext
     public DbSet<Invitacion> Invitaciones { get; set; }
     public DbSet<Logro> Logros { get; set; }
 
-    public DbSet<Torneo> Torneos { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -59,11 +57,6 @@ public class FitRankDbContext : DbContext
                 }
             }
         }
-        modelBuilder.Ignore<Participante>();
 
     }
-
-
-
 }
-
