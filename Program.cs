@@ -1,6 +1,7 @@
 ﻿
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
+using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
@@ -198,6 +199,13 @@ builder.Services.AddScoped<ObtenerTodosLosProfesoresCasoDeUso>();
 builder.Services.AddScoped<ObtenerProfesorPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarProfesorCasoDeUso>();
 builder.Services.AddScoped<EliminarProfesorCasoDeUso>();
+
+builder.Services.AddScoped<IDiaDeLaSemanaRepositorio, DiaDeLaSemanaRepositorioImpl>();
+builder.Services.AddScoped<AgregarDiaDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosDiasDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<ObtenerDiaDeLaSemanaPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarDiaDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<EliminarDiaDeLaSemanaCasoDeUso>();
 
 
 
