@@ -37,7 +37,7 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> ObtenerPorIdAsync(long id)
+        public async Task<IActionResult> ObtenerPorId(long id)
         {
             var profesor = await _obtenerProfesorPorIdCasoDeUso.Ejecutar(id);
             if (profesor == null)
@@ -54,9 +54,7 @@ namespace FitRank_API.Presentacion.Controllers
 
 
             // Tuve que hacer esto porque me tiraba error al usar CreatedAtAction
-            var url = Url.Action(nameof(ObtenerPorIdAsync), "Profesor", new { id = nuevoProfesor.Id }, Request.Scheme);
-
-            return Created(url, nuevoProfesor);
+            return CreatedAtAction(nameof(ObtenerPorId), "Profesor", new { id = nuevoProfesor.Id }, nuevoProfesor);
         }
 
 
