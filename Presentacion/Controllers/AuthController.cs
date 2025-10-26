@@ -1,48 +1,63 @@
-﻿using FitRank_API.Application.DTOs.Auth;
-using FitRank_API.Application.DTOs.Auth.Invitacion;
-using FitRank_API.Application.DTOs.Auth.ValidarAuth;
-using FitRank_API.Application.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FitRank_API.Presentacion.Controllers
+using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
+using FitRank_API.Application.DTOs.Invitacion;
+using FitRank_API.Application.DTOs.UsuarioDTOs;
+using FitRank_API.Application.DTOs.UsuarioDTOs.ValidarAuth;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+
+
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    private readonly LoginUsuarioCasoDeUso _loginCasoDeUso;
+    private readonly RegistrarUsuarioCasoDeUso _registerCasoDeUso;
+
+    private readonly ValidarTokenActivacionCasoDeUso _validarTokenActivacionCasoDeUso;
+    private readonly ActivarCuentaCasoDeUso _activarCuentaCasoDeUso;
+    private readonly AgregarUsuarioConInvitacionCasoDeUso _agregarUsuarioConInvitacionCasoDeUso;
+    private readonly IConfiguration _config;
+
+    public AuthController(
+        LoginUsuarioCasoDeUso loginCasoDeUso,
+        RegistrarUsuarioCasoDeUso registerCasoDeUso,
+       
+        ValidarTokenActivacionCasoDeUso validarTokenActivacionCasoDeUso,
+        ActivarCuentaCasoDeUso activarCuentaCasoDeUso , AgregarUsuarioConInvitacionCasoDeUso agregarUsuarioConInvitacionCasoDeUso   , IConfiguration configuration )
     {
-        private readonly IAuthService _authService;
-        private readonly IConfiguration _config;
+        _loginCasoDeUso = loginCasoDeUso;
+        _registerCasoDeUso = registerCasoDeUso;
+      
+        _validarTokenActivacionCasoDeUso = validarTokenActivacionCasoDeUso;
+        _activarCuentaCasoDeUso = activarCuentaCasoDeUso;
+        _agregarUsuarioConInvitacionCasoDeUso = agregarUsuarioConInvitacionCasoDeUso;
+        _config = configuration;
+    }
 
-        public AuthController(IAuthService authService, IConfiguration config)
-        {
-            _authService = authService;
-            _config = config;
-        }
 
 
-        [HttpPost("login")]
+    [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDTO>> Login([FromBody] LoginDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // HARDCORE ADMIN EN CONTROLADOR
+           
             if (dto.Email == "fitrank2025@gmail.com" && dto.Password == "Admin1234!")
             {
-                // Generamos JWT con rol Admin
+                
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                // ✅ Aquí se crean los claims incluyendo el rol Admin
+
                 var claims = new[]
                 {
-      new Claim(JwtRegisteredClaimNames.Sub, dto.Email),
-      new Claim(ClaimTypes.Role, "Admin") // <- Rol Admin
+                    new Claim(JwtRegisteredClaimNames.Sub, dto.Email),
+                     new Claim(ClaimTypes.Role, "Admin") 
   };
 
                 var token = new JwtSecurityToken(
@@ -60,8 +75,8 @@ namespace FitRank_API.Presentacion.Controllers
                     Id = 1,
                     Nombre = "Admin",
                     Apellidos = "Dev",
-                    Correo = "fitrank2025@gmail.com",
-                    Username = "admin",
+                    Email = "fitrank2025@gmail.com",
+                    NombreUsuario = "admin",
                     Rol = "Admin",
                     TieneCuotaPagada = true
                 };
@@ -73,8 +88,7 @@ namespace FitRank_API.Presentacion.Controllers
                 });
             }
 
-            // Login normal con DB
-            var result = await _authService.LoginAsync(dto);
+            var result = await _loginCasoDeUso.Ejecutar(dto);
             if (result == null)
                 return Unauthorized(new { Mensaje = "Email o password inválido" });
 
@@ -88,7 +102,7 @@ namespace FitRank_API.Presentacion.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authService.RegisterAsync(dto);
+            var result = await _registerCasoDeUso.Ejecutar(dto);
             if (result == null)
                 return BadRequest(new { Mensaje = "Email ya existe" });
 
@@ -97,12 +111,12 @@ namespace FitRank_API.Presentacion.Controllers
 
 
         [HttpPost("register-invitacion")]
-        public async Task<ActionResult<AuthResponseDTO>> RegisterWithInvitacion([FromBody] RegisterInvitacionDTO dto)
+        public async Task<ActionResult<AuthResponseDTO>> AgregarUsuarioConInvitacion([FromBody] RegisterInvitacionDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authService.RegisterWithInvitacionAsync(dto);
+            var result = await _agregarUsuarioConInvitacionCasoDeUso.Ejecutar(dto);
             if (result == null)
                 return BadRequest(new { Mensaje = "Token de invitación inválido o ya usado" });
 
@@ -117,7 +131,7 @@ namespace FitRank_API.Presentacion.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var esValido = await _authService.ValidarTokenActivacionAsync(dto.Token);
+            var esValido = await _validarTokenActivacionCasoDeUso.Ejecutar(dto.Token);
             if (!esValido)
                 return BadRequest(new { valido = false, Mensaje = "Token inválido o expirado" });
 
@@ -130,7 +144,7 @@ namespace FitRank_API.Presentacion.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var email = await _authService.ActivarCuentaAsync(dto.Token, dto.Password);
+            var email = await _activarCuentaCasoDeUso.Ejecutar(dto.Token, dto.Password);
             if (email == null)
                 return BadRequest(new { Mensaje = "Token inválido o ya usado" });
 
@@ -139,5 +153,5 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(new ActivarResponseDTO { Email = email, Mensaje = "Cuenta activada. Ahora inicia sesión." });
         }
     }
-}
+
 

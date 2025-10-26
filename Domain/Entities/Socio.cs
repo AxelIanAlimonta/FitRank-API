@@ -5,9 +5,16 @@ public class Socio : Usuario
     public long GimnasioId { get; set; }
     public Gimnasio Gimnasio { get; set; } = null!;
     public DateTime FechaRegistro { get; set; }
-    public ICollection<Puntaje> Puntajes { get; set; } = new List<Puntaje>();
 
-    //Coleccion de logros
-    //Coleccion de rutinas
+    public double Altura { get; set; }
+    public double Peso { get; set; }
 
-}
+    public string Nivel { get; set; }
+
+    public double Puntaje { get; set; }
+   
+
+
+    }
+
+

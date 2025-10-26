@@ -18,7 +18,10 @@ public class AgregarSocioCasoDeUso
 
     public async Task<SocioDTO> Ejecutar(AgregarSocioDTO socio)
     {
+
+        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(socio.Password);
         var socioEntidad = _mapper.Map<Socio>(socio);
+        socioEntidad.PasswordHash = hashedPassword;
         var socioCreado = await _socioRepositorio.AgregarAsync(socioEntidad);
         return _mapper.Map<SocioDTO>(socioCreado);
 

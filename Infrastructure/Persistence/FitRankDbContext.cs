@@ -34,8 +34,8 @@ public class FitRankDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        ConfigureEntityRelationships(modelBuilder);
 
-        // 🔹 Forzar que todos los DateTime se guarden como UTC
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             foreach (var property in entityType.GetProperties())
@@ -58,5 +58,42 @@ public class FitRankDbContext : DbContext
             }
         }
 
+    }
+
+    private static void ConfigureEntityRelationships(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Usuario>().ToTable("Usuarios");
+        modelBuilder.Entity<Socio>().ToTable("Socios");
+
+
+        modelBuilder.Entity<Socio>()
+            .HasOne(s => s.Gimnasio)
+            .WithMany(g => g.Socios)
+            .HasForeignKey(s => s.GimnasioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Asistencia>()
+    .HasOne(a => a.Usuario)
+    .WithMany()
+    .HasForeignKey(a => a.UsuarioId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Asistencia>()
+            .HasOne(a => a.Gimnasio)
+            .WithMany(g => g.Asistencias)
+            .HasForeignKey(a => a.GimnasioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Invitacion>()
+    .HasOne(i => i.Gimnasio)
+    .WithMany(g => g.Invitaciones)
+    .HasForeignKey(i => i.GimnasioId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Invitacion>()
+            .HasOne(i => i.Usuario)
+            .WithMany()
+            .HasForeignKey(i => i.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
