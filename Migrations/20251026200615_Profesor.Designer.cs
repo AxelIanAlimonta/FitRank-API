@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251026200615_Profesor")]
+    partial class Profesor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -616,7 +619,7 @@ namespace FitRank_API.Migrations
                     b.Property<double>("Sueldo")
                         .HasColumnType("double precision");
 
-                    b.ToTable("Profesores", (string)null);
+                    b.ToTable("Profesores");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
@@ -829,15 +832,6 @@ namespace FitRank_API.Migrations
                         .IsRequired();
 
                     b.Navigation("EjercicioRealizado");
-                });
-
-            modelBuilder.Entity("FitRank_API.Domain.Entities.Profesor", b =>
-                {
-                    b.HasOne("FitRank_API.Domain.Entities.Usuario", null)
-                        .WithOne()
-                        .HasForeignKey("FitRank_API.Domain.Entities.Profesor", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
