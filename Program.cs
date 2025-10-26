@@ -1,9 +1,13 @@
-﻿using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
+﻿
+using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
+using FitRank_API.Application.CasosDeUso.Invitacion;
+using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
 using FitRank_API.Application.CasosDeUso.LogroCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
@@ -13,12 +17,15 @@ using FitRank_API.Application.CasosDeUso.SerieAsignadaCasoDeUso;
 using FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
+
+using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.Services;
-using FitRank_API.Application.Servicio;
+
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Infrastructure.Repositories;
+using FitRank_API.Infrastructure.Repositorios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -154,14 +161,35 @@ builder.Services.AddScoped<AgregarLogroCasoDeUso>();
 builder.Services.AddScoped<EliminarLogroCasoDeUso>();
 builder.Services.AddScoped<ActualizarLogroCasoDeUso>();
 
-builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
-builder.Services.AddScoped<IAdminService, AdminServiceImpl>();
 
 builder.Services.AddScoped<IRankingRepositorio, RankingRepositorioImpl>();
 builder.Services.AddScoped<ObtenerRankingGeneralCasoDeUso>();
 builder.Services.AddScoped<ObtenerPosicionPorIdCasoDeUso>();
 
 
+builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorioImpl>();
+builder.Services.AddScoped<LoginUsuarioCasoDeUso>();
+builder.Services.AddScoped<RegistrarUsuarioCasoDeUso>();
+builder.Services.AddScoped<ValidarTokenActivacionCasoDeUso>();
+builder.Services.AddScoped<ActivarCuentaCasoDeUso>();
+builder.Services.AddScoped<GenerarTokenCasoDeUso>();
+builder.Services.AddScoped<ObtenerUsuarioPorIdCasoDeUso>();
+builder.Services.AddScoped<EliminarUsuarioCasoDeUso>();
+builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
+
+
+builder.Services.AddScoped<IInvitacionRepositorio, InvitacionRepositorioImpl>();
+
+builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
+builder.Services.AddScoped<EnviarEmailQrCasoDeUso>();
+builder.Services.AddScoped<FallbackEfectivoCasoDeUso>();
+
+builder.Services.AddScoped<QrHelper>();
+
+
+builder.Services.AddScoped<IAsistenciaRepositorio, AsistenciaRepositorioImpl>();
+builder.Services.AddScoped<ObtenerAsistenciasPorUsuarioCasoDeUso>();
+builder.Services.AddScoped<ValidarQrCasoDeUso>();
 
 builder.Services.AddCors(options =>
 {
