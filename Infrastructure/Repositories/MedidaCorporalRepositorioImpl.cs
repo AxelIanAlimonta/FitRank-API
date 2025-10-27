@@ -46,13 +46,14 @@ namespace FitRank_API.Infrastructure.Repositories
             return existente;
         }
 
-        public async Task<bool> EliminarAsync(long id)
+        public async Task<bool> EliminarAsync(MedidaCorporal medida)
         {
-            var medida = await _context.MedidasCorporales.FindAsync(id);
-            if (medida == null)
+            var medidaExistente = await _context.MedidasCorporales.FindAsync(medida.Id);
+            if (medidaExistente == null)
+            {
                 return false;
-
-            _context.MedidasCorporales.Remove(medida);
+            }
+            _context.MedidasCorporales.Remove(medidaExistente);
             await _context.SaveChangesAsync();
             return true;
         }

@@ -8,6 +8,6 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<MedidaCorporal?> ObtenerPorIdAsync(long id);
         Task<List<MedidaCorporal>> ObtenerPorSocioAsync(long socioId);
         Task<MedidaCorporal?> ActualizarAsync(MedidaCorporal medida);
-        Task<bool> EliminarAsync(long id);
+        Task<bool> EliminarAsync(MedidaCorporal medida);
     }
 }

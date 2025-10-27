@@ -8,13 +8,18 @@ namespace FitRank_API.Application.Mappings
     {
         public AsistenciaProfile()
         {
-            // DTO → Entidad
+       
             CreateMap<AgregarAsistenciaDTO, Asistencia>();
 
-            // Entidad → ResponseDTO
+            CreateMap<Asistencia, AsistenciaDetalleUsuarioDTO>()
+                .ForMember(dest => dest.GimnasioNombre, opt => opt.MapFrom(src => src.Gimnasio.Nombre));
+           
             CreateMap<Asistencia, AsistenciaResponseDTO>()
                 .ForMember(dest => dest.AsistenciaId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.HoraEntrada, opt => opt.MapFrom(src => src.HoraEntrada));
+
+  
+
         }
     }
 }

@@ -30,14 +30,17 @@ namespace FitRank_API.Presentacion.Controllers
             _eliminarCasoDeUso = eliminarCasoDeUso;
         }
 
-        
+       
         [HttpPost("agregar")]
         public async Task<IActionResult> Agregar([FromBody] AgregarMedidaCorporalDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _agregarCasoDeUso.Ejecutar(dto);
+           
+            var socioId = long.Parse(User.FindFirst("id")!.Value);
+
+            var result = await _agregarCasoDeUso.Ejecutar(socioId, dto);
             return Ok(result);
         }
 
@@ -48,37 +51,54 @@ namespace FitRank_API.Presentacion.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _actualizarCasoDeUso.Ejecutar(dto);
+            var socioId = long.Parse(User.FindFirst("id")!.Value);
+
+            var result = await _actualizarCasoDeUso.Ejecutar(socioId, dto);
             if (result == null)
-                return NotFound(new { Mensaje = "Medición no encontrada" });
+                return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
 
             return Ok(result);
         }
 
-      
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(long id)
         {
-            var result = await _obtenerPorIdCasoDeUso.Ejecutar(id);
+            var socioId = long.Parse(User.FindFirst("id")!.Value);
+            var result = await _obtenerPorIdCasoDeUso.Ejecutar(socioId, id);
+
             if (result == null)
-                return NotFound(new { Mensaje = "Medición no encontrada" });
+                return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
 
             return Ok(result);
         }
 
-        [HttpGet("historial/{socioId}")]
-        public async Task<IActionResult> ObtenerPorSocio(long socioId)
+        [HttpGet("historial")]
+        public async Task<IActionResult> ObtenerPorSocio([FromQuery] long? socioId = null)
         {
-            var result = await _obtenerPorSocioCasoDeUso.Ejecutar(socioId);
+            var rol = User.FindFirst("rol")?.Value;
+            var usuarioId = long.Parse(User.FindFirst("id")!.Value);
+
+            if (rol == "Socio")
+                socioId = usuarioId;
+
+            if (socioId == null)
+                return BadRequest(new { Mensaje = "Debe indicar el socioId o estar autenticado como socio." });
+
+            var result = await _obtenerPorSocioCasoDeUso.Ejecutar(socioId.Value);
             return Ok(result);
         }
 
+       
         [HttpDelete("eliminar/{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            var eliminado = await _eliminarCasoDeUso.Ejecutar(id);
+            var socioId = long.Parse(User.FindFirst("id")!.Value);
+            var rol = User.FindFirst("rol")?.Value;
+
+            var eliminado = await _eliminarCasoDeUso.Ejecutar(socioId, rol, id);
             if (!eliminado)
-                return NotFound(new { Mensaje = "Medición no encontrada" });
+                return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
 
             return Ok(new { Mensaje = "Medición eliminada correctamente" });
         }

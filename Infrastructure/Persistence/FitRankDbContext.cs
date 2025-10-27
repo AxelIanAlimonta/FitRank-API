@@ -43,6 +43,10 @@ public class FitRankDbContext : DbContext
     public DbSet<MedidaCorporal> MedidasCorporales { get; set; }
 
     public DbSet<Foto> Fotos { get; set; }
+
+    public DbSet<Notificacion> Notificaciones { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -115,6 +119,42 @@ public class FitRankDbContext : DbContext
       .WithOne(a => a.Gimnasio)
       .HasForeignKey<Gimnasio>(g => g.AdministradorId)
       .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Notificacion>(entity =>
+        {
+            entity.HasKey(n => n.Id);
+
+            entity.HasOne(n => n.UsuarioEmisor)
+                  .WithMany(u => u.NotificacionesEnviadas)
+                  .HasForeignKey(n => n.UsuarioEmisorId)
+                  .OnDelete(DeleteBehavior.Restrict); 
+
+            entity.HasOne(n => n.UsuarioReceptor)
+                  .WithMany(u => u.NotificacionesRecibidas)
+                  .HasForeignKey(n => n.UsuarioReceptorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Asistencia>(entity =>
+            {
+                entity.HasKey(a => a.Id);
+
+                entity.HasOne(a => a.Usuario)
+                      .WithMany(u => u.Asistencias)
+                      .HasForeignKey(a => a.UsuarioId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .IsRequired();
+
+                entity.HasOne(a => a.Gimnasio)
+                      .WithMany(g => g.Asistencias)
+                      .HasForeignKey(a => a.GimnasioId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .IsRequired();
+            });
+
+
+        });
+
+
     }
 
 }

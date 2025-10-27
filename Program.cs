@@ -43,6 +43,8 @@ using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
 using FitRank_API.Application.CasosDeUso.FotoCasosDeUso;
 using FitRank_API.Application.DTOs.GimnasioDTOs;
 using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso;
+using FitRank_API.Application.DTOs.NotificacionDTOs;
 
 
 
@@ -263,7 +265,9 @@ builder.Services.AddScoped<ActualizarJornadaCasoDeUso>();
 builder.Services.AddScoped<EliminarJornadaCasoDeUso>();
 
 
-
+builder.Services.AddScoped<INotificacionRepositorio, NotificacionRepositorioImpl>();
+builder.Services.AddScoped<AgregarNotificacionCasoDeUso>();
+builder.Services.AddScoped<ObtenerNotificacionPorUsuarioCasoDeUso>();
 
 
 builder.Services.AddCors(options =>
@@ -289,7 +293,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-// JWT Authentication
+
 var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "tu_secreto_super_seguro_32_chars_minimo");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -303,14 +307,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
-// ✅ Agregar política de Admin
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy =>
         policy.RequireRole("Admin")); // Solo usuarios con rol Admin
 });
 
-// SendGrid para emails
+
 builder.Services.AddSingleton<ISendGridClient>(provider =>
     new SendGridClient(builder.Configuration["SendGrid:ApiKey"] ?? "SG.tu_clave")
 );
@@ -319,7 +323,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FitRank API", Version = "v1" });
 
-    // Config para JWT Bearer
+    
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Ejemplo: 'Bearer {tu_token}'",
@@ -342,7 +346,7 @@ builder.Services.AddSwaggerGen(c =>
                       Id = "Bearer"
                   }
               },
-              Array.Empty<string>()  // Para roles, si querés, agrega {"Admin"}
+              Array.Empty<string>()  
           }
       });
 });

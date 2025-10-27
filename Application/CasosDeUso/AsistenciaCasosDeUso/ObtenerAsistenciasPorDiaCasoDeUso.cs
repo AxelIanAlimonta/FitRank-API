@@ -1,4 +1,5 @@
-﻿using FitRank_API.Application.DTOs.Asistencia;
+﻿using AutoMapper;
+using FitRank_API.Application.DTOs.Asistencia;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
@@ -12,9 +13,22 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             _asistenciaRepositorio = asistenciaRepositorio;
         }
 
-        public async Task<List<AsistenciaPorDiaDTO>> Ejecutar(int gimnasioId, DateTime? desde = null, DateTime? hasta = null)
+        public async Task<List<AsistenciaPorDiaDTO>> Ejecutar(long gimnasioId, DateTime? desde = null, DateTime? hasta = null)
         {
-            return await _asistenciaRepositorio.ObtenerConteoPorDiaAsync(gimnasioId, desde, hasta);
+            var asistencias = await _asistenciaRepositorio.ObtenerPorGimnasioYRangoAsync(gimnasioId, desde, hasta);
+
+          
+            var resultado = asistencias
+                .GroupBy(a => a.Fecha.Date)
+                .Select(g => new AsistenciaPorDiaDTO
+                {
+                    Fecha = g.Key,
+                    Cantidad = g.Count()
+                })
+                .OrderByDescending(x => x.Fecha)
+                .ToList();
+
+            return resultado;
         }
     }
 }

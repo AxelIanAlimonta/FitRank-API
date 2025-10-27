@@ -35,8 +35,8 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             }
 
             var asistencia = _mapper.Map<Asistencia>(dto);
-            asistencia.Fecha = DateTime.Today;
-            asistencia.HoraEntrada = DateTime.Now;
+            asistencia.Fecha = DateTime.UtcNow.Date;
+            asistencia.HoraEntrada = DateTime.UtcNow;
             asistencia.Presente = true;
 
             await _asistenciaRepositorio.AgregarAsync(asistencia);

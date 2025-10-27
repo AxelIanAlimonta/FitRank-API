@@ -2,7 +2,7 @@
 {
     public class AgregarMedidaCorporalDTO
     {
-        public long SocioId { get; set; }
+       
 
         public double PechoCm { get; set; }
         public double CinturaCm { get; set; }
