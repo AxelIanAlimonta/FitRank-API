@@ -33,7 +33,7 @@ public class FitRankDbContext : DbContext
     public DbSet<Logro> Logros { get; set; }
     public DbSet<DiaDeLaSemana> DiasDeLaSemana { get; set; }
     public DbSet<LogroSocio> LogrosSocios { get; set; }
-
+    public DbSet<Jornada> Jornadas { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
