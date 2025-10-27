@@ -8,7 +8,7 @@ namespace FitRank_API.Infrastructure.Repositories
     public class InvitacionRepositorioImpl : IInvitacionRepositorio
     {
         private readonly FitRankDbContext _context;
-      
+
         public InvitacionRepositorioImpl(FitRankDbContext context)
         {
             _context = context;
@@ -70,5 +70,17 @@ namespace FitRank_API.Infrastructure.Repositories
             return await _context.Invitaciones
                 .FirstOrDefaultAsync(i => i.Id == id && i.Estado == estado);
         }
+
+        public async Task<List<Invitacion>> ObtenerTodasAsync(int gimnasioId)
+        {
+            return await _context.Invitaciones
+                .Where(i => i.GimnasioId == gimnasioId)
+                .Include(i => i.Usuario)
+                .OrderByDescending(i => i.CreadaEn)
+                .ToListAsync();
+        }
+
+
+
     }
 }

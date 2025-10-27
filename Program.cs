@@ -180,10 +180,12 @@ builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
 
 
 builder.Services.AddScoped<IInvitacionRepositorio, InvitacionRepositorioImpl>();
-
 builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
 builder.Services.AddScoped<EnviarEmailQrCasoDeUso>();
 builder.Services.AddScoped<FallbackEfectivoCasoDeUso>();
+builder.Services.AddScoped<EliminarInvitacionCasoDeUso>();
+builder.Services.AddScoped<ObtenerInvitacionesCasoDeUso>();
+
 
 builder.Services.AddScoped<QrHelper>();
 
@@ -191,6 +193,10 @@ builder.Services.AddScoped<QrHelper>();
 builder.Services.AddScoped<IAsistenciaRepositorio, AsistenciaRepositorioImpl>();
 builder.Services.AddScoped<ObtenerAsistenciasPorUsuarioCasoDeUso>();
 builder.Services.AddScoped<ValidarQrCasoDeUso>();
+builder.Services.AddScoped<ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso>();
+builder.Services.AddScoped<ObtenerAsistenciasPorDiaCasoDeUso>();
+builder.Services.AddScoped<AgregarAsistenciaCasoDeUso>();
+
 
 builder.Services.AddScoped<IProfesorRepositorio, ProfesorRepositorioImpl>();
 builder.Services.AddScoped<AgregarProfesorCasoDeUso>();
