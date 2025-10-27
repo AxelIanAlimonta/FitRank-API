@@ -55,11 +55,7 @@ public class LogroController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarLogroDTO actualizarLogroDTO)
     {
-        if (id != actualizarLogroDTO.Id)
-        {
-            return BadRequest();
-        }
-        var logroActualizado = await _actualizarLogroCasoDeUso.Ejecutar(actualizarLogroDTO);
+        var logroActualizado = await _actualizarLogroCasoDeUso.Ejecutar(id, actualizarLogroDTO);
         if (logroActualizado == null)
         {
             return NotFound();
