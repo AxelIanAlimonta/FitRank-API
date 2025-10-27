@@ -19,5 +19,4 @@ public class ObtenerLogrosCasoDeUso
         var logros = await _logroRepositorio.ObtenerTodosLosLogros();
         return _mapper.Map<List<ObtenerLogroDTO>>(logros);
     }
-
 }

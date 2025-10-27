@@ -1,4 +1,5 @@
-﻿using FitRank_API.Domain.Entities;
+﻿using FitRank_API.Application.DTOs.LogroDTOs;
+using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -30,20 +31,23 @@ public class LogroRepositorioImpl : ILogroRepositorio
         return logro;
     }
 
-    public async Task<Logro?> ActualizarLogro(Logro logro)
+    public async Task<Logro?> ActualizarLogro(long id, ActualizarLogroDTO dto)
     {
-        var logroExistente = await _context.Logros.FindAsync(logro.Id);
-        if (logroExistente == null)
-        {
+        var logroExistente = await _context.Logros.FirstOrDefaultAsync(x => x.Id == id);
+        if (logroExistente is null)
             return null;
-        }
-        logroExistente.Nombre = logro.Nombre;
-        logroExistente.Descripcion = logro.Descripcion;
-        logroExistente.Imagen = logro.Imagen;
-        logroExistente.Global = logro.Global;
+
+        if (!string.IsNullOrWhiteSpace(dto.Nombre)) logroExistente.Nombre = dto.Nombre;
+        if (!string.IsNullOrWhiteSpace(dto.Descripcion)) logroExistente.Descripcion = dto.Descripcion;
+        if (!string.IsNullOrWhiteSpace(dto.Categoria)) logroExistente.Categoria = dto.Categoria;
+        if (!string.IsNullOrWhiteSpace(dto.Imagen)) logroExistente.Imagen = dto.Imagen;
+        if (dto.Puntos.HasValue) logroExistente.Puntos = dto.Puntos.Value;
+
         await _context.SaveChangesAsync();
         return logroExistente;
     }
+
+
 
     public async Task<bool> EliminarLogro(long id)
     {
