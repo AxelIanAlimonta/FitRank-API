@@ -29,9 +29,9 @@ public class Ejercicio
     public GrupoMuscular? GrupoMuscular { get; set; }
 
     // 🔗 Relación con Maquina
-    //[ForeignKey("Maquina")]
-    //public long? MaquinaId { get; set; } // puede ser null si no requiere máquina
-    //public Maquina? Maquina { get; set; }
+    [ForeignKey("Maquina")]
+    public long? MaquinaId { get; set; } // puede ser null si no requiere máquina
+    public Maquina? Maquina { get; set; }
 
     // 🔗 Relación con EjercicioAsignado
     public ICollection<EjercicioAsignado>? EjerciciosAsignados { get; set; }
