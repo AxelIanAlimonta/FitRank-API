@@ -1,6 +1,7 @@
 ﻿
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
+using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
@@ -10,6 +11,7 @@ using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
 using FitRank_API.Application.CasosDeUso.LogroCasosDeUso;
+using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
@@ -207,6 +209,22 @@ builder.Services.AddScoped<QrHelper>();
 builder.Services.AddScoped<IAsistenciaRepositorio, AsistenciaRepositorioImpl>();
 builder.Services.AddScoped<ObtenerAsistenciasPorUsuarioCasoDeUso>();
 builder.Services.AddScoped<ValidarQrCasoDeUso>();
+
+builder.Services.AddScoped<IProfesorRepositorio, ProfesorRepositorioImpl>();
+builder.Services.AddScoped<AgregarProfesorCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosProfesoresCasoDeUso>();
+builder.Services.AddScoped<ObtenerProfesorPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarProfesorCasoDeUso>();
+builder.Services.AddScoped<EliminarProfesorCasoDeUso>();
+
+builder.Services.AddScoped<IDiaDeLaSemanaRepositorio, DiaDeLaSemanaRepositorioImpl>();
+builder.Services.AddScoped<AgregarDiaDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosDiasDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<ObtenerDiaDeLaSemanaPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarDiaDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<EliminarDiaDeLaSemanaCasoDeUso>();
+
+
 
 builder.Services.AddCors(options =>
 {
