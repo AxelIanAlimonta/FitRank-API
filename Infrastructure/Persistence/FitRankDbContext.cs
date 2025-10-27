@@ -34,8 +34,11 @@ public class FitRankDbContext : DbContext
     public DbSet<DiaDeLaSemana> DiasDeLaSemana { get; set; }
     public DbSet<LogroSocio> LogrosSocios { get; set; }
 
+    public DbSet<Administrador> Administradores { get; set; }
 
+    public DbSet<MedidaCorporal> MedidasCorporales { get; set; }
 
+    public DbSet<Foto> Fotos { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -70,7 +73,8 @@ public class FitRankDbContext : DbContext
         modelBuilder.Entity<Usuario>().ToTable("Usuarios");
         modelBuilder.Entity<Socio>().ToTable("Socios");
         modelBuilder.Entity<Profesor>().ToTable("Profesores");
-
+    
+        modelBuilder.Entity<Administrador>().ToTable("Administradores");
 
         modelBuilder.Entity<Socio>()
             .HasOne(s => s.Gimnasio)
@@ -101,5 +105,12 @@ public class FitRankDbContext : DbContext
             .WithMany()
             .HasForeignKey(i => i.UsuarioId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Gimnasio>()
+      .HasOne(g => g.Administrador)
+      .WithOne(a => a.Gimnasio)
+      .HasForeignKey<Gimnasio>(g => g.AdministradorId)
+      .OnDelete(DeleteBehavior.SetNull);
     }
+
 }

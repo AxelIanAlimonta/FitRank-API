@@ -37,6 +37,10 @@ using Microsoft.OpenApi.Models;
 using SendGrid;
 using System;
 using System.Text;
+using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
+using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
+using FitRank_API.Application.CasosDeUso.FotoCasosDeUso;
+using FitRank_API.Application.DTOs.GimnasioDTOs;
 
 
 
@@ -229,6 +233,24 @@ builder.Services.AddScoped<ObtenerTodosLosDiasDeLaSemanaCasoDeUso>();
 builder.Services.AddScoped<ObtenerDiaDeLaSemanaPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarDiaDeLaSemanaCasoDeUso>();
 builder.Services.AddScoped<EliminarDiaDeLaSemanaCasoDeUso>();
+
+builder.Services.AddScoped<IAdministradorRepositorio, AdministradorRepositorioImpl>();
+builder.Services.AddScoped<AgregarAdministradorCasoDeUso>();
+builder.Services.AddScoped<EliminarAdministradorCasoDeUso>();
+
+builder.Services.AddScoped<IMedidaCorporalRepositorio, MedidaCorporalRepositorioImpl>();
+builder.Services.AddScoped<AgregarMedidaCorporalCasoDeUso>();
+builder.Services.AddScoped<ObtenerMedidasPorSocioCasoDeUso>();
+builder.Services.AddScoped<ObtenerMedidaCorporalPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarMedidaCorporalCasoDeUso>();
+builder.Services.AddScoped<EliminarMedidaCorporalCasoDeUso>();
+
+builder.Services.AddScoped<IFotoRepositorio, FotoRepositorioImpl>();
+builder.Services.AddScoped<AgregarFotoCasoDeUso>();
+builder.Services.AddScoped<ObtenerFotosPorSocioCasoDeUso>();
+builder.Services.AddScoped<EliminarFotoCasoDeUso>();
+
+
 
 
 

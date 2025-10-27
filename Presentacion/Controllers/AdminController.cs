@@ -1,13 +1,16 @@
 ﻿
+using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
+using FitRank_API.Application.DTOs.AdministradorDTOs;
 using FitRank_API.Application.DTOs.Asistencia;
 using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
 using FitRank_API.Application.Interfaces;
+using FitRank_API.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +25,8 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly AgregarInvitacionCasoDeUso _agregarInvitacionCasoDeUso;
         private readonly FallbackEfectivoCasoDeUso _fallbackEfectivoCasoDeUso;
         private readonly EnviarEmailQrCasoDeUso _enviarEmailQrCasoDeUso;
-     
+        private readonly AgregarAdministradorCasoDeUso _agregarAdministradorCasoDeUso;
+        private readonly EliminarAdministradorCasoDeUso _eliminarAdministradorCasoDeUso;
         private readonly ValidarQrCasoDeUso _validarQrCasoDeUso;
         public AdminController(
             AgregarInvitacionCasoDeUso agregarInvitacionCasoDeUso,
@@ -99,5 +103,29 @@ namespace FitRank_API.Presentacion.Controllers
 
             return Ok(result);
         }
+    
+
+       [HttpPost("crear-admin")]
+        public async Task<ActionResult<Administrador>> Agregar([FromBody] AgregarAdministradorDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var admin = await _agregarAdministradorCasoDeUso.Ejecutar(dto);
+            return Ok(admin);
+        }
+
+        [HttpDelete("eliminar-admin/{id}")]
+        public async Task<IActionResult> Eliminar(long id)
+        {
+            var result = await _eliminarAdministradorCasoDeUso.Ejecutar(id);
+
+            if (!result)
+                return NotFound(new { Mensaje = "Administrador no encontrado" });
+
+            return Ok(new { Mensaje = "Administrador eliminado correctamente" });
+        }
+
     }
 }
+

@@ -23,7 +23,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
 
         public async Task<AsistenciaResponseDTO> Ejecutar(AgregarAsistenciaDTO dto)
         {
-            // 1️⃣ Validar usuario
+            
             var usuario = await _usuarioRepositorio.ObtenerPorIdAsync(dto.UsuarioId);
             if (usuario == null)
             {
@@ -39,7 +39,6 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             asistencia.HoraEntrada = DateTime.Now;
             asistencia.Presente = true;
 
-            // 3️⃣ Guardar
             await _asistenciaRepositorio.AgregarAsync(asistencia);
 
           

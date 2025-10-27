@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027174022_Foto_MedidaCorporal_Administrador")]
+    partial class Foto_MedidaCorporal_Administrador
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,7 +261,7 @@ namespace FitRank_API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("AdministradorId")
+                    b.Property<long>("AdministradorId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("ColorPrincipal")
@@ -946,7 +949,8 @@ namespace FitRank_API.Migrations
                     b.HasOne("FitRank_API.Domain.Entities.Administrador", "Administrador")
                         .WithOne("Gimnasio")
                         .HasForeignKey("FitRank_API.Domain.Entities.Gimnasio", "AdministradorId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Administrador");
                 });
@@ -1116,7 +1120,8 @@ namespace FitRank_API.Migrations
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Administrador", b =>
                 {
-                    b.Navigation("Gimnasio");
+                    b.Navigation("Gimnasio")
+                        .IsRequired();
 
                     b.Navigation("asistencias");
                 });

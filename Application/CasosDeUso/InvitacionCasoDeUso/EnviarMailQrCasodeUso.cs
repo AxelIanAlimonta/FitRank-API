@@ -28,7 +28,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         {
             try
             {
-                // 1️⃣ Buscar usuario
+               
                 var user = await _usuarioRepositorio.ObtenerPorIdAsync(dto.UsuarioId);
                 if (user == null)
                     return new EmailResponseDTO
@@ -55,7 +55,6 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
                 msg.AddTo(new EmailAddress(dto.EmailDestinatario ?? user.Email));
 
-                // 4️⃣ Enviar email
                 var response = await _sendGridClient.SendEmailAsync(msg);
                 if (response.StatusCode == System.Net.HttpStatusCode.Accepted ||
                     response.StatusCode == System.Net.HttpStatusCode.OK)

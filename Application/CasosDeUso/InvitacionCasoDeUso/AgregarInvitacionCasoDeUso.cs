@@ -20,19 +20,22 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         private readonly IConfiguration _config;
         private readonly ISendGridClient _sendGridClient;
         private readonly QrHelper _qrHelper;
+        private readonly IGimnasioRepositorio _gimnasioRepositorio; 
 
-        public AgregarInvitacionCasoDeUso(
+  public AgregarInvitacionCasoDeUso(
             IInvitacionRepositorio invitacionRepositorio,
             IUsuarioRepositorio usuarioRepositorio,
             IConfiguration config,
             ISendGridClient sendGridClient,
-            QrHelper qrHelper)
+            QrHelper qrHelper,
+            IGimnasioRepositorio gimnasioRepositorio)
         {
             _invitacionRepositorio = invitacionRepositorio;
             _usuarioRepositorio = usuarioRepositorio;
             _config = config;
             _sendGridClient = sendGridClient;
             _qrHelper = qrHelper;
+            _gimnasioRepositorio = gimnasioRepositorio;
         }
 
         public async Task<InvitacionResponseDTO> Ejecutar(GenerarInvitacionDTO dto, int adminId)
@@ -97,7 +100,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 Email = dto.Email,
                 NombreUsuario = "socio_" + Guid.NewGuid().ToString("N").Substring(0, 6),
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString("N")),
-                Rol = "User",
+                Rol = "Socio",
                 Estado = "Activo",
                 EsActivado = false,
                 CuotaPagadaHasta = invitacion.CuotaPagadaHasta,
@@ -109,11 +112,15 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             return socio;
         }
 
-        private async Task<Domain.Entities.Invitacion> GenerarNuevaInvitacionAsync(GenerarInvitacionDTO dto, int adminId)
+        private async Task<Domain.Entities.Invitacion> GenerarNuevaInvitacionAsync(GenerarInvitacionDTO dto, long adminId)
         {
+            var gimnasio = await _gimnasioRepositorio.ObtenerPorAdministradorIdAsync(adminId);
+
+            if (gimnasio == null)
+                throw new Exception("No se encontró un gimnasio asociado al administrador.");
             var invitacion = new Domain.Entities.Invitacion
             {
-                GimnasioId = adminId,
+                GimnasioId = gimnasio.Id,
                 Email = dto.Email,
                 DatosPrellenados = JsonSerializer.Serialize(new
                 {

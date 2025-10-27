@@ -4,7 +4,7 @@ namespace FitRank_API.Application.Helpers
 {
     public static class TokenInvitacionHelper
     {
-        // si el token es un número o GUID
+        
         public static int? ParseIdFromTokenSimple(string token)
         {
             if (int.TryParse(token, out int id))
@@ -13,7 +13,7 @@ namespace FitRank_API.Application.Helpers
             return null;
         }
 
-        //JWT: si el token viene con claims
+        
         public static int? ParseIdFromJwt(string token)
         {
             try
@@ -29,7 +29,7 @@ namespace FitRank_API.Application.Helpers
             }
             catch
             {
-                return null; // token inválido
+                return null; 
             }
         }
     }
