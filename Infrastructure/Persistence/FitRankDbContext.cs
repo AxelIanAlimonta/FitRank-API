@@ -34,7 +34,11 @@ public class FitRankDbContext : DbContext
     public DbSet<DiaDeLaSemana> DiasDeLaSemana { get; set; }
     public DbSet<LogroSocio> LogrosSocios { get; set; }
 
+
     public DbSet<Administrador> Administradores { get; set; }
+
+    public DbSet<Jornada> Jornadas { get; set; }
+
 
     public DbSet<MedidaCorporal> MedidasCorporales { get; set; }
 

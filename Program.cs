@@ -37,10 +37,14 @@ using Microsoft.OpenApi.Models;
 using SendGrid;
 using System;
 using System.Text;
+
 using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
 using FitRank_API.Application.CasosDeUso.FotoCasosDeUso;
 using FitRank_API.Application.DTOs.GimnasioDTOs;
+using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
+
+
 
 
 
@@ -234,6 +238,7 @@ builder.Services.AddScoped<ObtenerDiaDeLaSemanaPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarDiaDeLaSemanaCasoDeUso>();
 builder.Services.AddScoped<EliminarDiaDeLaSemanaCasoDeUso>();
 
+
 builder.Services.AddScoped<IAdministradorRepositorio, AdministradorRepositorioImpl>();
 builder.Services.AddScoped<AgregarAdministradorCasoDeUso>();
 builder.Services.AddScoped<EliminarAdministradorCasoDeUso>();
@@ -249,6 +254,13 @@ builder.Services.AddScoped<IFotoRepositorio, FotoRepositorioImpl>();
 builder.Services.AddScoped<AgregarFotoCasoDeUso>();
 builder.Services.AddScoped<ObtenerFotosPorSocioCasoDeUso>();
 builder.Services.AddScoped<EliminarFotoCasoDeUso>();
+
+builder.Services.AddScoped<IJornadaRepositorio, JornadaRepositorioImpl>();
+builder.Services.AddScoped<AgregarJornadaCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodasLasJornadasCasoDeUso>();
+builder.Services.AddScoped<ObtenerJornadaPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarJornadaCasoDeUso>();
+builder.Services.AddScoped<EliminarJornadaCasoDeUso>();
 
 
 
@@ -341,6 +353,10 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAutoMapper(cfg =>
    cfg.AddMaps(typeof(FitRank_API.Application.Mappings.AssemblyMapping).Assembly));
+
+
+
+
 
 
 var app = builder.Build();
