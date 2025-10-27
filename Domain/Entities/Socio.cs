@@ -2,7 +2,7 @@
 
 public class Socio : Usuario
 {
-    public long GimnasioId { get; set; }
+    public long? GimnasioId { get; set; }
     public Gimnasio Gimnasio { get; set; } = null!;
     public DateTime FechaRegistro { get; set; }
 

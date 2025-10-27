@@ -29,5 +29,9 @@
 
         public ICollection<Asistencia> asistencias { get; set; } = new List<Asistencia>();
 
+        public ICollection<Rutina> RutinasCreadas { get; set; }
+
+        public ICollection<Rutina> RutinasAsignadas { get; set; }
+
     }
 }

@@ -22,7 +22,9 @@ public class GrupoMuscularRepositorioImpl : IGrupoMuscularRepositorio
 
     public async Task<GrupoMuscular?> ObtenerPorIdAsync(long id)
     {
-        return await _context.GruposMusculares.FindAsync(id);
+        //return await _context.GruposMusculares.FindAsync(id);
+        return await _context.GruposMusculares.FirstOrDefaultAsync(g => g.Id == id);
+
     }
 
     public async Task<GrupoMuscular?> AgregarAsync(GrupoMuscular grupoMuscular)
@@ -41,19 +43,21 @@ public class GrupoMuscularRepositorioImpl : IGrupoMuscularRepositorio
         }
 
         existente.Nombre = grupoMuscular.Nombre;
+        existente.Imagen = grupoMuscular.Imagen;
 
         await _context.SaveChangesAsync();
         return existente;
     }
 
 
-    public async Task EliminarAsync(long id)
+    public async Task<bool> EliminarAsync(long id)
     {
         var grupoMuscular = await _context.GruposMusculares.FindAsync(id);
-        if (grupoMuscular != null)
-        {
+        if (grupoMuscular == null) return false;
+        
             _context.GruposMusculares.Remove(grupoMuscular);
             await _context.SaveChangesAsync();
-        }
+            return true;
+        
     }
 }

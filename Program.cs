@@ -17,6 +17,7 @@ using FitRank_API.Application.CasosDeUso.SerieAsignadaCasoDeUso;
 using FitRank_API.Application.CasosDeUso.SerieRealizadaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SesionRealizadaDeEjercicios;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
+using FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
 
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
 using FitRank_API.Application.Interfaces;
@@ -107,10 +108,17 @@ builder.Services.AddScoped<EliminarConfiguracionGrupoMuscularCasoDeUso>();
 
 builder.Services.AddScoped<IRutinaRepositorio, RutinaRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodasLasRutinasCasoDeUso>();
-builder.Services.AddScoped<OtenerRutinaPorIdCasoDeUso>();
+builder.Services.AddScoped<ObtenerRutinaPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarRutinaCasoDeUso>();
 builder.Services.AddScoped<ActualizarRutinaCasoDeUso>();
 builder.Services.AddScoped<EliminarRutinaCasoDeUso>();
+
+builder.Services.AddScoped<ISesionRepositorio, SesionRepositorioImpl>();
+builder.Services.AddScoped<ObtenerTodasLasSesionesCasoDeUso>();
+builder.Services.AddScoped<ObtenerSesionPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarSesionCasoDeUso>();
+builder.Services.AddScoped<ActualizarSesionCasoDeUso>();
+builder.Services.AddScoped<EliminarSesionCasoDeUso>();
 
 builder.Services.AddScoped<IEjercicioAsignadoRepositorio, EjercicioAsignadoRepositorioImpl>();
 builder.Services.AddScoped<ObtenerEjerciciosAsignadosCasoDeUso>();

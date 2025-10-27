@@ -8,5 +8,5 @@ public class EjercicioDTO
     public string Nombre { set; get; } = string.Empty;
     public string UrlVideo { set; get; } = string.Empty;
     public long GrupoMuscularId { set; get; }
-    GrupoMuscularDTO GrupoMuscular { set; get; } = new GrupoMuscularDTO();
+    ObtenerGrupoMuscularDTO GrupoMuscular { set; get; } = new ObtenerGrupoMuscularDTO();
 }

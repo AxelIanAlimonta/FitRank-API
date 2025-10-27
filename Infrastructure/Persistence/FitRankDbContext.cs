@@ -19,6 +19,7 @@ public class FitRankDbContext : DbContext
     public DbSet<ConfiguracionGrupoMuscular> ConfiguracionesGrupoMuscular { get; set; }
     public DbSet<Ejercicio> Ejercicios { get; set; }
     public DbSet<Rutina> Rutinas { get; set; }
+    public DbSet<Sesion> Sesiones { get; set; }
     public DbSet<EjercicioAsignado> EjerciciosAsignados { get; set; }
     public DbSet<SerieAsignada> SeriesAsignadas { get; set; }
     public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
@@ -73,10 +74,10 @@ public class FitRankDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Asistencia>()
-    .HasOne(a => a.Usuario)
-    .WithMany()
-    .HasForeignKey(a => a.UsuarioId)
-    .OnDelete(DeleteBehavior.Restrict);
+        .HasOne(a => a.Usuario)
+        .WithMany()
+        .HasForeignKey(a => a.UsuarioId)
+        .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Asistencia>()
             .HasOne(a => a.Gimnasio)
@@ -85,15 +86,33 @@ public class FitRankDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Invitacion>()
-    .HasOne(i => i.Gimnasio)
-    .WithMany(g => g.Invitaciones)
-    .HasForeignKey(i => i.GimnasioId)
-    .OnDelete(DeleteBehavior.Restrict);
+        .HasOne(i => i.Gimnasio)
+        .WithMany(g => g.Invitaciones)
+        .HasForeignKey(i => i.GimnasioId)
+        .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Invitacion>()
             .HasOne(i => i.Usuario)
             .WithMany()
             .HasForeignKey(i => i.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Rutina>()
+            .HasOne(r => r.Usuario)
+            .WithMany(s => s.RutinasAsignadas)
+            .HasForeignKey(r => r.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Sesion>()
+            .HasOne(s => s.Rutina)
+            .WithMany(r => r.Sesiones)
+            .HasForeignKey(s => s.RutinaId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Ejercicio>()
+            .HasOne(e => e.GrupoMuscular)
+            .WithMany(g => g.Ejercicios)
+            .HasForeignKey(e => e.GrupoMuscularId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

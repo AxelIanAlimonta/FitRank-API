@@ -14,10 +14,10 @@ public class ObtenerTodosLosGruposMuscularesCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<List<DTOs.GrupoMuscularDTOs.GrupoMuscularDTO>> Ejecutar()
+    public async Task<List<DTOs.GrupoMuscularDTOs.ObtenerGrupoMuscularDTO>> Ejecutar()
     {
         var gruposMusculares = await _grupoMuscularRepositorio.ObtenerTodosAsync();
-        return _mapper.Map<List<DTOs.GrupoMuscularDTOs.GrupoMuscularDTO>>(gruposMusculares);
+        return _mapper.Map<List<DTOs.GrupoMuscularDTOs.ObtenerGrupoMuscularDTO>>(gruposMusculares);
     }
 
 

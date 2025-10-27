@@ -13,7 +13,7 @@ public class AgregarSocioDTO
     public string FotoDePerfil { get; set; } = string.Empty;
 
     
-    public long GimnasioId { get; set; }
+    public long? GimnasioId { get; set; } 
     public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
     public double Altura { get; set; }
     public double Peso { get; set; }

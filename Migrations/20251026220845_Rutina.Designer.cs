@@ -3,6 +3,7 @@ using System;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    partial class FitRankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251026220845_Rutina")]
+    partial class Rutina
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -634,7 +637,7 @@ namespace FitRank_API.Migrations
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("GimnasioId")
+                    b.Property<long>("GimnasioId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Nivel")
@@ -849,7 +852,8 @@ namespace FitRank_API.Migrations
                     b.HasOne("FitRank_API.Domain.Entities.Gimnasio", "Gimnasio")
                         .WithMany("Socios")
                         .HasForeignKey("GimnasioId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", null)
                         .WithOne()
