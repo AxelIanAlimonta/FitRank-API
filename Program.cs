@@ -1,14 +1,18 @@
 ﻿
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
+using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioRealizadoCasosDeUso;
+using FitRank_API.Application.CasosDeUso.GimnasioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
 using FitRank_API.Application.CasosDeUso.LogroCasosDeUso;
+using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
+using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
@@ -34,6 +38,7 @@ using Microsoft.OpenApi.Models;
 using SendGrid;
 using System;
 using System.Text;
+using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
 
 
 
@@ -81,6 +86,12 @@ builder.Services.AddScoped<AgregarEjercicioCasoDeUso>();
 builder.Services.AddScoped<ActualizarEjercicioCasoDeUso>();
 builder.Services.AddScoped<EliminarEjercicioCasoDeUso>();
 
+builder.Services.AddScoped<IMaquinaRepositorio, MaquinaRepositorioImpl>();
+builder.Services.AddScoped<ObtenerMaquinasCasoDeUso>();
+builder.Services.AddScoped<ObtenerMaquinaPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarMaquinaCasoDeUso>();
+builder.Services.AddScoped<ActualizarMaquinaCasoDeUso>();
+builder.Services.AddScoped<EliminarMaquinaCasoDeUso>();
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
@@ -169,6 +180,12 @@ builder.Services.AddScoped<AgregarLogroCasoDeUso>();
 builder.Services.AddScoped<EliminarLogroCasoDeUso>();
 builder.Services.AddScoped<ActualizarLogroCasoDeUso>();
 
+builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();
+builder.Services.AddScoped<ObtenerGimnasiosCasoDeUso>();
+builder.Services.AddScoped<ObtenerGimnasioPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarGimnasioCasoDeUso>();
+builder.Services.AddScoped<EliminarGimnasioCasoDeUso>();
+builder.Services.AddScoped<ActualizarGimnasioCasoDeUso>();
 
 builder.Services.AddScoped<IRankingRepositorio, RankingRepositorioImpl>();
 builder.Services.AddScoped<ObtenerRankingGeneralCasoDeUso>();
@@ -186,11 +203,16 @@ builder.Services.AddScoped<EliminarUsuarioCasoDeUso>();
 builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
 
 
-builder.Services.AddScoped<IInvitacionRepositorio, InvitacionRepositorioImpl>();
+builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorioImpl>();
 
+
+builder.Services.AddScoped<IInvitacionRepositorio, InvitacionRepositorioImpl>();
 builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
 builder.Services.AddScoped<EnviarEmailQrCasoDeUso>();
 builder.Services.AddScoped<FallbackEfectivoCasoDeUso>();
+builder.Services.AddScoped<EliminarInvitacionCasoDeUso>();
+builder.Services.AddScoped<ObtenerInvitacionesCasoDeUso>();
+
 
 builder.Services.AddScoped<QrHelper>();
 
@@ -198,6 +220,34 @@ builder.Services.AddScoped<QrHelper>();
 builder.Services.AddScoped<IAsistenciaRepositorio, AsistenciaRepositorioImpl>();
 builder.Services.AddScoped<ObtenerAsistenciasPorUsuarioCasoDeUso>();
 builder.Services.AddScoped<ValidarQrCasoDeUso>();
+builder.Services.AddScoped<ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso>();
+builder.Services.AddScoped<ObtenerAsistenciasPorDiaCasoDeUso>();
+builder.Services.AddScoped<AgregarAsistenciaCasoDeUso>();
+
+
+builder.Services.AddScoped<IProfesorRepositorio, ProfesorRepositorioImpl>();
+builder.Services.AddScoped<AgregarProfesorCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosProfesoresCasoDeUso>();
+builder.Services.AddScoped<ObtenerProfesorPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarProfesorCasoDeUso>();
+builder.Services.AddScoped<EliminarProfesorCasoDeUso>();
+
+builder.Services.AddScoped<IDiaDeLaSemanaRepositorio, DiaDeLaSemanaRepositorioImpl>();
+builder.Services.AddScoped<AgregarDiaDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosDiasDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<ObtenerDiaDeLaSemanaPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarDiaDeLaSemanaCasoDeUso>();
+builder.Services.AddScoped<EliminarDiaDeLaSemanaCasoDeUso>();
+
+builder.Services.AddScoped<IJornadaRepositorio, JornadaRepositorioImpl>();
+builder.Services.AddScoped<AgregarJornadaCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodasLasJornadasCasoDeUso>();
+builder.Services.AddScoped<ObtenerJornadaPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarJornadaCasoDeUso>();
+builder.Services.AddScoped<EliminarJornadaCasoDeUso>();
+
+
+
 
 builder.Services.AddCors(options =>
 {
@@ -286,6 +336,10 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAutoMapper(cfg =>
    cfg.AddMaps(typeof(FitRank_API.Application.Mappings.AssemblyMapping).Assembly));
+
+
+
+
 
 
 var app = builder.Build();

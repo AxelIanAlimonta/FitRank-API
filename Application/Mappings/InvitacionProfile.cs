@@ -35,6 +35,10 @@ namespace FitRank_API.Application.Mappings
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
                 .ForMember(dest => dest.TokenRecuperacion, opt => opt.Ignore())
                 .ForMember(dest => dest.TokenExpira, opt => opt.Ignore());
+
+
+  
+
         }
     }
 }

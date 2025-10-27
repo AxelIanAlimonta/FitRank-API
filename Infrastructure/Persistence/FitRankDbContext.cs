@@ -13,6 +13,9 @@ public class FitRankDbContext : DbContext
     public DbSet<Persona> Personas { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Socio> Socios { get; set; }
+    public DbSet<Profesor> Profesores { get; set; }
+    public DbSet<Gimnasio> Gimnasios { get; set; }
+    public DbSet<Maquina> Maquinas { get; set; }
     public DbSet<GrupoMuscular> GruposMusculares { get; set; }
     public DbSet<Dificultad> Dificultades { get; set; }
     public DbSet<SesionRealizadaDeEjercicios> SesionRealizadaDeEjercicios { get; set; }
@@ -29,7 +32,9 @@ public class FitRankDbContext : DbContext
     public DbSet<Asistencia> Asistencias { get; set; }
     public DbSet<Invitacion> Invitaciones { get; set; }
     public DbSet<Logro> Logros { get; set; }
-
+    public DbSet<DiaDeLaSemana> DiasDeLaSemana { get; set; }
+    public DbSet<LogroSocio> LogrosSocios { get; set; }
+    public DbSet<Jornada> Jornadas { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +70,7 @@ public class FitRankDbContext : DbContext
     {
         modelBuilder.Entity<Usuario>().ToTable("Usuarios");
         modelBuilder.Entity<Socio>().ToTable("Socios");
+        modelBuilder.Entity<Profesor>().ToTable("Profesores");
 
 
         modelBuilder.Entity<Socio>()

@@ -15,14 +15,12 @@ public class ActualizarLogroCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerLogroDTO?> Ejecutar(ActualizarLogroDTO actualizarLogroDTO)
+    public async Task<ObtenerLogroDTO?> Ejecutar(long id, ActualizarLogroDTO dto)
     {
-        var logroEntidad = _mapper.Map<Logro>(actualizarLogroDTO);
-        var logroActualizado = await _logroRepositorio.ActualizarLogro(logroEntidad);
-        if (logroActualizado == null)
-        {
-            return null;
-        }
+        var logroActualizado = await _logroRepositorio.ActualizarLogro(id, dto);
+        if (logroActualizado is null) return null;
+
         return _mapper.Map<ObtenerLogroDTO>(logroActualizado);
     }
+
 }
