@@ -4,7 +4,7 @@
     {
         public long Id { get; set; }
         public long UsuarioId { get; set; }
-        public Socio Usuario { get; set; } = null!;
+        public Usuario Usuario { get; set; } = null!;
         public DateTime Fecha { get; set; }
         public bool Presente { get; set; }
         public DateTime HoraEntrada { get; set; }

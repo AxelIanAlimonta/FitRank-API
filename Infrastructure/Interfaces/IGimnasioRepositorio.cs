@@ -9,4 +9,5 @@ public interface IGimnasioRepositorio
     Task<Gimnasio> AgregarGimnasio(Gimnasio gimnasio);
     Task<Gimnasio?> ActualizarGimnasio(long id, ActualizarGimnasioDTO gimnasioDTO);
     Task<bool> EliminarGimnasio(long id);
+    Task<Gimnasio?> ObtenerPorAdministradorIdAsync(long adminId);
 }

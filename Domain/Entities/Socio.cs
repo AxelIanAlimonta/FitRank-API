@@ -12,9 +12,11 @@ public class Socio : Usuario
     public string Nivel { get; set; }
 
     public double Puntaje { get; set; }
-   
+
+    public ICollection<MedidaCorporal>? MedidasCorporales { get; set; } = new List<MedidaCorporal>();
+    public ICollection<Foto>? FotosProgreso { get; set; } = new List<Foto>();
 
 
-    }
+}
 
 
