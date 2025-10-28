@@ -18,17 +18,17 @@ public class FitRankDbContext : DbContext
     public DbSet<Maquina> Maquinas { get; set; }
     public DbSet<GrupoMuscular> GruposMusculares { get; set; }
     public DbSet<Dificultad> Dificultades { get; set; }
-    public DbSet<SesionRealizadaDeEjercicios> SesionRealizadaDeEjercicios { get; set; }
+
     public DbSet<ConfiguracionGrupoMuscular> ConfiguracionesGrupoMuscular { get; set; }
     public DbSet<Ejercicio> Ejercicios { get; set; }
     public DbSet<Rutina> Rutinas { get; set; }
     public DbSet<Sesion> Sesiones { get; set; }
     public DbSet<EjercicioAsignado> EjerciciosAsignados { get; set; }
-    public DbSet<SerieAsignada> SeriesAsignadas { get; set; }
-    public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
-    public DbSet<SerieRealizada> SeriesRealizadas { get; set; }
+
+ 
+
     public DbSet<Puntaje> Puntajes { get; set; }
-    public DbSet<RutinaEjercicio> RutinasEjercicios { get; set; }
+ 
     public DbSet<Asistencia> Asistencias { get; set; }
     public DbSet<Invitacion> Invitaciones { get; set; }
     public DbSet<Logro> Logros { get; set; }
@@ -47,6 +47,11 @@ public class FitRankDbContext : DbContext
 
     public DbSet<Notificacion> Notificaciones { get; set; }
 
+    public DbSet<Entrenamiento> Entrenamientos { get; set; }
+
+    public DbSet<Serie> Series { get; set; }
+
+    public DbSet<Actividad> Actividades { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

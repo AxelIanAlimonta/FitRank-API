@@ -65,5 +65,8 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
         return true;
     }
 
-
+    public Task<Rutina> ObtenerPorSocioIdAsync(long socioId)
+    {
+        throw new NotImplementedException();
+    }
 }

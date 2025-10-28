@@ -26,7 +26,7 @@ namespace FitRank_API.Domain.Entities
 
         public bool Activa { get; set; } = true;
 
-        // 🔗 Relaciones
+       
         [ForeignKey("Socio")]
         public long SocioId { get; set; }
         public Socio? Socio { get; set; }
@@ -36,8 +36,7 @@ namespace FitRank_API.Domain.Entities
         public Usuario? Usuario { get; set; }
 
 
-        // Una rutina puede tener muchas sesiones y sesiones realizadas
         public ICollection<Sesion>? Sesiones { get; set; }
-        //public ICollection<SesionRealizada>? SesionesRealizadas { get; set; }
+       
     }
 }

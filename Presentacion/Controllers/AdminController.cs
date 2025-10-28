@@ -19,7 +19,7 @@ namespace FitRank_API.Presentacion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")] 
+
     public class AdminController : ControllerBase
     {
         private readonly AgregarInvitacionCasoDeUso _agregarInvitacionCasoDeUso;
@@ -29,16 +29,22 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly EliminarAdministradorCasoDeUso _eliminarAdministradorCasoDeUso;
         private readonly ValidarQrCasoDeUso _validarQrCasoDeUso;
         public AdminController(
-            AgregarInvitacionCasoDeUso agregarInvitacionCasoDeUso,
-            FallbackEfectivoCasoDeUso fallbackEfectivoCasoDeUso,
-            EnviarEmailQrCasoDeUso enviarEmailQrCasoDeUso,
-            ValidarQrCasoDeUso validarQrCasoDeUso)
+               AgregarInvitacionCasoDeUso agregarInvitacionCasoDeUso,
+               FallbackEfectivoCasoDeUso fallbackEfectivoCasoDeUso,
+               EnviarEmailQrCasoDeUso enviarEmailQrCasoDeUso,
+               AgregarAdministradorCasoDeUso agregarAdministradorCasoDeUso,
+               EliminarAdministradorCasoDeUso eliminarAdministradorCasoDeUso,
+               ValidarQrCasoDeUso validarQrCasoDeUso
+               )
         {
             _agregarInvitacionCasoDeUso = agregarInvitacionCasoDeUso;
             _fallbackEfectivoCasoDeUso = fallbackEfectivoCasoDeUso;
             _enviarEmailQrCasoDeUso = enviarEmailQrCasoDeUso;
+            _agregarAdministradorCasoDeUso = agregarAdministradorCasoDeUso;
+            _eliminarAdministradorCasoDeUso = eliminarAdministradorCasoDeUso;
             _validarQrCasoDeUso = validarQrCasoDeUso;
         }
+
 
         [HttpPost("generar-invitacion")]
         public async Task<ActionResult<InvitacionResponseDTO>> GenerarInvitacion([FromBody] GenerarInvitacionDTO dto)

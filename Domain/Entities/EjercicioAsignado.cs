@@ -9,9 +9,9 @@ namespace FitRank_API.Domain.Entities
         public long Id { get; set; }
 
         [Required]
-        public int NumeroEjercicio { get; set; } // orden del ejercicio en la sesión
+        public int NumeroEjercicio { get; set; } 
 
-        // Relaciones
+       
         [Required]
         public long EjercicioId { get; set; }
         [ForeignKey("EjercicioId")]
@@ -22,8 +22,7 @@ namespace FitRank_API.Domain.Entities
         [ForeignKey("SesionId")]
         public Sesion Sesion { get; set; } = null!;
 
-        // Serie (por ahora comentada)
-        // public long? SerieId { get; set; }
-        // public Seriea? Serie { get; set; }
+        public ICollection<Serie>? Series { get; set; }
+
     }
 }

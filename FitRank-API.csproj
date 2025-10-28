@@ -39,6 +39,7 @@
   <ItemGroup>
     <Folder Include="Application\Servicio\" />
     <Folder Include="Domain\Enums\" />
+    <Folder Include="Migrations\" />
     <Folder Include="tests\IntegrationTests\" />
     <Folder Include="tests\ApiTests\" />
     <Folder Include="tests\UnitTests\" />

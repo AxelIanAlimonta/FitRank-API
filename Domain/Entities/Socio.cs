@@ -16,7 +16,7 @@ public class Socio : Usuario
     public ICollection<MedidaCorporal>? MedidasCorporales { get; set; } = new List<MedidaCorporal>();
     public ICollection<Foto>? FotosProgreso { get; set; } = new List<Foto>();
 
-
+    public ICollection<Entrenamiento> Entrenamientos { get; set; }
 }
 
 
