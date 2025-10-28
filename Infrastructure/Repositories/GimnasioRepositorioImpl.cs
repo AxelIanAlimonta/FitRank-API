@@ -61,4 +61,13 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<Gimnasio?> ObtenerPorAdministradorIdAsync(long adminId)
+    {
+        return await _context.Gimnasios
+            .Include(g => g.Administrador)
+            .FirstOrDefaultAsync(g => g.AdministradorId == adminId);
+    }
+
+   
 }

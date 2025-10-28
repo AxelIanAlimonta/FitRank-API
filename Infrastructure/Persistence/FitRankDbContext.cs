@@ -34,7 +34,18 @@ public class FitRankDbContext : DbContext
     public DbSet<Logro> Logros { get; set; }
     public DbSet<DiaDeLaSemana> DiasDeLaSemana { get; set; }
     public DbSet<LogroSocio> LogrosSocios { get; set; }
+
+
+    public DbSet<Administrador> Administradores { get; set; }
+
     public DbSet<Jornada> Jornadas { get; set; }
+
+
+    public DbSet<MedidaCorporal> MedidasCorporales { get; set; }
+
+    public DbSet<Foto> Fotos { get; set; }
+
+    public DbSet<Notificacion> Notificaciones { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -71,7 +82,8 @@ public class FitRankDbContext : DbContext
         modelBuilder.Entity<Usuario>().ToTable("Usuarios");
         modelBuilder.Entity<Socio>().ToTable("Socios");
         modelBuilder.Entity<Profesor>().ToTable("Profesores");
-
+    
+        modelBuilder.Entity<Administrador>().ToTable("Administradores");
 
         modelBuilder.Entity<Socio>()
             .HasOne(s => s.Gimnasio)
@@ -80,10 +92,10 @@ public class FitRankDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Asistencia>()
-        .HasOne(a => a.Usuario)
-        .WithMany()
-        .HasForeignKey(a => a.UsuarioId)
-        .OnDelete(DeleteBehavior.Restrict);
+    .HasOne(a => a.Usuario)
+    .WithMany()
+    .HasForeignKey(a => a.UsuarioId)
+    .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Asistencia>()
             .HasOne(a => a.Gimnasio)
@@ -92,10 +104,10 @@ public class FitRankDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Invitacion>()
-        .HasOne(i => i.Gimnasio)
-        .WithMany(g => g.Invitaciones)
-        .HasForeignKey(i => i.GimnasioId)
-        .OnDelete(DeleteBehavior.Restrict);
+    .HasOne(i => i.Gimnasio)
+    .WithMany(g => g.Invitaciones)
+    .HasForeignKey(i => i.GimnasioId)
+    .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Invitacion>()
             .HasOne(i => i.Usuario)
@@ -120,5 +132,48 @@ public class FitRankDbContext : DbContext
             .WithMany(g => g.Ejercicios)
             .HasForeignKey(e => e.GrupoMuscularId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Gimnasio>()
+      .HasOne(g => g.Administrador)
+      .WithOne(a => a.Gimnasio)
+      .HasForeignKey<Gimnasio>(g => g.AdministradorId)
+      .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Notificacion>(entity =>
+        {
+            entity.HasKey(n => n.Id);
+
+            entity.HasOne(n => n.UsuarioEmisor)
+                  .WithMany(u => u.NotificacionesEnviadas)
+                  .HasForeignKey(n => n.UsuarioEmisorId)
+                  .OnDelete(DeleteBehavior.Restrict); 
+
+            entity.HasOne(n => n.UsuarioReceptor)
+                  .WithMany(u => u.NotificacionesRecibidas)
+                  .HasForeignKey(n => n.UsuarioReceptorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Asistencia>(entity =>
+            {
+                entity.HasKey(a => a.Id);
+
+                entity.HasOne(a => a.Usuario)
+                      .WithMany(u => u.Asistencias)
+                      .HasForeignKey(a => a.UsuarioId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .IsRequired();
+
+                entity.HasOne(a => a.Gimnasio)
+                      .WithMany(g => g.Asistencias)
+                      .HasForeignKey(a => a.GimnasioId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .IsRequired();
+            });
+
+
+        });
+
+
     }
+
 }

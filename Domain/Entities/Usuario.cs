@@ -27,7 +27,9 @@
         public string? Telefono { get; set; }
         public bool EsActivado { get; set; } = false;
 
-        public ICollection<Asistencia> asistencias { get; set; } = new List<Asistencia>();
+        public ICollection<Asistencia> Asistencias { get; set; } = new List<Asistencia>();
+        public ICollection<Notificacion> NotificacionesEnviadas { get; set; }
+        public ICollection<Notificacion> NotificacionesRecibidas { get; set; }
 
         public ICollection<Rutina> RutinasCreadas { get; set; }
 

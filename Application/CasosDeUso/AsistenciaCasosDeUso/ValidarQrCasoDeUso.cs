@@ -17,17 +17,19 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoD
         private readonly IAsistenciaRepositorio _asistenciaRepositorio;
         private readonly IConfiguration _config;
         private readonly QrHelper _qrHelper;
+        private readonly IGimnasioRepositorio _gimnasioRepositorio;
 
-        public ValidarQrCasoDeUso(
-            IUsuarioRepositorio usuarioRepositorio,
+   public ValidarQrCasoDeUso(IUsuarioRepositorio usuarioRepositorio,
             IAsistenciaRepositorio asistenciaRepositorio,
             IConfiguration config,
-            QrHelper qrHelper)
+            QrHelper qrHelper,
+            IGimnasioRepositorio gimnasioRepositorio)
         {
             _usuarioRepositorio = usuarioRepositorio;
             _asistenciaRepositorio = asistenciaRepositorio;
             _config = config;
             _qrHelper = qrHelper;
+            _gimnasioRepositorio = gimnasioRepositorio;
         }
 
         public async Task<QrValidationResponseDTO> Ejecutar(QrValidationDTO dto, int? adminId)
@@ -75,11 +77,22 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoD
                 if (!user.CuotaPagadaHasta.HasValue || user.CuotaPagadaHasta < DateTime.Now || validoHasta < DateTime.Now)
                     return new QrValidationResponseDTO { Valido = false, Mensaje = "Cuota expirada o QR inválido" };
 
-               
-                if (adminId.HasValue && qrGymId != adminId.Value)
-                    return new QrValidationResponseDTO { Valido = false, Mensaje = "QR no válido para este gimnasio" };
 
-              
+                
+                long gimnasioId = 0;
+                if (adminId.HasValue)
+                {
+                    var gimnasio = await _gimnasioRepositorio.ObtenerPorAdministradorIdAsync(adminId.Value);
+                    if (gimnasio == null)
+                        return new QrValidationResponseDTO { Valido = false, Mensaje = "No se encontró gimnasio asociado al administrador." };
+
+                    gimnasioId = gimnasio.Id;
+
+                    if (qrGymId != gimnasio.Id)
+                        return new QrValidationResponseDTO { Valido = false, Mensaje = "QR no válido para este gimnasio." };
+                }
+
+
                 var asistencia = new Asistencia
                 {
                     UsuarioId = userId,
@@ -87,7 +100,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoD
                     Presente = true,
                     HoraEntrada = DateTime.Now,
                     Observaciones = dto.Observaciones ?? "Ingreso por QR",
-                    GimnasioId = adminId ?? 1
+                    GimnasioId = gimnasioId
                 };
 
                 await _asistenciaRepositorio.AgregarAsync(asistencia);
@@ -100,7 +113,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoD
                     Apellidos = user.Apellido,
                     Email = user.Email,
                     NombreUsuario = user.NombreUsuario,
-                    Rol = user.Rol ?? "User",
+                    Rol = user.Rol ?? "Socio",
                     CuotaPagadaHasta = user.CuotaPagadaHasta,
                     TieneCuotaPagada = true
                 };

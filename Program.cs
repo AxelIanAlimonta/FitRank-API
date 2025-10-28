@@ -38,7 +38,16 @@ using Microsoft.OpenApi.Models;
 using SendGrid;
 using System;
 using System.Text;
+
+using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
+using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
+using FitRank_API.Application.CasosDeUso.FotoCasosDeUso;
+using FitRank_API.Application.DTOs.GimnasioDTOs;
 using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso;
+using FitRank_API.Application.DTOs.NotificacionDTOs;
+
+
 
 
 
@@ -239,6 +248,23 @@ builder.Services.AddScoped<ObtenerDiaDeLaSemanaPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarDiaDeLaSemanaCasoDeUso>();
 builder.Services.AddScoped<EliminarDiaDeLaSemanaCasoDeUso>();
 
+
+builder.Services.AddScoped<IAdministradorRepositorio, AdministradorRepositorioImpl>();
+builder.Services.AddScoped<AgregarAdministradorCasoDeUso>();
+builder.Services.AddScoped<EliminarAdministradorCasoDeUso>();
+
+builder.Services.AddScoped<IMedidaCorporalRepositorio, MedidaCorporalRepositorioImpl>();
+builder.Services.AddScoped<AgregarMedidaCorporalCasoDeUso>();
+builder.Services.AddScoped<ObtenerMedidasPorSocioCasoDeUso>();
+builder.Services.AddScoped<ObtenerMedidaCorporalPorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarMedidaCorporalCasoDeUso>();
+builder.Services.AddScoped<EliminarMedidaCorporalCasoDeUso>();
+
+builder.Services.AddScoped<IFotoRepositorio, FotoRepositorioImpl>();
+builder.Services.AddScoped<AgregarFotoCasoDeUso>();
+builder.Services.AddScoped<ObtenerFotosPorSocioCasoDeUso>();
+builder.Services.AddScoped<EliminarFotoCasoDeUso>();
+
 builder.Services.AddScoped<IJornadaRepositorio, JornadaRepositorioImpl>();
 builder.Services.AddScoped<AgregarJornadaCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodasLasJornadasCasoDeUso>();
@@ -247,6 +273,9 @@ builder.Services.AddScoped<ActualizarJornadaCasoDeUso>();
 builder.Services.AddScoped<EliminarJornadaCasoDeUso>();
 
 
+builder.Services.AddScoped<INotificacionRepositorio, NotificacionRepositorioImpl>();
+builder.Services.AddScoped<AgregarNotificacionCasoDeUso>();
+builder.Services.AddScoped<ObtenerNotificacionPorUsuarioCasoDeUso>();
 
 
 builder.Services.AddCors(options =>
@@ -272,7 +301,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-// JWT Authentication
+
 var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "tu_secreto_super_seguro_32_chars_minimo");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -286,14 +315,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
-// ✅ Agregar política de Admin
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy =>
         policy.RequireRole("Admin")); // Solo usuarios con rol Admin
 });
 
-// SendGrid para emails
+
 builder.Services.AddSingleton<ISendGridClient>(provider =>
     new SendGridClient(builder.Configuration["SendGrid:ApiKey"] ?? "SG.tu_clave")
 );
@@ -302,7 +331,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FitRank API", Version = "v1" });
 
-    // Config para JWT Bearer
+    
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Ejemplo: 'Bearer {tu_token}'",
@@ -325,7 +354,7 @@ builder.Services.AddSwaggerGen(c =>
                       Id = "Bearer"
                   }
               },
-              Array.Empty<string>()  // Para roles, si querés, agrega {"Admin"}
+              Array.Empty<string>()  
           }
       });
 });
