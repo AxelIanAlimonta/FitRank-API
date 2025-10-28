@@ -1270,8 +1270,7 @@ namespace FitRank_API.Migrations
                     b.HasOne("FitRank_API.Domain.Entities.Gimnasio", "Gimnasio")
                         .WithMany("Socios")
                         .HasForeignKey("GimnasioId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", null)
                         .WithOne()
@@ -1306,6 +1305,11 @@ namespace FitRank_API.Migrations
                     b.Navigation("LogrosOtorgados");
                 });
 
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Rutina", b =>
+                {
+                    b.Navigation("Sesiones");
+                });
+
             modelBuilder.Entity("FitRank_API.Domain.Entities.Usuario", b =>
                 {
                     b.Navigation("Asistencias");
@@ -1313,16 +1317,16 @@ namespace FitRank_API.Migrations
                     b.Navigation("NotificacionesEnviadas");
 
                     b.Navigation("NotificacionesRecibidas");
+
+                    b.Navigation("RutinasAsignadas");
+
+                    b.Navigation("RutinasCreadas");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Administrador", b =>
                 {
                     b.Navigation("Gimnasio");
                 });
-            modelBuilder.Entity("FitRank_API.Domain.Entities.Rutina", b =>
-            {
-                b.Navigation("Sesiones");
-            });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
                 {
