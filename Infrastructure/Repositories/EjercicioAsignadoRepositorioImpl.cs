@@ -18,7 +18,12 @@ public class EjercicioAsignadoRepositorioImpl : IEjercicioAsignadoRepositorio
     {
         var resultado = await _context.EjerciciosAsignados.AddAsync(ejercicioAsignado);
         await _context.SaveChangesAsync();
-        return resultado.Entity;
+
+        var ejercicioConDetalles = await _context.EjerciciosAsignados
+            .Include(e => e.Ejercicio)
+            .Include(e => e.Sesion)
+            .FirstOrDefaultAsync(e => e.Id == resultado.Entity.Id);
+        return ejercicioConDetalles;
     }
 
     public async Task<bool> EliminarAsync(long id)
@@ -36,14 +41,14 @@ public class EjercicioAsignadoRepositorioImpl : IEjercicioAsignadoRepositorio
     public async Task<List<EjercicioAsignado>> ObtenerTodosAsync()
     {
         return await _context.EjerciciosAsignados.Include(e => e.Ejercicio)
-                                               .Include(e => e.Rutina)
+                                               .Include(e => e.Sesion)
                                                .ToListAsync();
     }
 
     public async Task<EjercicioAsignado?> ObtenerPorIdAsync(long id)
     {
         return await _context.EjerciciosAsignados.Include(e => e.Ejercicio)
-                                               .Include(e => e.Rutina)
+                                               .Include(e => e.Sesion)
                                                .FirstOrDefaultAsync(e => e.Id == id);
     }
 
@@ -55,16 +60,16 @@ public class EjercicioAsignadoRepositorioImpl : IEjercicioAsignadoRepositorio
             return null;
         }
 
-        ejercicioExistente.Orden = ejercicioAsignado.Orden;
-        ejercicioExistente.Observaciones = ejercicioAsignado.Observaciones;
-        ejercicioExistente.RutinaId = ejercicioAsignado.RutinaId;
+        ejercicioExistente.NumeroEjercicio = ejercicioAsignado.NumeroEjercicio;
         ejercicioExistente.EjercicioId = ejercicioAsignado.EjercicioId;
-        ejercicioExistente.SocioId = ejercicioAsignado.SocioId;
-        ejercicioExistente.Sesion = ejercicioAsignado.Sesion;
-
-
+        ejercicioExistente.SesionId = ejercicioAsignado.SesionId;
         await _context.SaveChangesAsync();
-        return ejercicioExistente;
+
+        var ejercicioConDetalles = await _context.EjerciciosAsignados
+            .Include(e => e.Ejercicio)
+            .Include(e => e.Sesion)
+            .FirstOrDefaultAsync(e => e.Id == ejercicioExistente.Id);
+        return ejercicioConDetalles;
     }
 
 

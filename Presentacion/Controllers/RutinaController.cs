@@ -11,20 +11,20 @@ public class RutinaController : ControllerBase
 {
 
     private readonly AgregarRutinaCasoDeUso _agregarRutinaCasoDeUso;
-    private readonly OtenerRutinaPorIdCasoDeUso _otenerRutinaPorIdCasoDeUso;
+    private readonly ObtenerRutinaPorIdCasoDeUso _obtenerRutinaPorIdCasoDeUso;
     private readonly ActualizarRutinaCasoDeUso _actualizarRutinaCasoDeUso;
     private readonly EliminarRutinaCasoDeUso _eliminarRutinaCasoDeUso;
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
 
     public RutinaController(
         AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
-        OtenerRutinaPorIdCasoDeUso otenerRutinaPorIdCasoDeUso,
+        ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
         ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
         ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
         EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso)
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
-        _otenerRutinaPorIdCasoDeUso = otenerRutinaPorIdCasoDeUso;
+        _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
         _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _actualizarRutinaCasoDeUso = actualizarRutinaCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
@@ -41,7 +41,7 @@ public class RutinaController : ControllerBase
     [Route("{id:long}")]
     public async Task<IActionResult> ObtenerPorId(long id)
     {
-        var rutina = await _otenerRutinaPorIdCasoDeUso.Ejecutar(id);
+        var rutina = await _obtenerRutinaPorIdCasoDeUso.Ejecutar(id);
         if (rutina == null)
         {
             return NotFound();
@@ -57,9 +57,13 @@ public class RutinaController : ControllerBase
         return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaRutina.Id }, nuevaRutina);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Actualizar([FromBody] ActualizarRutinaDTO rutinaDTO)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Actualizar(long id,[FromBody] ActualizarRutinaDTO rutinaDTO)
     {
+        if (id != rutinaDTO.Id)
+        {
+            return BadRequest();
+        }
         var rutinaActualizada = await _actualizarRutinaCasoDeUso.Ejecutar(rutinaDTO);
         if (rutinaActualizada == null)
         {

@@ -14,9 +14,9 @@ public class ObtenerGrupoMuscularPorIdCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<DTOs.GrupoMuscularDTOs.GrupoMuscularDTO?> Ejecutar(long id)
+    public async Task<DTOs.GrupoMuscularDTOs.ObtenerGrupoMuscularDTO?> Ejecutar(long id)
     {
         var grupoMuscular = await _grupoMuscularRepositorio.ObtenerPorIdAsync(id);
-        return grupoMuscular == null ? null : _mapper.Map<DTOs.GrupoMuscularDTOs.GrupoMuscularDTO>(grupoMuscular);
+        return grupoMuscular == null ? null : _mapper.Map<DTOs.GrupoMuscularDTOs.ObtenerGrupoMuscularDTO>(grupoMuscular);
     }
 }

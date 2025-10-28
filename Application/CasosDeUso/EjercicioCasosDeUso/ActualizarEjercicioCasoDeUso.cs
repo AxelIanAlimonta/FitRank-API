@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.EjercicioDTOs;
+using FitRank_API.Application.DTOs.EjercicioDTOs.ActualizarEjercicioDTO;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 
@@ -16,9 +17,10 @@ public class ActualizarEjercicioCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<Ejercicio?> EjecutarAsync(EjercicioDTO ejercicio)
+    public async Task<Ejercicio?> EjecutarAsync(long id, ActualizarEjercicioDTO ejercicioDTO)
     {
-        var ejercicioMapeado = _mapper.Map<Ejercicio>(ejercicio);
+        ejercicioDTO.Id = id;
+        var ejercicioMapeado = _mapper.Map<Ejercicio>(ejercicioDTO);
         var resultado = await _ejercicioRepositorio.ActualizarEjercicioAsync(ejercicioMapeado);
         return resultado;
     }

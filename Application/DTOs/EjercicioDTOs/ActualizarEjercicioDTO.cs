@@ -1,7 +1,8 @@
-﻿namespace FitRank_API.Application.DTOs.EjercicioDTOs.AgregarEjercicioDTO
+﻿namespace FitRank_API.Application.DTOs.EjercicioDTOs.ActualizarEjercicioDTO
 {
-    public class AgregarEjercicioDTO
+    public class ActualizarEjercicioDTO
     {
+        public long Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string? Descripcion { get; set; } = string.Empty;
         public string UrlImagen { get; set; } = string.Empty;

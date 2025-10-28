@@ -3,6 +3,7 @@ using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace FitRank_API.Infrastructure.Repositories;
 
 public class EjercicioRepositorioImpl : IEjercicioRepositorio
@@ -15,18 +16,31 @@ public class EjercicioRepositorioImpl : IEjercicioRepositorio
 
     public async Task<List<Ejercicio>> ObtenerEjerciciosAsync()
     {
-        return await _context.Ejercicios.ToListAsync();
+        return await _context.Ejercicios
+                .Include(e => e.GrupoMuscular)
+                .Include(e => e.Maquina)
+                .ToListAsync();
     }
 
     public async Task<Ejercicio?> ObtenerEjercicioPorIdAsync(long id)
     {
-        return await _context.Ejercicios.FindAsync(id);
+        return await _context.Ejercicios
+            .Include(e => e.GrupoMuscular)
+            .Include(e => e.Maquina)
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
     public async Task<Ejercicio> AgregarEjercicioAsync(Ejercicio ejercicio)
     {
         _context.Ejercicios.Add(ejercicio);
         await _context.SaveChangesAsync();
-        return ejercicio;
+
+        // Recargar con relaciones
+        var ejercicioConRelaciones = await _context.Ejercicios
+            .Include(e => e.GrupoMuscular)
+            .Include(e => e.Maquina)
+            .FirstOrDefaultAsync(e => e.Id == ejercicio.Id);
+
+        return ejercicioConRelaciones!;
     }
 
     public async Task<Ejercicio?> ActualizarEjercicioAsync(Ejercicio ejercicio)
@@ -36,11 +50,14 @@ public class EjercicioRepositorioImpl : IEjercicioRepositorio
         {
             return null;
         }
-        ejercicioExistente.Nombre = ejercicio.Nombre;
-        ejercicioExistente.UrlVideo = ejercicio.UrlVideo;
-        ejercicioExistente.GrupoMuscularId = ejercicio.GrupoMuscularId;
+        _context.Entry(ejercicioExistente).CurrentValues.SetValues(ejercicio);
         await _context.SaveChangesAsync();
-        return ejercicioExistente;
+
+        var ejercicioConRelaciones = await _context.Ejercicios
+            .Include(e => e.GrupoMuscular)
+            .Include(e => e.Maquina)
+            .FirstOrDefaultAsync(e => e.Id == ejercicioExistente.Id);
+        return ejercicioConRelaciones;
     }
 
     public async Task<bool> EliminarEjercicioAsync(long id)

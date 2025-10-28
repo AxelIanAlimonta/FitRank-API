@@ -1,4 +1,4 @@
-﻿using FitRank_API.Application.DTOs.EjercicioDTOs;
+﻿using FitRank_API.Application.DTOs.EjercicioDTOs.ObtenerEjercicioDTO;
 using FitRank_API.Application.DTOs.RutinaDTOs;
 using FitRank_API.Application.DTOs.SocioDTOs;
 
@@ -8,7 +8,7 @@ public class ObtenerEjercicioRealizadoDTO
 {
     public long Id { get; set; }
     public long EjercicioId { get; set; }
-    public EjercicioDTO Ejercicio { get; set; }
+    public ObtenerEjercicioDTO Ejercicio { get; set; }
     public long SocioId { get; set; }
     public SocioDTO Socio { get; set; }
     public long RutinaId { get; set; }

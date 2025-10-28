@@ -4,12 +4,12 @@ using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 
-public class OtenerRutinaPorIdCasoDeUso
+public class ObtenerRutinaPorIdCasoDeUso
 {
     private readonly IRutinaRepositorio _rutinaRepositorio;
     private readonly IMapper _mapper;
 
-    public OtenerRutinaPorIdCasoDeUso(IRutinaRepositorio rutinaRepositorio, IMapper mapper)
+    public ObtenerRutinaPorIdCasoDeUso(IRutinaRepositorio rutinaRepositorio, IMapper mapper)
     {
         _rutinaRepositorio = rutinaRepositorio;
         _mapper = mapper;
@@ -17,7 +17,7 @@ public class OtenerRutinaPorIdCasoDeUso
 
     public async Task<ObtenerRutinaDTO?> Ejecutar(long id)
     {
-        var rutina = await _rutinaRepositorio.ObtenerPorId(id);
+        var rutina = await _rutinaRepositorio.ObtenerPorIdAsync(id);
         if (rutina == null)
         {
             return null;

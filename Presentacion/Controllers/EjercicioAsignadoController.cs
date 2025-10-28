@@ -10,7 +10,7 @@ namespace FitRank_API.Presentacion.Controllers;
 public class EjercicioAsignadoController : ControllerBase
 {
     private readonly ActualizarEjercicioAsignadoCasoDeUso _actualizarEjercicioAsignadoCasoDeUso;
-    private readonly ObtenerEjercicioAsignadoPorIdCasoDeUso _obtenerEjercicioRealizadoPorIdCasoDeUso;
+    private readonly ObtenerEjercicioAsignadoPorIdCasoDeUso _obtenerEjercicioAsignadoPorIdCasoDeUso;
     private readonly AgregarEjercicioAsignadoCasoDeUso _agregarEjercicioAsignadoCasoDeUso;
     private readonly EliminarEjercicioAsignadoCasoDeUso _eliminarEjercicioAsignadoCasoDeUso;
     private readonly ObtenerEjerciciosAsignadosCasoDeUso _obtenerEjerciciosAsignadosCasoDeUso;
@@ -23,7 +23,7 @@ public class EjercicioAsignadoController : ControllerBase
         ObtenerEjerciciosAsignadosCasoDeUso obtenerEjerciciosAsignadosCasoDeUso)
     {
         _actualizarEjercicioAsignadoCasoDeUso = actualizarEjercicioAsignadoCasoDeUso;
-        _obtenerEjercicioRealizadoPorIdCasoDeUso = obtenerEjercicioRealizadoPorIdCasoDeUso;
+        _obtenerEjercicioAsignadoPorIdCasoDeUso = obtenerEjercicioRealizadoPorIdCasoDeUso;
         _agregarEjercicioAsignadoCasoDeUso = agregarEjercicioAsignadoCasoDeUso;
         _eliminarEjercicioAsignadoCasoDeUso = eliminarEjercicioAsignadoCasoDeUso;
         _obtenerEjerciciosAsignadosCasoDeUso = obtenerEjerciciosAsignadosCasoDeUso;
@@ -41,7 +41,7 @@ public class EjercicioAsignadoController : ControllerBase
     [Route("{id:long}")]
     public async Task<IActionResult> ObtenerPorId(long id)
     {
-        var ejercicioAsignado = await _obtenerEjercicioRealizadoPorIdCasoDeUso.Ejecutar(id);
+        var ejercicioAsignado = await _obtenerEjercicioAsignadoPorIdCasoDeUso.Ejecutar(id);
         if (ejercicioAsignado == null)
         {
             return NotFound();

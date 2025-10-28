@@ -19,7 +19,7 @@ public class ActualizarRutinaCasoDeUso
     public async Task<ObtenerRutinaDTO?> Ejecutar(ActualizarRutinaDTO rutinaActualizada)
     {
         var rutinaEntidad = _mapper.Map<Rutina>(rutinaActualizada);
-        var rutinaActualizadaEntidad = await _rutinaRepositorio.Actualizar(rutinaEntidad);
+        var rutinaActualizadaEntidad = await _rutinaRepositorio.ActualizarAsync(rutinaEntidad);
         if (rutinaActualizadaEntidad == null)
         {
             return null;

@@ -11,6 +11,6 @@ public class EliminarRutinaCasoDeUso
     }
     public async Task<bool> Ejecutar(long id)
     {
-        return await _rutinaRepositorio.Eliminar(id);
+        return await _rutinaRepositorio.EliminarAsync(id);
     }
 }

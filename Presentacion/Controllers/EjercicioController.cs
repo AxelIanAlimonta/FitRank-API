@@ -1,5 +1,7 @@
 ﻿using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.DTOs.EjercicioDTOs;
+using FitRank_API.Application.DTOs.EjercicioDTOs.ActualizarEjercicioDTO;
+using FitRank_API.Application.DTOs.EjercicioDTOs.AgregarEjercicioDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,10 +58,11 @@ public class EjercicioController : ControllerBase
 
     }
 
-    [HttpPut]
-    public async Task<IActionResult> ActualizarEjercicio([FromBody] EjercicioDTO ejercicio)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> ActualizarEjercicio(long id, [FromBody] ActualizarEjercicioDTO ejercicio)
     {
-        var ejercicioActualizado = await _actualizarEjercicioCasoDeUso.EjecutarAsync(ejercicio);
+        if (id != ejercicio.Id) return BadRequest("El ID no coincide.");
+        var ejercicioActualizado = await _actualizarEjercicioCasoDeUso.EjecutarAsync(id, ejercicio);
         if (ejercicioActualizado == null)
         {
             return NotFound();
@@ -77,5 +80,13 @@ public class EjercicioController : ControllerBase
         }
         return NoContent();
     }
+
+    //[HttpGet("grupo/{grupoFuncionalId}")]
+    //public async Task<IActionResult> GetEjerciciosPorGrupoFuncional(long grupoFuncionalId)
+    //{
+    //    var ejercicios = await _obtenerEjerciciosPorGrupoFuncionalCasoDeUso.EjecutarAsync(grupoFuncionalId);
+    //    return Ok(ejercicios);
+    //}
+
 
 }

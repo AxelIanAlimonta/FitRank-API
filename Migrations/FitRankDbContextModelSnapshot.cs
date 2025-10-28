@@ -127,20 +127,39 @@ namespace FitRank_API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("DuracionEstimada")
+                        .HasColumnType("integer");
+
                     b.Property<long>("GrupoMuscularId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("MaquinaId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("UrlImagen")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.Property<string>("UrlVideo")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GrupoMuscularId");
+
+                    b.HasIndex("MaquinaId");
 
                     b.ToTable("Ejercicios");
                 });
@@ -156,28 +175,17 @@ namespace FitRank_API.Migrations
                     b.Property<long>("EjercicioId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Observaciones")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Orden")
+                    b.Property<int>("NumeroEjercicio")
                         .HasColumnType("integer");
 
-                    b.Property<long>("RutinaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Sesion")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("SocioId")
+                    b.Property<long>("SesionId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EjercicioId");
 
-                    b.HasIndex("RutinaId");
-
-                    b.HasIndex("SocioId");
+                    b.HasIndex("SesionId");
 
                     b.ToTable("EjerciciosAsignados");
                 });
@@ -298,9 +306,14 @@ namespace FitRank_API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Imagen")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -615,18 +628,47 @@ namespace FitRank_API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("DificultadId")
+                    b.Property<bool>("Activa")
+                        .HasColumnType("boolean");
+
+                    b.Property<long?>("AdministradorId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("Frecuencia")
-                        .HasColumnType("integer");
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<long?>("ProfesorId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SocioId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TipoCreacion")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<long>("UsuarioId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DificultadId");
+                    b.HasIndex("AdministradorId");
+
+                    b.HasIndex("ProfesorId");
+
+                    b.HasIndex("SocioId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Rutinas");
                 });
@@ -718,6 +760,31 @@ namespace FitRank_API.Migrations
                     b.HasIndex("EjercicioRealizadoId");
 
                     b.ToTable("SeriesRealizadas");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Sesion", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("NumeroDeSesion")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("RutinaId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RutinaId");
+
+                    b.ToTable("Sesiones");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.SesionRealizadaDeEjercicios", b =>
@@ -859,7 +926,7 @@ namespace FitRank_API.Migrations
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("GimnasioId")
+                    b.Property<long?>("GimnasioId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Nivel")
@@ -910,39 +977,37 @@ namespace FitRank_API.Migrations
             modelBuilder.Entity("FitRank_API.Domain.Entities.Ejercicio", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.GrupoMuscular", "GrupoMuscular")
-                        .WithMany()
+                        .WithMany("Ejercicios")
                         .HasForeignKey("GrupoMuscularId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("FitRank_API.Domain.Entities.Maquina", "Maquina")
+                        .WithMany()
+                        .HasForeignKey("MaquinaId");
+
                     b.Navigation("GrupoMuscular");
+
+                    b.Navigation("Maquina");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.EjercicioAsignado", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Ejercicio", "Ejercicio")
-                        .WithMany()
+                        .WithMany("EjerciciosAsignados")
                         .HasForeignKey("EjercicioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FitRank_API.Domain.Entities.Rutina", "Rutina")
+                    b.HasOne("FitRank_API.Domain.Entities.Sesion", "Sesion")
                         .WithMany()
-                        .HasForeignKey("RutinaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitRank_API.Domain.Entities.Socio", "Socio")
-                        .WithMany()
-                        .HasForeignKey("SocioId")
+                        .HasForeignKey("SesionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Ejercicio");
 
-                    b.Navigation("Rutina");
-
-                    b.Navigation("Socio");
+                    b.Navigation("Sesion");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.EjercicioRealizado", b =>
@@ -1095,13 +1160,29 @@ namespace FitRank_API.Migrations
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Rutina", b =>
                 {
-                    b.HasOne("FitRank_API.Domain.Entities.Dificultad", "Dificultad")
-                        .WithMany()
-                        .HasForeignKey("DificultadId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("FitRank_API.Domain.Entities.Administrador", null)
+                        .WithMany("RutinasAsignadas")
+                        .HasForeignKey("AdministradorId");
+
+                    b.HasOne("FitRank_API.Domain.Entities.Profesor", null)
+                        .WithMany("RutinasAsignadas")
+                        .HasForeignKey("ProfesorId");
+
+                    b.HasOne("FitRank_API.Domain.Entities.Socio", "Socio")
+                        .WithMany("RutinasAsignadas")
+                        .HasForeignKey("SocioId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Dificultad");
+                    b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
+                        .WithMany("RutinasCreadas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Socio");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.RutinaEjercicio", b =>
@@ -1145,6 +1226,17 @@ namespace FitRank_API.Migrations
                     b.Navigation("EjercicioRealizado");
                 });
 
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Sesion", b =>
+                {
+                    b.HasOne("FitRank_API.Domain.Entities.Rutina", "Rutina")
+                        .WithMany("Sesiones")
+                        .HasForeignKey("RutinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rutina");
+                });
+
             modelBuilder.Entity("FitRank_API.Domain.Entities.Administrador", b =>
                 {
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", null)
@@ -1168,8 +1260,7 @@ namespace FitRank_API.Migrations
                     b.HasOne("FitRank_API.Domain.Entities.Gimnasio", "Gimnasio")
                         .WithMany("Socios")
                         .HasForeignKey("GimnasioId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("FitRank_API.Domain.Entities.Usuario", null)
                         .WithOne()
@@ -1178,6 +1269,11 @@ namespace FitRank_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Gimnasio");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Ejercicio", b =>
+                {
+                    b.Navigation("EjerciciosAsignados");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Gimnasio", b =>
@@ -1189,9 +1285,19 @@ namespace FitRank_API.Migrations
                     b.Navigation("Socios");
                 });
 
+            modelBuilder.Entity("FitRank_API.Domain.Entities.GrupoMuscular", b =>
+                {
+                    b.Navigation("Ejercicios");
+                });
+
             modelBuilder.Entity("FitRank_API.Domain.Entities.Logro", b =>
                 {
                     b.Navigation("LogrosOtorgados");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Rutina", b =>
+                {
+                    b.Navigation("Sesiones");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Usuario", b =>
@@ -1201,11 +1307,20 @@ namespace FitRank_API.Migrations
                     b.Navigation("NotificacionesEnviadas");
 
                     b.Navigation("NotificacionesRecibidas");
+
+                    b.Navigation("RutinasCreadas");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Administrador", b =>
                 {
                     b.Navigation("Gimnasio");
+
+                    b.Navigation("RutinasAsignadas");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Profesor", b =>
+                {
+                    b.Navigation("RutinasAsignadas");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
@@ -1213,6 +1328,8 @@ namespace FitRank_API.Migrations
                     b.Navigation("FotosProgreso");
 
                     b.Navigation("MedidasCorporales");
+
+                    b.Navigation("RutinasAsignadas");
                 });
 #pragma warning restore 612, 618
         }

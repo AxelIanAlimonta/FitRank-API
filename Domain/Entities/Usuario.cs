@@ -31,5 +31,9 @@
         public ICollection<Notificacion> NotificacionesEnviadas { get; set; }
         public ICollection<Notificacion> NotificacionesRecibidas { get; set; }
 
+        public ICollection<Rutina> RutinasCreadas { get; set; }
+
+        public ICollection<Rutina> RutinasAsignadas { get; set; }
+
     }
 }

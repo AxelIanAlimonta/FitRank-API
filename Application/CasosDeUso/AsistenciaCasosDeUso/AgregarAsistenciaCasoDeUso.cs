@@ -23,7 +23,6 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
 
         public async Task<AsistenciaResponseDTO> Ejecutar(AgregarAsistenciaDTO dto)
         {
-            
             var usuario = await _usuarioRepositorio.ObtenerPorIdAsync(dto.UsuarioId);
             if (usuario == null)
             {

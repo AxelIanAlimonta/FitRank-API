@@ -16,11 +16,11 @@ public class ActualizarGrupoMuscularCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<GrupoMuscularDTO?> Ejecutar(GrupoMuscularDTO grupoMuscularDTO)
+    public async Task<ObtenerGrupoMuscularDTO?> Ejecutar(ObtenerGrupoMuscularDTO grupoMuscularDTO)
     {
         var grupoMuscularEntidad = _mapper.Map<GrupoMuscular>(grupoMuscularDTO);
         var grupoMuscularActualizado = await _grupoMuscularRepositorio.ActualizarAsync(grupoMuscularEntidad);
-        return grupoMuscularActualizado == null ? null : _mapper.Map<GrupoMuscularDTO>(grupoMuscularActualizado);
+        return grupoMuscularActualizado == null ? null : _mapper.Map<ObtenerGrupoMuscularDTO>(grupoMuscularActualizado);
     }
 
 

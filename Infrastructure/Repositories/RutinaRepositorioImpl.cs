@@ -13,38 +13,47 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
         _context = context;
     }
 
-    public async Task<List<Rutina>> ObtenerTodas()
+    public async Task<List<Rutina>> ObtenerTodasAsync()
     {
-        return await _context.Rutinas.Include(r => r.Dificultad).ToListAsync();
+        return await _context.Rutinas
+                        .Include(r => r.Usuario)
+                        .Include(r => r.Socio)
+                        .ToListAsync();
     }
 
-    public async Task<Rutina?> ObtenerPorId(long id)
+    public async Task<Rutina?> ObtenerPorIdAsync(long id)
     {
-        return await _context.Rutinas.Include(r => r.Dificultad).FirstOrDefaultAsync(r => r.Id == id);
+        return await _context.Rutinas
+                      .Include(r => r.Usuario)
+                      .Include(r => r.Socio)
+                      .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task<Rutina> Agregar(Rutina rutina)
+    public async Task<Rutina> AgregarAsync(Rutina rutina)
     {
         _context.Rutinas.Add(rutina);
         await _context.SaveChangesAsync();
         return rutina;
     }
 
-    public async Task<Rutina?> Actualizar(Rutina rutina)
+    public async Task<Rutina?> ActualizarAsync(Rutina rutina)
     {
         var rutinaExistente = await _context.Rutinas.FindAsync(rutina.Id);
         if (rutinaExistente == null)
         {
             return null;
         }
-        rutinaExistente.Nombre = rutina.Nombre;
-        rutinaExistente.Frecuencia = rutina.Frecuencia;
-        rutinaExistente.DificultadId = rutina.DificultadId;
+        rutinaExistente.Nombre = rutina.Nombre ?? rutinaExistente.Nombre;
+        rutinaExistente.TipoCreacion = rutina.TipoCreacion ?? rutinaExistente.TipoCreacion;
+        rutinaExistente.Descripcion = rutina.Descripcion ?? rutinaExistente.Descripcion;
+        rutinaExistente.Activa = rutina.Activa;
+        rutinaExistente.SocioId = rutina.SocioId;
+
         await _context.SaveChangesAsync();
         return rutinaExistente;
     }
 
-    public async Task<bool> Eliminar(long id)
+    public async Task<bool> EliminarAsync(long id)
     {
         var rutinaExistente = await _context.Rutinas.FindAsync(id);
         if (rutinaExistente == null)

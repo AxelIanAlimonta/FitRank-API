@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.GrupoMuscularDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
@@ -16,11 +17,11 @@ public class AgregarGrupoMuscularCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<GrupoMuscularDTO> Ejecutar(AgregarGrupoMuscularDTO agregarGrupoMuscularDTO)
+    public async Task<ObtenerGrupoMuscularDTO> Ejecutar(AgregarGrupoMuscularDTO agregarGrupoMuscularDTO)
     {
         var grupoMuscularEntidad = _mapper.Map<GrupoMuscular>(agregarGrupoMuscularDTO);
         var grupoMuscularCreado = await _grupoMuscularRepositorio.AgregarAsync(grupoMuscularEntidad);
-        return _mapper.Map<GrupoMuscularDTO>(grupoMuscularCreado);
+        return _mapper.Map<ObtenerGrupoMuscularDTO>(grupoMuscularCreado);
     }
 
 
