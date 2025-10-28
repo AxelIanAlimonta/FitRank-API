@@ -12,5 +12,4 @@ public class EjercicioAsignadoProfile : Profile
         CreateMap<EjercicioAsignado, AgregarEjercicioAsignadoDTO>().ReverseMap();
         CreateMap<EjercicioAsignado, ActualizarEjercicioAsignadoDTO>().ReverseMap();
     }
-
 }

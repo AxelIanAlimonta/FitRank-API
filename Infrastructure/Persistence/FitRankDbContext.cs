@@ -115,15 +115,24 @@ public class FitRankDbContext : DbContext
             .HasForeignKey(i => i.UsuarioId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Rutina → Usuario creador
         modelBuilder.Entity<Rutina>()
             .HasOne(r => r.Usuario)
-            .WithMany(s => s.RutinasAsignadas)
+            .WithMany(u => u.RutinasCreadas) // colección en Usuario que representa rutinas creadas
             .HasForeignKey(r => r.UsuarioId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Rutina → Socio asignado
+        modelBuilder.Entity<Rutina>()
+            .HasOne(r => r.Socio)
+            .WithMany(s => s.RutinasAsignadas) // colección en Socio que representa rutinas asignadas
+            .HasForeignKey(r => r.SocioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Sesiones → Rutina
         modelBuilder.Entity<Sesion>()
             .HasOne(s => s.Rutina)
-            .WithMany(r => r.Sesiones)
+            .WithMany(r => r.Sesiones) // colección en Rutina de todas sus sesiones
             .HasForeignKey(s => s.RutinaId)
             .OnDelete(DeleteBehavior.Cascade);
 

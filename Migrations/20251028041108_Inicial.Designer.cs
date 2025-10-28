@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    [Migration("20251028022335_Inicial")]
+    [Migration("20251028041108_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -178,28 +178,17 @@ namespace FitRank_API.Migrations
                     b.Property<long>("EjercicioId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Observaciones")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Orden")
+                    b.Property<int>("NumeroEjercicio")
                         .HasColumnType("integer");
 
-                    b.Property<long>("RutinaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Sesion")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("SocioId")
+                    b.Property<long>("SesionId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EjercicioId");
 
-                    b.HasIndex("RutinaId");
-
-                    b.HasIndex("SocioId");
+                    b.HasIndex("SesionId");
 
                     b.ToTable("EjerciciosAsignados");
                 });
@@ -645,6 +634,9 @@ namespace FitRank_API.Migrations
                     b.Property<bool>("Activa")
                         .HasColumnType("boolean");
 
+                    b.Property<long?>("AdministradorId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Descripcion")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -657,6 +649,9 @@ namespace FitRank_API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<long?>("ProfesorId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("SocioId")
                         .HasColumnType("bigint");
 
@@ -668,16 +663,15 @@ namespace FitRank_API.Migrations
                     b.Property<long>("UsuarioId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("UsuarioId1")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("AdministradorId");
+
+                    b.HasIndex("ProfesorId");
 
                     b.HasIndex("SocioId");
 
                     b.HasIndex("UsuarioId");
-
-                    b.HasIndex("UsuarioId1");
 
                     b.ToTable("Rutinas");
                 });
@@ -1008,23 +1002,15 @@ namespace FitRank_API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FitRank_API.Domain.Entities.Rutina", "Rutina")
+                    b.HasOne("FitRank_API.Domain.Entities.Sesion", "Sesion")
                         .WithMany()
-                        .HasForeignKey("RutinaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitRank_API.Domain.Entities.Socio", "Socio")
-                        .WithMany()
-                        .HasForeignKey("SocioId")
+                        .HasForeignKey("SesionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Ejercicio");
 
-                    b.Navigation("Rutina");
-
-                    b.Navigation("Socio");
+                    b.Navigation("Sesion");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.EjercicioRealizado", b =>
@@ -1177,21 +1163,25 @@ namespace FitRank_API.Migrations
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Rutina", b =>
                 {
-                    b.HasOne("FitRank_API.Domain.Entities.Socio", "Socio")
-                        .WithMany()
-                        .HasForeignKey("SocioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
+                    b.HasOne("FitRank_API.Domain.Entities.Administrador", null)
                         .WithMany("RutinasAsignadas")
-                        .HasForeignKey("UsuarioId")
+                        .HasForeignKey("AdministradorId");
+
+                    b.HasOne("FitRank_API.Domain.Entities.Profesor", null)
+                        .WithMany("RutinasAsignadas")
+                        .HasForeignKey("ProfesorId");
+
+                    b.HasOne("FitRank_API.Domain.Entities.Socio", "Socio")
+                        .WithMany("RutinasAsignadas")
+                        .HasForeignKey("SocioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("FitRank_API.Domain.Entities.Usuario", null)
+                    b.HasOne("FitRank_API.Domain.Entities.Usuario", "Usuario")
                         .WithMany("RutinasCreadas")
-                        .HasForeignKey("UsuarioId1");
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Socio");
 
@@ -1321,14 +1311,19 @@ namespace FitRank_API.Migrations
 
                     b.Navigation("NotificacionesRecibidas");
 
-                    b.Navigation("RutinasAsignadas");
-
                     b.Navigation("RutinasCreadas");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Administrador", b =>
                 {
                     b.Navigation("Gimnasio");
+
+                    b.Navigation("RutinasAsignadas");
+                });
+
+            modelBuilder.Entity("FitRank_API.Domain.Entities.Profesor", b =>
+                {
+                    b.Navigation("RutinasAsignadas");
                 });
 
             modelBuilder.Entity("FitRank_API.Domain.Entities.Socio", b =>
@@ -1336,6 +1331,8 @@ namespace FitRank_API.Migrations
                     b.Navigation("FotosProgreso");
 
                     b.Navigation("MedidasCorporales");
+
+                    b.Navigation("RutinasAsignadas");
                 });
 #pragma warning restore 612, 618
         }
