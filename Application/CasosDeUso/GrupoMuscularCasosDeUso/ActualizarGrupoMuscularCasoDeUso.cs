@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.GrupoMuscularDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
@@ -16,7 +17,7 @@ public class ActualizarGrupoMuscularCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerGrupoMuscularDTO?> Ejecutar(ObtenerGrupoMuscularDTO grupoMuscularDTO)
+    public virtual async Task<ObtenerGrupoMuscularDTO?> Ejecutar(ActualizarGrupoMuscularDTO grupoMuscularDTO)
     {
         var grupoMuscularEntidad = _mapper.Map<GrupoMuscular>(grupoMuscularDTO);
         var grupoMuscularActualizado = await _grupoMuscularRepositorio.ActualizarAsync(grupoMuscularEntidad);

@@ -17,7 +17,7 @@ public class AgregarGrupoMuscularCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerGrupoMuscularDTO> Ejecutar(AgregarGrupoMuscularDTO agregarGrupoMuscularDTO)
+    public virtual async Task<ObtenerGrupoMuscularDTO> Ejecutar(AgregarGrupoMuscularDTO agregarGrupoMuscularDTO)
     {
         var grupoMuscularEntidad = _mapper.Map<GrupoMuscular>(agregarGrupoMuscularDTO);
         var grupoMuscularCreado = await _grupoMuscularRepositorio.AgregarAsync(grupoMuscularEntidad);
