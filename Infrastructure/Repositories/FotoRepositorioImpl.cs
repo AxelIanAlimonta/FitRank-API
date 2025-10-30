@@ -28,14 +28,17 @@ namespace FitRank_API.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task EliminarAsync(long id)
+        public async Task<bool> EliminarAsync(long id)
         {
             var foto = await _context.Fotos.FindAsync(id);
-            if (foto != null)
+            if (foto == null)
             {
-                _context.Fotos.Remove(foto);
-                await _context.SaveChangesAsync();
+                return false;
             }
+            _context.Fotos.Remove(foto);
+            await _context.SaveChangesAsync();
+            return true;
+
         }
     }
 }
