@@ -57,5 +57,7 @@ namespace FitRank_API.Infrastructure.Repositories
             _context.Notificaciones.Update(notificacion);
             await _context.SaveChangesAsync();
         }
+
+        
     }
 }
