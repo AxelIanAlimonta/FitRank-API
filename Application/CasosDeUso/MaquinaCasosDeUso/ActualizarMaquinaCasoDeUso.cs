@@ -15,9 +15,14 @@ namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
         }
         public async Task<ObtenerMaquinaDTO?> Ejecutar(long id, ActualizarMaquinaDTO dto)
         {
-            var maquinaActualizada = await _maquinaRepositorio.ActualizarMaquina(id, dto);
-            if (maquinaActualizada is null) return null;
+            var maquinaExistente = await _maquinaRepositorio.ObtenerMaquinaPorId(id);
+            if (maquinaExistente == null)
+            {
+                return null;
+            }
 
+            _mapper.Map(dto, maquinaExistente);
+            var maquinaActualizada = await _maquinaRepositorio.ActualizarMaquina(maquinaExistente);
             return _mapper.Map<ObtenerMaquinaDTO>(maquinaActualizada);
         }
     }
