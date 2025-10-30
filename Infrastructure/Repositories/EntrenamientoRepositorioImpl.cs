@@ -45,10 +45,11 @@ namespace FitRank_API.Infrastructure.Repositories
             return entrenamiento;
         }
 
-        public async Task ActualizarAsync(Entrenamiento entrenamiento)
+        public async Task<Entrenamiento?> ActualizarAsync(Entrenamiento entrenamiento)
         {
             _context.Entrenamientos.Update(entrenamiento);
             await _context.SaveChangesAsync();
+            return entrenamiento;
         }
 
         public async Task EliminarAsync(long id)
