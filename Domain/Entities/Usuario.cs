@@ -19,7 +19,7 @@
 
         public DateTime FechaNacimiento { get; set; }
 
-        public string FotoDePerfil { get; set; } = string.Empty;
+        public string? FotoDePerfil { get; set; } = string.Empty;
 
         public string? Estado { get; set; }
         public string Email { get; set; }
