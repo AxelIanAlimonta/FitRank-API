@@ -8,12 +8,11 @@ namespace FitRank_API.Infrastructure.Interfaces
     {
         Task<Asistencia> AgregarAsync(Asistencia asistencia);
         Task<List<Asistencia>> ObtenerPorGimnasioYRangoAsync(long gimnasioId, DateTime? desde = null, DateTime? hasta = null);
-
         Task<Asistencia?> ObtenerPorIdAsync(long id);
-        Task ActualizarAsync(Asistencia asistencia);
+        Task<Asistencia?> ActualizarAsync(Asistencia asistencia);
         Task<IEnumerable<Asistencia>> ObtenerTodasAsync();
         Task<List<Asistencia>> ObtenerPorUsuarioAsync(long usuarioId);
+        Task<bool> EliminarAsync(long Id);
 
-       
     }
 }
