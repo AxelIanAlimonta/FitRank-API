@@ -1,0 +1,61 @@
+[
+  {
+    "WorkflowName": "Salud",
+    "Rules": [
+      {
+        "RuleName": "HipertensionNoControlada",
+        "SuccessEvent": "PRECAUCION_HIPERTENSION_ESTRICTA",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.Hipertension && !input.Screening.HipertensionControlada"
+      },
+      {
+        "RuleName": "HipertensionControlada",
+        "SuccessEvent": "PRECAUCION_HIPERTENSION",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.Hipertension && input.Screening.HipertensionControlada"
+      },
+      {
+        "RuleName": "Diabetes",
+        "SuccessEvent": "PRECAUCION_DIABETES",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.Diabetes"
+      },
+      {
+        "RuleName": "DolorHombro",
+        "SuccessEvent": "EVITAR_SOBRECARGA_HOMBRO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.DolorHombro"
+      },
+      {
+        "RuleName": "DolorRodilla",
+        "SuccessEvent": "EVITAR_SOBRECARGA_RODILLA",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.DolorRodilla"
+      },
+      {
+        "RuleName": "DolorLumbar",
+        "SuccessEvent": "EVITAR_SOBRECARGA_LUMBAR",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.DolorLumbar"
+      },
+      {
+        "RuleName": "DerivarPorSincopeDolorToracicoOCirugiaReciente",
+        "SuccessEvent": "DERIVAR_PROFESIONAL",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.Sincope || input.Screening.DolorToracico || input.Screening.CirugiaReciente"
+      },
+      {
+        "RuleName": "Embarazo",
+        "SuccessEvent": "PRECAUCION_EMBARAZO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.Embarazo"
+      },
+      {
+        "RuleName": "DolorElevado",
+        "SuccessEvent": "PRECAUCION_DOLOR_ELEVADO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Screening.DolorEscala0a10 >=6"
+      }
+    ]]
+  }
+]
