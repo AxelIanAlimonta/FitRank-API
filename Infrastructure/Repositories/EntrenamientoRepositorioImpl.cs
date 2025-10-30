@@ -47,9 +47,18 @@ namespace FitRank_API.Infrastructure.Repositories
 
         public async Task<Entrenamiento?> ActualizarAsync(Entrenamiento entrenamiento)
         {
-            _context.Entrenamientos.Update(entrenamiento);
+            var entrenamientoExistente = await _context.Entrenamientos.FindAsync(entrenamiento.Id);
+            if (entrenamientoExistente == null)
+            {
+                return null;
+            }
+
+            entrenamientoExistente.Fecha = entrenamiento.Fecha;
+            entrenamientoExistente.Duracion = entrenamiento.Duracion;
+            entrenamientoExistente.SocioId = entrenamiento.SocioId;
+
             await _context.SaveChangesAsync();
-            return entrenamiento;
+            return entrenamientoExistente;
         }
 
         public async Task EliminarAsync(long id)
