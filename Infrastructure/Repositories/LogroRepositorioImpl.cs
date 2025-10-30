@@ -31,20 +31,24 @@ public class LogroRepositorioImpl : ILogroRepositorio
         return logro;
     }
 
-    public async Task<Logro?> ActualizarLogro(long id, ActualizarLogroDTO dto)
+    public async Task<Logro?> ActualizarLogro(Logro logro)
     {
-        var logroExistente = await _context.Logros.FirstOrDefaultAsync(x => x.Id == id);
-        if (logroExistente is null)
+        var logroExistente = await _context.Logros.FindAsync(logro.Id);
+        if (logroExistente == null)
+        {
             return null;
+        }
 
-        if (!string.IsNullOrWhiteSpace(dto.Nombre)) logroExistente.Nombre = dto.Nombre;
-        if (!string.IsNullOrWhiteSpace(dto.Descripcion)) logroExistente.Descripcion = dto.Descripcion;
-        if (!string.IsNullOrWhiteSpace(dto.Categoria)) logroExistente.Categoria = dto.Categoria;
-        if (!string.IsNullOrWhiteSpace(dto.Imagen)) logroExistente.Imagen = dto.Imagen;
-        if (dto.Puntos.HasValue) logroExistente.Puntos = dto.Puntos.Value;
+        logroExistente.Nombre = logro.Nombre;
+        logroExistente.Descripcion = logro.Descripcion;
+        logroExistente.NombreClave = logro.NombreClave;
+        logroExistente.Imagen = logro.Imagen;
+        logroExistente.Categoria = logro.Categoria;
+        logroExistente.Puntos = logro.Puntos;
 
         await _context.SaveChangesAsync();
         return logroExistente;
+        
     }
 
 
