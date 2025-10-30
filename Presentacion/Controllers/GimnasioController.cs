@@ -55,7 +55,7 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Actualizar(long id, [FromBody] ActualizarGimnasioDTO actualizarGimnasioDTO)
         {
-            var gimnasioActualizado = await _actualizarGimnasioCasoDeUso.Ejecutar(id, actualizarGimnasioDTO);
+            var gimnasioActualizado = await _actualizarGimnasioCasoDeUso.Ejecutar(actualizarGimnasioDTO);
             if (gimnasioActualizado == null)
             {
                 return NotFound();
