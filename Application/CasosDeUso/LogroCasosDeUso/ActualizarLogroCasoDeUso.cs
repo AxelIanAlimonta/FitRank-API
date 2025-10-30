@@ -17,7 +17,14 @@ public class ActualizarLogroCasoDeUso
 
     public async Task<ObtenerLogroDTO?> Ejecutar(long id, ActualizarLogroDTO dto)
     {
-        var logroActualizado = await _logroRepositorio.ActualizarLogro(id, dto);
+        var logroExistente = await _logroRepositorio.ObtenerLogroPorId(id);
+        if (logroExistente == null)
+        {
+            return null;
+        }
+
+        _mapper.Map(dto, logroExistente);
+        var logroActualizado = await _logroRepositorio.ActualizarLogro(logroExistente);
         if (logroActualizado is null) return null;
 
         return _mapper.Map<ObtenerLogroDTO>(logroActualizado);
