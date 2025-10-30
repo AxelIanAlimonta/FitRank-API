@@ -48,10 +48,24 @@ namespace FitRank_API.Infrastructure.Repositories
             return actividad;
         }
 
-        public async Task ActualizarAsync(Actividad actividad)
+        public async Task<Actividad?> ActualizarAsync(Actividad actividad)
         {
-            _context.Actividades.Update(actividad);
+            var actividadExistente = await _context.Actividades.FindAsync(actividad.Id);
+            if (actividadExistente == null)
+            {
+                return null;
+            }
+
+            actividadExistente.Repeticiones = actividad.Repeticiones;
+            actividadExistente.Peso = actividad.Peso;
+            actividadExistente.Punto = actividad.Punto;
+            actividadExistente.SerieId = actividad.SerieId;
+            actividadExistente.EjercicioAsignadoId = actividad.EjercicioAsignadoId;
+            actividadExistente.EntrenamientoId = actividad.EntrenamientoId;
+
             await _context.SaveChangesAsync();
+            return actividadExistente;
+
         }
 
         public async Task EliminarAsync(long id)
