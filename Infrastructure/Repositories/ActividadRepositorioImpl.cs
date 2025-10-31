@@ -68,14 +68,18 @@ namespace FitRank_API.Infrastructure.Repositories
 
         }
 
-        public async Task EliminarAsync(long id)
+        public async Task<bool> EliminarAsync(long id)
         {
-            var act = await _context.Actividades.FindAsync(id);
-            if (act != null)
+            var actividadExistente = await _context.Actividades.FindAsync(id);
+            if (actividadExistente == null)
             {
-                _context.Actividades.Remove(act);
-                await _context.SaveChangesAsync();
+                return false;
             }
+
+            _context.Actividades.Remove(actividadExistente);
+            await _context.SaveChangesAsync();
+            return true;
+
         }
     }
 }

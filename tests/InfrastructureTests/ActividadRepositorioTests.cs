@@ -230,12 +230,12 @@ public class ActividadRepositorioTests
         resultado.Should().BeNull();
     }
 
-    //eliminar actividad
+    //eliminar actividad exitosa
     [Fact]
-    public async Task EliminarActividad_DeberiaEliminarCorrectamente()
+    public async Task EliminarActividad_Exitosa_DeberiaEliminarCorrectamente()
     {
         // Arrange
-        var options = CreateInMemoryOptions("EliminarActividadDb");
+        var options = CreateInMemoryOptions("EliminarActividad_Exitosa_Db");
         using var context = new FitRankDbContext(options);
         var (serie, ejercicioAsignado, entrenamiento) = await SeedData(context);
 
@@ -251,10 +251,28 @@ public class ActividadRepositorioTests
         var actividadRepositorio = new ActividadRepositorioImpl(context);
 
         // Act
-        await actividadRepositorio.EliminarAsync(actividad.Id);
+        var resultado = await actividadRepositorio.EliminarAsync(actividad.Id);
 
         // Assert
+        resultado.Should().BeTrue();
         var actividadEliminada = await context.Actividades.FindAsync(actividad.Id);
         actividadEliminada.Should().BeNull();
+    }
+
+    //eliminar actividad no existente
+    [Fact]
+    public async Task EliminarActividad_NoExistente_DeberiaRetornarFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarActividad_NoExistente_Db");
+        using var context = new FitRankDbContext(options);
+
+        var actividadRepositorio = new ActividadRepositorioImpl(context);
+
+        // Act
+        var resultado = await actividadRepositorio.EliminarAsync(999);
+
+        // Assert
+        resultado.Should().BeFalse();
     }
 }
