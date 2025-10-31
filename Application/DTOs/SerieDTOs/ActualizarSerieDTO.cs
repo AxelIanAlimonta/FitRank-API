@@ -7,5 +7,6 @@
         public DateTime? Duracion { get; set; }
         public int? Repeticiones { get; set; }
         public double? Peso { get; set; }
+        public long EjercicioAsignadoId { get; set; }
     }
 }

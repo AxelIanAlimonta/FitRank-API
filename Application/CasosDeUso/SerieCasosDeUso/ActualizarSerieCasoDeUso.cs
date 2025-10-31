@@ -16,14 +16,19 @@ namespace FitRank_API.Application.CasosDeUso.SerieCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task Ejecutar(ActualizarSerieDTO dto)
+        public async Task<ObtenerSerieDTO?> Ejecutar(ActualizarSerieDTO dto)
         {
-            var serie = await _repo.ObtenerPorIdAsync(dto.Id);
-            if (serie == null)
-                throw new Exception("Serie no encontrada.");
+            var serieExistente = await _repo.ObtenerPorIdAsync(dto.Id);
+            if (serieExistente == null)
+            {
+                return null;
+            }
 
-            _mapper.Map(dto, serie);
-            await _repo.ActualizarAsync(serie);
+            _mapper.Map(dto, serieExistente);
+
+            var serieActualizada = await _repo.ActualizarAsync(serieExistente);
+
+            return _mapper.Map<ObtenerSerieDTO>(serieActualizada);
         }
     }
 }

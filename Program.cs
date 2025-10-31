@@ -44,7 +44,7 @@ using FitRank_API.Application.DTOs.GimnasioDTOs;
 using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso;
 using FitRank_API.Application.DTOs.NotificacionDTOs;
-using FitRank_API.Application.UseCases.Serie;
+using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using FitRank_API.Application.UseCases.Actividad;
 using FitRank_API.Application.UseCases.Entrenamiento;
 
