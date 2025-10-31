@@ -2,8 +2,8 @@
 {
     public class AgregarEntrenamientoDTO
     {
-        public DateTime Fecha { get; set; } = DateTime.UtcNow;
-        public DateTime Duracion { get; set; }
+        public DateTime? Fecha { get; set; }
+        public DateTime? Duracion { get; set; }
         public long SocioId { get; set; }
     }
 }
