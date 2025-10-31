@@ -1,0 +1,17 @@
+{
+    "dotnet.defaultSolution": "FitRank.sln",
+    "dotnetAcquisitionExtension.enableTelemetry": false,
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+    "dotnet.server.useOmnisharp": false,
+    "dotnet.unitTests.runSettingsPath": "",
+    "testExplorer.useNativeTesting": true,
+    "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
+    "dotnet-test-explorer.autoWatch": false,
+    "dotnet-test-explorer.enableTelemetry": false,
+    "dotnet.testing.runSettingsPath": "",
+    "csharp.semanticHighlighting.enabled": true,
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true
+    }
+}
