@@ -54,12 +54,18 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarMaquinaDTO actualizarLogroDTO)
         {
-            var logroActualizado = await _actualizarMaquinaCasoDeUso.Ejecutar(id, actualizarLogroDTO);
-            if (logroActualizado == null)
+            if (id != actualizarLogroDTO.Id)
+            {
+                return BadRequest("El ID de la ruta no coincide con el ID del cuerpo de la solicitud.");
+            }
+
+            var maquinaActualizada = await _actualizarMaquinaCasoDeUso.Ejecutar(actualizarLogroDTO);
+            if (maquinaActualizada == null)
             {
                 return NotFound();
             }
-            return Ok(logroActualizado);
+            return Ok(maquinaActualizada);
+
         }
 
         [HttpDelete("{id}")]
