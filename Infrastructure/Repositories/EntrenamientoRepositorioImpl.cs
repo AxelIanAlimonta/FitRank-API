@@ -61,14 +61,18 @@ namespace FitRank_API.Infrastructure.Repositories
             return entrenamientoExistente;
         }
 
-        public async Task EliminarAsync(long id)
+        public async Task<bool> EliminarAsync(long id)
         {
-            var ent = await _context.Entrenamientos.FindAsync(id);
-            if (ent != null)
+            var entrenamiento = await _context.Entrenamientos.FindAsync(id);
+            if (entrenamiento == null)
             {
-                _context.Entrenamientos.Remove(ent);
-                await _context.SaveChangesAsync();
+                return false;
             }
+
+            _context.Entrenamientos.Remove(entrenamiento);
+            await _context.SaveChangesAsync();
+            return true;
+
         }
     }
 }

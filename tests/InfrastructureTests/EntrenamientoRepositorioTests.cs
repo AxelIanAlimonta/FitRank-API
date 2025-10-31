@@ -219,10 +219,10 @@ public class EntrenamientoRepositorioTests
 
     //eliminar entrenamiento deberia eliminar correctamente
     [Fact]
-    public async Task EliminarEntrenamiento_DebeEliminarCorrectamente()
+    public async Task EliminarEntrenamiento_DebeEliminarYDevolverTrue()
     {
         // Arrange
-        var options = CreateInMemoryOptions("EliminarEntrenamiento_DebeEliminarCorrectamente");
+        var options = CreateInMemoryOptions("EliminarEntrenamiento_DebeEliminarYDevolverTrue");
         using var context = new FitRankDbContext(options);
         var repositorio = new EntrenamientoRepositorioImpl(context);
         var socio = await SeedData(context);
@@ -238,10 +238,28 @@ public class EntrenamientoRepositorioTests
         await context.SaveChangesAsync();
 
         // Act
-        await repositorio.EliminarAsync(entrenamiento.Id);
+        var resultado = await repositorio.EliminarAsync(entrenamiento.Id);
         var entrenamientoEliminado = await repositorio.ObtenerPorIdAsync(entrenamiento.Id);
 
         // Assert con fluent assertions
+        resultado.Should().BeTrue();
         entrenamientoEliminado.Should().BeNull();
+
+    }
+
+    //eliminar entrenamiento no existente deberia devolver false
+    [Fact]
+    public async Task EliminarEntrenamiento_NoExistente_DebeDevolverFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarEntrenamiento_NoExistente_DebeDevolverFalse");
+        using var context = new FitRankDbContext(options);
+        var repositorio = new EntrenamientoRepositorioImpl(context);
+
+        // Act
+        var resultado = await repositorio.EliminarAsync(999);
+
+        // Assert con fluent assertions
+        resultado.Should().BeFalse();
     }
 }
