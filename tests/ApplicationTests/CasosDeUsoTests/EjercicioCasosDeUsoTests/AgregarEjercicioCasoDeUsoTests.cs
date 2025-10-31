@@ -3,12 +3,10 @@ using FitRank_API.Infrastructure.Interfaces;
 using Moq;
 using AutoMapper;
 using Xunit;
-using FitRank_API.Application.DTOs;
-using FitRank_API.Domain.Entities;
 using FluentAssertions;
-using FitRank_API.Application.DTOs.EjercicioDTOs.ActualizarEjercicioDTO;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.DTOs.EjercicioDTOs.AgregarEjercicioDTO;
+using FitRank_API.Domain.Entities;
 
 namespace ApplicationTests.CasosDeUsoTests.EjercicioCasosDeUsoTests;
 
