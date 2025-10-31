@@ -1,0 +1,44 @@
+name: CI - Build & Test Backend
+
+on:
+  push:
+    branches:
+      - main
+      - 'dev-*'
+  pull_request:
+    branches:
+      - main
+      - 'dev-*'
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  SOLUTION_FILE: 'FitRank.sln'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build and Test
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restaurar dependencias
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+      - name: Build API
+        run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
+
+      - name: Build Tests
+        run: dotnet build FitRank-API.Tests/FitRank-API.Tests.csproj --no-restore --configuration Release
+
+      - name: Ejecutar Tests
+        run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+
+      - name: Verificar Build de API standalone
+        run: dotnet build FitRank-API/FitRank-API.csproj --configuration Release

@@ -8625,11 +8625,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\FitRank-API.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\FitRank-API.Tests.csproj",
       "projectName": "FitRank-API.Tests",
-      "projectPath": "c:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\FitRank-API.Tests.csproj",
+      "projectPath": "C:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\FitRank-API.Tests.csproj",
       "packagesPath": "C:\\Users\\axela\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\obj\\",
+      "outputPath": "C:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -8650,8 +8650,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "c:\\Users\\axela\\Desktop\\fitrank\\FitRank-API\\FitRank-API.csproj": {
-              "projectPath": "c:\\Users\\axela\\Desktop\\fitrank\\FitRank-API\\FitRank-API.csproj"
+            "C:\\Users\\axela\\Desktop\\fitrank\\FitRank-API\\FitRank-API.csproj": {
+              "projectPath": "C:\\Users\\axela\\Desktop\\fitrank\\FitRank-API\\FitRank-API.csproj"
             }
           }
         }

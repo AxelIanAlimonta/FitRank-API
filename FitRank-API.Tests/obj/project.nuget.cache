@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OhYgQtWX4UQ=",
+  "dgSpecHash": "2umRGh2Dom4=",
   "success": true,
-  "projectFilePath": "c:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\FitRank-API.Tests.csproj",
+  "projectFilePath": "C:\\Users\\axela\\Desktop\\fitrank\\FitRank-API.Tests\\FitRank-API.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\axela\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\axela\\.nuget\\packages\\bcrypt.net-core\\1.6.0\\bcrypt.net-core.1.6.0.nupkg.sha512",
