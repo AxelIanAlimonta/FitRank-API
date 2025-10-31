@@ -2,17 +2,14 @@
 using FitRank_API.Application.DTOs.MedidaCorporalDTOs;
 using FitRank_API.Domain.Entities;
 
-namespace FitRank_API.Application.Mappings
+namespace FitRank_API.Application.Mappings;
+
+public class MedidaCorporalProfile : Profile
 {
-    public class MedidaCorporalProfile : Profile
+    public MedidaCorporalProfile()
     {
-        public MedidaCorporalProfile()
-        {
-            CreateMap<AgregarMedidaCorporalDTO, MedidaCorporal>();
-            CreateMap<ActualizarMedidaCorporalDTO, MedidaCorporal>();
-            CreateMap<MedidaCorporal, ObtenerMedidaCorporalDTO>()
-                .ForMember(dest => dest.NombreSocio, opt => opt.MapFrom(src => src.Socio.Nombre));
-                
-        }
+        CreateMap<AgregarMedidaCorporalDTO, MedidaCorporal>().ReverseMap();
+        CreateMap<ActualizarMedidaCorporalDTO, MedidaCorporal>().ReverseMap();
+        CreateMap<MedidaCorporal, ObtenerMedidaCorporalDTO>().ReverseMap();
     }
 }

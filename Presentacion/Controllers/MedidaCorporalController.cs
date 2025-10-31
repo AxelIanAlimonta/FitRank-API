@@ -30,21 +30,21 @@ namespace FitRank_API.Presentacion.Controllers
             _eliminarCasoDeUso = eliminarCasoDeUso;
         }
 
-       
+
         [HttpPost("agregar")]
         public async Task<IActionResult> Agregar([FromBody] AgregarMedidaCorporalDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-           
+
             var socioId = long.Parse(User.FindFirst("id")!.Value);
 
-            var result = await _agregarCasoDeUso.Ejecutar(socioId, dto);
+            var result = await _agregarCasoDeUso.Ejecutar(dto);
             return Ok(result);
         }
 
-       
+
         [HttpPut("actualizar")]
         public async Task<IActionResult> Actualizar([FromBody] ActualizarMedidaCorporalDTO dto)
         {
@@ -53,19 +53,19 @@ namespace FitRank_API.Presentacion.Controllers
 
             var socioId = long.Parse(User.FindFirst("id")!.Value);
 
-            var result = await _actualizarCasoDeUso.Ejecutar(socioId, dto);
+            var result = await _actualizarCasoDeUso.Ejecutar(dto);
             if (result == null)
                 return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
 
             return Ok(result);
         }
 
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(long id)
         {
             var socioId = long.Parse(User.FindFirst("id")!.Value);
-            var result = await _obtenerPorIdCasoDeUso.Ejecutar(socioId, id);
+            var result = await _obtenerPorIdCasoDeUso.Ejecutar(id);
 
             if (result == null)
                 return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
@@ -89,14 +89,14 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(result);
         }
 
-       
+
         [HttpDelete("eliminar/{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
             var socioId = long.Parse(User.FindFirst("id")!.Value);
             var rol = User.FindFirst("rol")?.Value;
 
-            var eliminado = await _eliminarCasoDeUso.Ejecutar(socioId, rol, id);
+            var eliminado = await _eliminarCasoDeUso.Ejecutar(id);
             if (!eliminado)
                 return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
 

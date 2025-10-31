@@ -117,7 +117,7 @@ public class MedidaCorporalRepositorioTests
         await context.SaveChangesAsync();
 
         // Act
-        var resultado = await MedidaCorporalRepositorioMock.EliminarAsync(medidaCorporal);
+        var resultado = await MedidaCorporalRepositorioMock.EliminarAsync(medidaCorporal.Id);
 
         // FluentAssert
         Assert.True(resultado);
@@ -134,21 +134,12 @@ public class MedidaCorporalRepositorioTests
         using var context = new FitRankDbContext(options);
         var MedidaCorporalRepositorioMock = new MedidaCorporalRepositorioImpl(context);
 
-        var medidaCorporalInexistente = new MedidaCorporal
-        {
-            Id = 999,
-            Fecha = DateTime.UtcNow,
-            CaderaCm = 90.0,
-            PechoCm = 100.0,
-            PesoKg = 75.5,
-            SocioId = 1
-        };
-
         // Act
-        var resultado = await MedidaCorporalRepositorioMock.EliminarAsync(medidaCorporalInexistente);
+        var resultado = await MedidaCorporalRepositorioMock.EliminarAsync(999); // ID inexistente
 
         // FluentAssert
         Assert.False(resultado);
+
     }
 
 }

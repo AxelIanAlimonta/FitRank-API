@@ -11,18 +11,9 @@ namespace FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso
             _repo = repo;
         }
 
-        public async Task<bool> Ejecutar(long socioId, string rol, long id)
+        public async Task<bool> Ejecutar(long id)
         {
-            var medida = await _repo.ObtenerPorIdAsync(id);
-            if (medida == null)
-                return false;
-
-            
-            if (rol == "Socio" && medida.SocioId != socioId)
-                throw new UnauthorizedAccessException("No estás autorizado para eliminar esta medición.");
-
-            await _repo.EliminarAsync(medida);
-            return true;
+            return await _repo.EliminarAsync(id);
         }
     }
 }
