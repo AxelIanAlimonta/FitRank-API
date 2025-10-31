@@ -36,7 +36,7 @@ namespace FitRank_API.Infrastructure.Repositories
             return nuevaJornada;
         }
 
-        public async Task<Jornada> ActualizarJornadaAsync(Jornada jornadaActualizada)
+        public async Task<Jornada?> ActualizarJornadaAsync(Jornada jornadaActualizada)
         {
             var jornadaExistente = await _context.Jornadas.FindAsync(jornadaActualizada.Id);
             if (jornadaExistente == null)
