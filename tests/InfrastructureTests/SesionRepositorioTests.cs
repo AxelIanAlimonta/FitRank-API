@@ -218,7 +218,7 @@ public class SesionRepositorioTests
 
         // Act
         sesion.Nombre = "Sesión Actualizada";
-        await repositorioMock.ActualizarAsync(sesion.Id, sesion);
+        await repositorioMock.ActualizarAsync(sesion);
 
         // Assert
         var sesionActualizada = await context.Sesiones.FindAsync(sesion.Id);
@@ -243,7 +243,7 @@ public class SesionRepositorioTests
         };
 
         // Act
-        var resultado = await repositorioMock.ActualizarAsync(sesionInexistente.Id, sesionInexistente);
+        var resultado = await repositorioMock.ActualizarAsync(sesionInexistente);
 
         // Assert
         resultado.Should().BeNull();
