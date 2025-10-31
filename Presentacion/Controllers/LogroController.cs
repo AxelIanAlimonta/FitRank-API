@@ -55,12 +55,19 @@ public class LogroController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarLogroDTO actualizarLogroDTO)
     {
-        var logroActualizado = await _actualizarLogroCasoDeUso.Ejecutar(id, actualizarLogroDTO);
+        if (id != actualizarLogroDTO.Id)
+        {
+            return BadRequest("El ID del logro no coincide con el ID proporcionado en la ruta.");
+        }
+
+        var logroActualizado = await _actualizarLogroCasoDeUso.Ejecutar(actualizarLogroDTO);
         if (logroActualizado == null)
         {
             return NotFound();
         }
+
         return Ok(logroActualizado);
+
     }
 
     [HttpDelete("{id}")]
