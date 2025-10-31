@@ -49,7 +49,7 @@ namespace FitRank_API.Controllers
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarSesionDTO dto)
         {
             if (id != dto.Id) return BadRequest("El ID no coincide.");
-            var actualizada = await _actualizarSesionCasoDeUso.Ejecutar(id,dto);
+            var actualizada = await _actualizarSesionCasoDeUso.Ejecutar(dto);
             if (actualizada == null) return NotFound();
             return Ok(actualizada);
         }

@@ -35,19 +35,23 @@ namespace FitRank_API.Infrastructure.Repositories
             return sesionDetallada;
         }
 
-        public async Task<Sesion?> ActualizarAsync(long id, Sesion sesion)
+        public async Task<Sesion?> ActualizarAsync(Sesion sesion)
         {
-            var sesionExistente = await _context.Sesiones.FirstOrDefaultAsync(x => x.Id == id);
-            if (sesionExistente is null)
-                return null;
+            var sesionExistente = await _context.Sesiones.FindAsync(sesion.Id);
             if (sesionExistente == null) return null;
 
-            sesionExistente.Nombre = sesion.Nombre;
             sesionExistente.NumeroDeSesion = sesion.NumeroDeSesion;
+            sesionExistente.Nombre = sesion.Nombre;
             sesionExistente.RutinaId = sesion.RutinaId;
 
+            _context.Sesiones.Update(sesionExistente);
             await _context.SaveChangesAsync();
-            return sesionExistente;
+
+            var sesionActualizada = await _context.Sesiones
+                .Include(s => s.Rutina)
+                .FirstOrDefaultAsync(s => s.Id == sesionExistente.Id);
+            return sesionActualizada;
+
         }
 
         public async Task<bool> EliminarAsync(long id)
