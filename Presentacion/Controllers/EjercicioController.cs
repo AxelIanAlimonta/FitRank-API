@@ -42,7 +42,7 @@ public class EjercicioController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEjercicioPorId(long id)
     {
-        var ejercicio = await _obtenerEjercicioPorIdCasoDeUso.EjecutarAsync(id);
+        var ejercicio = await _obtenerEjercicioPorIdCasoDeUso.Ejecutar(id);
         if (ejercicio == null)
         {
             return NotFound();
@@ -53,7 +53,7 @@ public class EjercicioController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AgregarEjercicio([FromBody] AgregarEjercicioDTO ejercicio)
     {
-        var nuevoEjercicio = await _agregarEjercicioCasoDeUso.EjecutarAsync(ejercicio);
+        var nuevoEjercicio = await _agregarEjercicioCasoDeUso.Ejecutar(ejercicio);
         return CreatedAtAction(nameof(GetEjercicioPorId), new { id = nuevoEjercicio.Id }, nuevoEjercicio);
 
     }
@@ -62,7 +62,7 @@ public class EjercicioController : ControllerBase
     public async Task<IActionResult> ActualizarEjercicio(long id, [FromBody] ActualizarEjercicioDTO ejercicio)
     {
         if (id != ejercicio.Id) return BadRequest("El ID no coincide.");
-        var ejercicioActualizado = await _actualizarEjercicioCasoDeUso.EjecutarAsync(id, ejercicio);
+        var ejercicioActualizado = await _actualizarEjercicioCasoDeUso.Ejecutar(ejercicio);
         if (ejercicioActualizado == null)
         {
             return NotFound();
@@ -73,7 +73,7 @@ public class EjercicioController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> EliminarEjercicio(long id)
     {
-        var resultado = await _eliminarEjercicioCasoDeUso.EjecutarAsync(id);
+        var resultado = await _eliminarEjercicioCasoDeUso.Ejecutar(id);
         if (!resultado)
         {
             return NotFound();

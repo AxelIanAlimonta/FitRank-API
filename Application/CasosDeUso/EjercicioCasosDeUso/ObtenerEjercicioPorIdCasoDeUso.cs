@@ -15,7 +15,7 @@ public class ObtenerEjercicioPorIdCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerEjercicioDTO?> EjecutarAsync(long id)
+    public async Task<ObtenerEjercicioDTO?> Ejecutar(long id)
     {
         var ejercicio = await _ejercicioRepositorio.ObtenerEjercicioPorIdAsync(id);
         return _mapper.Map<ObtenerEjercicioDTO>(ejercicio);

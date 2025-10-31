@@ -17,9 +17,8 @@ public class ActualizarEjercicioCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<Ejercicio?> EjecutarAsync(long id, ActualizarEjercicioDTO ejercicioDTO)
+    public async Task<Ejercicio?> Ejecutar(ActualizarEjercicioDTO ejercicioDTO)
     {
-        ejercicioDTO.Id = id;
         var ejercicioMapeado = _mapper.Map<Ejercicio>(ejercicioDTO);
         var resultado = await _ejercicioRepositorio.ActualizarEjercicioAsync(ejercicioMapeado);
         return resultado;

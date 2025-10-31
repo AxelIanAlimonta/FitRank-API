@@ -10,7 +10,7 @@ public class EliminarEjercicioCasoDeUso
         _ejercicioRepositorio = ejercicioRepositorio;
     }
 
-    public async Task<bool> EjecutarAsync(long id)
+    public async Task<bool> Ejecutar(long id)
     {
         return await _ejercicioRepositorio.EliminarEjercicioAsync(id);
     }
