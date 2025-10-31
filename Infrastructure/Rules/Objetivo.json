@@ -6,31 +6,31 @@
         "RuleName": "Objetivo_Hipertrofia",
         "SuccessEvent": "OBJETIVO_HIPERTROFIA;REPETICIONES_6_12;RIR_1_3;CARDIO_APOYO_BAJO",
         "RuleExpressionType": "LambdaExpression",
-        "Expression": "input.ObjetivoPrincipal == @\"Hipertrofia\""
+        "Expression": "input.Objetivo == \"Hipertrofia\""
       },
       {
         "RuleName": "Objetivo_Fuerza",
         "SuccessEvent": "OBJETIVO_FUERZA;REPETICIONES_3_6;RIR_2_3;CARDIO_APOYO_BAJO",
         "RuleExpressionType": "LambdaExpression",
-        "Expression": "input.ObjetivoPrincipal == @\"Fuerza\""
+        "Expression": "input.Objetivo == \"Fuerza\""
       },
       {
         "RuleName": "Objetivo_Resistencia",
         "SuccessEvent": "OBJETIVO_RESISTENCIA;REPETICIONES_12_20;RIR_1_2;CARDIO_APOYO_MEDIO",
         "RuleExpressionType": "LambdaExpression",
-        "Expression": "input.ObjetivoPrincipal == @\"Resistencia\""
+        "Expression": "input.Objetivo == \"Resistencia\""
       },
       {
-        "RuleName": "Objetivo_PerdidaDeGrasa",
-        "SuccessEvent": "OBJETIVO_PERDIDA_GRASA;REPETICIONES_8_15;RIR_1_2;CARDIO_APOYO_ALTO",
+        "RuleName": "Objetivo_PerdidaDePeso",
+        "SuccessEvent": "OBJETIVO_PERDIDA_PES;REPETICIONES_8_15;RIR_1_2;CARDIO_APOYO_ALTO",
         "RuleExpressionType": "LambdaExpression",
-        "Expression": "input.ObjetivoPrincipal == @\"PerdidaDePeso\""
+        "Expression": "input.Objetivo == \"PerdidaDePeso\""
       },
       {
         "RuleName": "IMC_Alto_AumentarCardioDeApoyo",
         "SuccessEvent": "CARDIO_APOYO_MAYOR",
         "RuleExpressionType": "LambdaExpression",
-        "Expression": "(input.PesoKg / Math.Pow(input.AlturaCm/100.0, 2)) >= 30"
+        "Expression": "input.Imc >= 30"
       }
     ]
   }

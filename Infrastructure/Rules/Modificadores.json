@@ -1,55 +1,55 @@
 ﻿[
-    {
-        "WorkflowName": "Modificadores",
-        "Rules": [
-            {
-                "RuleName": "PocasHorasDeSuenio",
-                "SuccessEvent": "INTENSIDAD_BAJA",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "input.HorasSuenio < 5"
-            },
-            {
-                "RuleName": "MalaAlimentacion",
-                "SuccessEvent": "VOLUMEN_BAJO",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "input.CalidadAlimentacion <= 2"
-            },
-            {
-                "RuleName": "AltoIMC",
-                "SuccessEvent": "VOLUMEN_BASE;IMPACTO_BAJO;",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "(input.PesoKg / (input.AlturaCm/100)^2) >= 30"
-            },
-            {
-                "RuleName": "BajoIMC",
-                "SuccessEvent": "VOLUMEN_BASE",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "(input.PesoKg / (input.AlturaCm/100)^2) < 19"
-            },
-            {
-                "RuleName": "EdadMayorDe60",
-                "SuccessEvent": "INTENSIDAD_BAJA;VOLUMEN_BAJO",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "(input.PesoKg / Math.Pow(input.AlturaCm/100,2)) >= 30"
-            },
-            {
-                "RuleName": "NivelPrincipiante",
-                "SuccessEvent": "INTENSIDAD_BAJA;VOLUMEN_BASE",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "input.Nivel == @\"Principiante\""
-            },
-            {
-                "RuleName": "NivelIntermedio",
-                "SuccessEvent": "INTENSIDAD_MEDIA;VOLUMEN_ALTO",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "input.Nivel == @\"Intermedio\""
-            },
-            {
-                "RuleName": "NivelAvanzado",
-                "SuccessEvent": "INTENSIDAD_ALTA;VOLUMEN_ALTO",
-                "RuleExpressionType": "LambdaExpression",
-                "Expression": "input.Nivel == @\"Avanzado\""
-            }
-        ]
-    }
+  {
+    "WorkflowName": "Modificadores",
+    "Rules": [
+      {
+        "RuleName": "PocasHorasDeSueno",
+        "SuccessEvent": "INTENSIDAD_BAJA",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.HorasSuenio < 6"
+      },
+      {
+        "RuleName": "MalaAlimentacion",
+        "SuccessEvent": "VOLUMEN_BAJO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.CalidadAlimentacion <= 2"
+      },
+      {
+        "RuleName": "AltoIMC",
+        "SuccessEvent": "VOLUMEN_CONSERVADOR;PREF_CARDIO_IMPACTO_BAJO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Imc >= 30"
+      },
+      {
+        "RuleName": "BajoIMC",
+        "SuccessEvent": "VOLUMEN_BASE;ENFOQUE_NUTRICION",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Imc < 18.5"
+      },
+      {
+        "RuleName": "EdadMayorDe60",
+        "SuccessEvent": "INTENSIDAD_MEDIA;PRIORIDAD_TECNICA",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Edad >= 60"
+      },
+      {
+        "RuleName": "NivelPrincipiante",
+        "SuccessEvent": "INTENSIDAD_BAJA;VOLUMEN_BASE",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Nivel == \"Principiante\""
+      },
+      {
+        "RuleName": "NivelIntermedio",
+        "SuccessEvent": "INTENSIDAD_MEDIA;VOLUMEN_ALTO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Nivel == \"Intermedio\""
+      },
+      {
+        "RuleName": "NivelAvanzado",
+        "SuccessEvent": "INTENSIDAD_ALTA;VOLUMEN_ALTO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Nivel == \"Avanzado\""
+      }
+    ]
+  }
 ]

@@ -45,17 +45,11 @@
         "Expression": "input.Screening.Sincope || input.Screening.DolorToracico || input.Screening.CirugiaReciente"
       },
       {
-        "RuleName": "Embarazo",
-        "SuccessEvent": "PRECAUCION_EMBARAZO",
-        "RuleExpressionType": "LambdaExpression",
-        "Expression": "input.Screening.Embarazo"
-      },
-      {
         "RuleName": "DolorElevado",
         "SuccessEvent": "PRECAUCION_DOLOR_ELEVADO",
         "RuleExpressionType": "LambdaExpression",
-        "Expression": "input.Screening.DolorEscala0a10 >=6"
+        "Expression": "input.Screening.DolorEscala0a10 >= 6"
       }
-    ]]
+    ]
   }
 ]
