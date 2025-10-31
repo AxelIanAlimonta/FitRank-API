@@ -7,7 +7,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<List<Sesion>> ObtenerTodasAsync();
         Task<Sesion?> ObtenerPorIdAsync(long id);
         Task<Sesion> AgregarAsync(Sesion sesion);
-        Task<Sesion?> ActualizarAsync(long id,Sesion sesion);
+        Task<Sesion?> ActualizarAsync(Sesion sesion);
         Task<bool> EliminarAsync(long id);
     }
 }
