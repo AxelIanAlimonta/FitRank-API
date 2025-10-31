@@ -387,8 +387,22 @@ FodyWeavers.xsd
 !.vscode/extensions.json
 *.code-workspace
 
+# VS Code specific user settings and temporary files
+.vscode/settings.json.backup
+.vscode/tasks.json.backup
+.vscode/launch.json.backup
+.vscode/c_cpp_properties.json
+.vscode/bookmarks.json
+.vscode/symbols.json
+.vscode/.ropeproject/
+.vscode/workspace-state.json
+
 # Local History for Visual Studio Code
 .history/
+
+# VS Code extensions and cache
+.vscode-test/
+.vscodeignore
 
 # Windows Installer files from build outputs
 *.cab
