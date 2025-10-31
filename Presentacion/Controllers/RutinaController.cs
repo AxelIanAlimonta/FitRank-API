@@ -23,20 +23,25 @@ public class RutinaController : ControllerBase
     private readonly ActualizarRutinaCasoDeUso _actualizarRutinaCasoDeUso;
     private readonly EliminarRutinaCasoDeUso _eliminarRutinaCasoDeUso;
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
-   
+
+    private readonly GenerarRutinaIACasoDeUso _generarRutinaIACasoDeUso;
+    //private readonly ConfirmarRutinaCasoDeUso _confirmarRutinaCasoDeUso;
+
 
     public RutinaController(
         AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
         ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
         ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
         ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
-        EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso)
+        EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
+        GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso)
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
         _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _actualizarRutinaCasoDeUso = actualizarRutinaCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
+        _generarRutinaIACasoDeUso = generarRutinaIACasoDeUso;
     }
 
     [HttpGet]
@@ -96,29 +101,21 @@ public class RutinaController : ControllerBase
     }
 
     [HttpPost("generar")]
-    public async Task<IActionResult> Generar(
-            [FromBody] RutinaRequestDTO input,
-            [FromServices] IRoutineRulesRunner rulesRunner,
-            [FromServices] IRoutineBuilder builder)
+    public async Task<IActionResult> Generar([FromBody] RutinaRequestDTO input)
     {
-        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
 
-        var decisiones = await rulesRunner.RunAsync(input);
+        var resultado = await _generarRutinaIACasoDeUso.EjecutarAsync(input);
 
-        // Si las reglas piden derivación, avisamos (puede ser 409 o 200 con flag)
-        if (decisiones.DerivarProfesional)
-        {
-            var explain = new { message = "Se requiere derivación/validación profesional", decisiones };
-            return StatusCode(409, new { ok = false, explain });
-        }
-
-        var rutina = await builder.BuildAsync(input, decisiones);
+        if (resultado.RequiereDerivacion)
+            return StatusCode(409, new { ok = false, explain = resultado.Mensaje });
 
         return Ok(new
         {
             ok = true,
-            decisions = decisiones,
-            rutina
+            decisions = resultado.Decisiones,
+            rutina = resultado.Rutina
         });
     }
 
@@ -176,6 +173,7 @@ public class RutinaController : ControllerBase
             Descripcion = $"{body.Rutina.Objetivo} · {body.Rutina.Division}",
             Activa = true,                            // o false si querés activar sólo tras aprobación
             SocioId = body.SocioId,
+            UsuarioId = body.UsuarioId,
             InputSnapshotJson = snapDoc,
             RulesExplainJson = rulesDoc,
             Sesiones = new List<Sesion>()

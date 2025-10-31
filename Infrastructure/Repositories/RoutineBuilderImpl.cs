@@ -94,6 +94,8 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
         {
             var gruposDia = plan[dia];
 
+            
+
             // Traer candidatos (con tu Query/EF + fallback que ya agregaste)
             var candidatos = await _catalogo.BuscarAsync(
                 new CatalogoQuery(
@@ -102,6 +104,7 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
                     EvitarUsuario: input.Preferencias?.EjerciciosExcluidos?.ToArray() ?? Array.Empty<string>(),
                     Dolores: dolores
                 ));
+
 
             // Fallback sin filtro de equipo si no hay candidatos
             if (candidatos.Count == 0 && d.EquipoPreferido is { Count: > 0 })
@@ -134,7 +137,9 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
                 var delGrupo = candidatos
                     .Where(e => e.Tipo.Equals(grupo, StringComparison.OrdinalIgnoreCase)
                              && !usadosHoy.Contains(e.Id)
-                             && (!ultimoDiaUsado.TryGetValue(e.Id, out var ultimo) || (dia - ultimo) >= 2))
+                             && (!ultimoDiaUsado.TryGetValue(e.Id, out var ultimo) || (dia - ultimo) >= 2)
+                             && !e.ContraIndicaciones.Any(ci => dolores.Contains(ci, StringComparer.OrdinalIgnoreCase))
+                           )
                     .ToList();
 
                 if (delGrupo.Count == 0) continue;
@@ -174,6 +179,8 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
 
                     usadosHoy.Add(ej.Id);
 
+                    var pesoRecomendado = CalcularPesoRecomendado(input, ej.Tipo);
+
                     // Patrón de repeticiones consistente (pequeña variación)
                     var baseReps = rng.Next(repsMin, repsMax + 1);
                     var series = Enumerable.Range(1, sets)
@@ -184,7 +191,7 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
                                 Nro: n,
                                 Reps: Math.Clamp(baseReps + delta, repsMin, repsMax),
                                 Rir: rir,
-                                PesoObjetivo: null
+                                PesoObjetivo: pesoRecomendado
                             );
                         }).ToList();
 
@@ -334,6 +341,29 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
         }
         return dolores.ToList();
     }
+
+    // Método auxiliar dentro de RoutineBuilderImpl
+    private static double CalcularPesoRecomendado(RutinaRequestDTO input, string tipoEjercicio)
+    {
+        // Supongamos que el usuario tiene peso corporal en Kg
+        double pesoUsuario = input.PesoKg > 0 ? input.PesoKg : 70; // fallback a 70kg si no está
+
+        // Ajuste según grupo muscular
+        double factor = tipoEjercicio switch
+        {
+            "Piernas" => 0.7,
+            "Espalda" => 0.6,
+            "Pecho" => 0.5,
+            "Hombros" => 0.4,
+            "Biceps" => 0.3,
+            "Triceps" => 0.3,
+            "Core" => 0.2,
+            _ => 0.4
+        };
+
+        return Math.Round(pesoUsuario * factor, 1); // peso recomendado en kg, 1 decimal
+    }
+
 
     private static string SanitizeName(string raw)
         => raw.Replace("OBJETIVO_", "", StringComparison.OrdinalIgnoreCase)
