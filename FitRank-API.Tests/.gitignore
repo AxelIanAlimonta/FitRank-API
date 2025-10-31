@@ -1,0 +1,87 @@
+# Build outputs
+[Bb]in/
+[Oo]bj/
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# xUnit specific
+xunit-*.xml
+TestResult.xml
+
+# NUnit specific
+nunit-*.xml
+*.VisualState.xml
+
+# MSTest specific
+*.vsmdi
+*.testrunconfig
+*.testsettings
+
+# Code coverage tools
+*.dotCover
+.axoCover/
+OpenCover/
+
+# Visual Studio Code coverage results
+*.coverage
+*.coveragexml
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Logs
+*.log
+
+# VS Code workspace settings (keep shared config)
+.vscode/settings.json.backup
+.vscode/tasks.json.backup
+.vscode/launch.json.backup
+.vscode/c_cpp_properties.json
+.vscode/bookmarks.json
+.vscode/symbols.json
+.vscode/.ropeproject/
+
+# Local History for Visual Studio Code
+.history/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Test data and temporary test files
+TestData/temp/
+*.test.json
+*.test.xml
+test-output/
+
+# Rider
+.idea/
+
+# NuGet packages (should be restored)
+packages/
+!packages/repositories.config
+
+# Backup files
+*.bak
+*.backup
