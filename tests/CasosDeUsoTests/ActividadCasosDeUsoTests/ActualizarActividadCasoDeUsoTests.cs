@@ -8,7 +8,7 @@ using FitRank_API.Application.MappingProfiles;
 using FitRank_API.Application.DTOs.ActividadDTOs;
 using FitRank_API.Application.UseCases.Actividad;
 
-namespace FitRank_API.ApplicationTests.CasosDeUsoTests.ActividadCasosDeUsoTests;
+namespace CasosDeUsoTests.ActividadCasosDeUsoTests;
 
 public class ActualizarActividadCasoDeUsoTests
 {
