@@ -9,7 +9,7 @@ public class EliminarRutinaCasoDeUso
     {
         _rutinaRepositorio = rutinaRepositorio;
     }
-    public async Task<bool> Ejecutar(long id)
+    public virtual async Task<bool> Ejecutar(long id)
     {
         return await _rutinaRepositorio.EliminarAsync(id);
     }
