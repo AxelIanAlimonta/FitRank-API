@@ -13,7 +13,7 @@ namespace FitRank_API.Application.CasosDeUso.SesionCasosDeUso
             _sesionRepositorio = sesionRepositorio;
             _mapper = mapper;
         }
-        public async Task<ObtenerSesionDTO> Ejecutar(ActualizarSesionDTO sesionActualizada)
+        public virtual async Task<ObtenerSesionDTO> Ejecutar(ActualizarSesionDTO sesionActualizada)
         {
             var sesionEntidad = _mapper.Map<Domain.Entities.Sesion>(sesionActualizada);
             var sesionActualizadaEntidad = await _sesionRepositorio.ActualizarAsync(sesionEntidad);

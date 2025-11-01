@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
             _mapper = mapper;
         }
 
-        public async Task<ObtenerSesionDTO?> Ejecutar(long id)
+        public virtual async Task<ObtenerSesionDTO?> Ejecutar(long id)
         {
             var sesion = await _sesionRepositorio.ObtenerPorIdAsync(id);
             if (sesion == null)

@@ -14,7 +14,7 @@ public class AgregarSesionCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerSesionDTO> Ejecutar(AgregarSesionDTO nuevaSesion)
+    public virtual async Task<ObtenerSesionDTO> Ejecutar(AgregarSesionDTO nuevaSesion)
     {
         var sesionEntidad = _mapper.Map<Domain.Entities.Sesion>(nuevaSesion);
         var sesionAgregada = await _sesionRepositorio.AgregarAsync(sesionEntidad);
