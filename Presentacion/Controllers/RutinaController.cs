@@ -1,15 +1,7 @@
-﻿using AutoMapper;
-using FitRank.API.Application.Rutinas.Abstractions;
-using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
+﻿using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.DTOs.RutinaDTOs;
-using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
-using FitRank_API.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+
 
 namespace FitRank_API.Presentacion.Controllers;
 
@@ -25,7 +17,7 @@ public class RutinaController : ControllerBase
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
 
     private readonly GenerarRutinaIACasoDeUso _generarRutinaIACasoDeUso;
-    //private readonly ConfirmarRutinaCasoDeUso _confirmarRutinaCasoDeUso;
+    private readonly ConfirmarRutinaIACasoDeUso _confirmarRutinaIACasoDeUso;
 
 
     public RutinaController(
@@ -34,7 +26,8 @@ public class RutinaController : ControllerBase
         ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
         ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
         EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
-        GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso)
+        GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso,
+        ConfirmarRutinaIACasoDeUso confirmarRutinaIACasoDeUso)
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
@@ -42,6 +35,7 @@ public class RutinaController : ControllerBase
         _actualizarRutinaCasoDeUso = actualizarRutinaCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
         _generarRutinaIACasoDeUso = generarRutinaIACasoDeUso;
+        _confirmarRutinaIACasoDeUso = confirmarRutinaIACasoDeUso;
     }
 
     [HttpGet]
@@ -120,116 +114,16 @@ public class RutinaController : ControllerBase
     }
 
     [HttpPost("confirmar")]
-    public async Task<IActionResult> Confirmar(
-    [FromBody] ConfirmarRutinaDTO body,
-    [FromServices] FitRankDbContext db)
+    public async Task<IActionResult> Confirmar([FromBody] ConfirmarRutinaDTO body)
     {
-        if (body is null || body.Rutina is null)
-            return BadRequest("Body vacío.");
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
 
-        // 1) Validaciones de FK básicas
-        var socioExiste = await db.Set<Socio>().AnyAsync(s => s.Id == body.SocioId);
+        var resultado = await _confirmarRutinaIACasoDeUso.EjecutarAsync(body);
 
-        if (!socioExiste) return BadRequest($"SocioId {body.SocioId} no existe.");
+        if (!resultado.Ok)
+            return BadRequest(resultado.Mensaje);
 
-        // Validar que todos los ejercicios existen
-        var ejercicioIds = body.Rutina.SesionesPlan
-            .SelectMany(s => s.Ejercicios.Select(e => (long)e.EjercicioId))
-            .Distinct()
-            .ToList();
-
-        var existentes = await db.Ejercicios
-            .Where(x => ejercicioIds.Contains(x.Id))
-            .Select(x => x.Id)
-            .ToListAsync();
-
-        var faltantes = ejercicioIds.Except(existentes).ToList();
-        if (faltantes.Count > 0)
-            return BadRequest(new { error = "Hay ejercicios inexistentes", faltantes });
-
-        // 2) Persistir en transacción
-        await using var trx = await db.Database.BeginTransactionAsync();
-
-        // Serializo a JsonDocument para Npgsql (se mapea a jsonb)
-        JsonDocument? snapDoc = null;
-        JsonDocument? rulesDoc = null;
-        try
-        {
-            if (body.Rutina.InputSnapshot is not null)
-                snapDoc = JsonDocument.Parse(JsonSerializer.Serialize(body.Rutina.InputSnapshot));
-            if (body.Rutina.RulesExplain is not null)
-                rulesDoc = JsonDocument.Parse(JsonSerializer.Serialize(body.Rutina.RulesExplain));
-        }
-        catch
-        {
-            // Si algo raro en el JSON, seguí sin romper: dejá null o guardá string si preferís
-        }
-
-        var rutina = new Rutina
-        {
-            Nombre = body.Rutina.Nombre,
-            TipoCreacion = "IA",                      // <- importante para diferenciar origen
-            FechaCreacion = DateTime.UtcNow,
-            Descripcion = $"{body.Rutina.Objetivo} · {body.Rutina.Division}",
-            Activa = true,                            // o false si querés activar sólo tras aprobación
-            SocioId = body.SocioId,
-            UsuarioId = body.UsuarioId,
-            InputSnapshotJson = snapDoc,
-            RulesExplainJson = rulesDoc,
-            Sesiones = new List<Sesion>()
-        };
-
-        db.Add(rutina);
-        await db.SaveChangesAsync();
-
-        // Sesiones + ejercicios + series
-        for (int i = 0; i < body.Rutina.SesionesPlan.Count; i++)
-        {
-            var s = body.Rutina.SesionesPlan[i];
-
-            var sesion = new Sesion
-            {
-                RutinaId = rutina.Id,
-                Nombre = s.Nombre,
-                NumeroDeSesion= i,
-                EjerciciosAsignados = new List<EjercicioAsignado>()
-            };
-            db.Add(sesion);
-            await db.SaveChangesAsync();
-
-            int orden = 1;
-            foreach (var e in s.Ejercicios)
-            {
-                var ejAsig = new EjercicioAsignado
-                {
-                    SesionId = sesion.Id,
-                    EjercicioId = e.EjercicioId,
-                    NumeroEjercicio = orden++,
-                    Series = new List<Serie>()
-                };
-                db.Add(ejAsig);
-                await db.SaveChangesAsync();
-
-                foreach (var sr in e.Series)
-                {
-                    ejAsig.Series.Add(new Serie
-                    {
-                        EjercicioAsignadoId = ejAsig.Id,
-                        NumeroDeSerie = sr.Nro,
-                        Repeticiones = sr.Reps,
-                        Peso = sr.PesoObjetivo.HasValue ? (int)Math.Round(sr.PesoObjetivo.Value) : 0
-                    });
-                }
-
-                await db.SaveChangesAsync();
-            }
-        }
-
-        await trx.CommitAsync();
-
-        return Ok(new { ok = true, id = rutina.Id });
+        return Ok(new { ok = true, id = resultado.RutinaId });
     }
-
-
-
 }

@@ -1,4 +1,6 @@
-﻿using FitRank_API.Domain.Entities;
+﻿using FitRank_API.Application.DTOs.RutinaDTOs;
+using FitRank_API.Application.DTOs.SesionDTOs;
+using FitRank_API.Domain.Entities;
 
 namespace FitRank_API.Infrastructure.Interfaces;
 
@@ -10,4 +12,7 @@ public interface IRutinaRepositorio
     Task<Rutina?> ActualizarAsync(Rutina rutina);
     Task<bool> EliminarAsync(long id);
     Task<Rutina> ObtenerPorSocioIdAsync(long socioId);
+    //RUTINA GENERADA POR IA
+    Task<ResultadoConfirmarRutinaDTO> ValidarReferenciasAsync(ConfirmarRutinaDTO body);
+    Task GuardarRutinaCompletaAsync(Rutina rutina, List<SesionPlanDTO> sesiones);
 }
