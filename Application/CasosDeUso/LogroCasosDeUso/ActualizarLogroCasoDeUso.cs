@@ -15,7 +15,7 @@ public class ActualizarLogroCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerLogroDTO?> Ejecutar(ActualizarLogroDTO dto)
+    public virtual async Task<ObtenerLogroDTO?> Ejecutar(ActualizarLogroDTO dto)
     {
         var logroAActualizar = _mapper.Map<Logro>(dto);
         var logroActualizado = await _logroRepositorio.ActualizarLogro(logroAActualizar);

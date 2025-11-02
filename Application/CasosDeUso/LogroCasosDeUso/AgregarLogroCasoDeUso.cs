@@ -14,7 +14,7 @@ public class AgregarLogroCasoDeUso
         _logroRepositorio = logroRepositorio;
         _mapper = mapper;
     }
-    public async Task<ObtenerLogroDTO> Ejecutar(AgregarLogroDTO crearLogroDTO)
+    public virtual async Task<ObtenerLogroDTO> Ejecutar(AgregarLogroDTO crearLogroDTO)
     {
         var logroEntidad = _mapper.Map<Logro>(crearLogroDTO);
         var logroCreado = await _logroRepositorio.AgregarLogro(logroEntidad);

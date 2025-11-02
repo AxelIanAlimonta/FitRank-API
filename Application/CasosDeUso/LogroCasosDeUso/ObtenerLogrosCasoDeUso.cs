@@ -14,7 +14,7 @@ public class ObtenerLogrosCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<List<ObtenerLogroDTO>> Ejecutar()
+    public virtual async Task<List<ObtenerLogroDTO>> Ejecutar()
     {
         var logros = await _logroRepositorio.ObtenerTodosLosLogros();
         return _mapper.Map<List<ObtenerLogroDTO>>(logros);

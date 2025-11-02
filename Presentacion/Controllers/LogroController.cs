@@ -30,54 +30,105 @@ public class LogroController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> ObtenerTodos()
     {
-        var logros = await _obtenerLogrosCasoDeUso.Ejecutar();
-        return Ok(logros);
+        try
+        {
+            var logros = await _obtenerLogrosCasoDeUso.Ejecutar();
+            return Ok(logros);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocurrió un error en el servidor.");
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> ObtenerPorId(long id)
     {
-        var logro = await _obtenerLogroPorIdCasoDeUso.Ejecutar(id);
-        if (logro == null)
+        try
         {
-            return NotFound();
+            var logro = await _obtenerLogroPorIdCasoDeUso.Ejecutar(id);
+            if (logro == null)
+            {
+                return NotFound($"No se encontró ningún logro con ID {id}.");
+            }
+            return Ok(logro);
         }
-        return Ok(logro);
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocurrió un error en el servidor.");
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> Agregar([FromBody] AgregarLogroDTO crearLogroDTO)
     {
-        var logroCreado = await _agregarLogroCasoDeUso.Ejecutar(crearLogroDTO);
-        return CreatedAtAction(nameof(ObtenerPorId), new { id = logroCreado.Id }, logroCreado);
+        if (crearLogroDTO == null)
+        {
+            return BadRequest("El logro proporcionado es nulo.");
+        }
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var logroCreado = await _agregarLogroCasoDeUso.Ejecutar(crearLogroDTO);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = logroCreado.Id }, logroCreado);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocurrió un error en el servidor.");
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarLogroDTO actualizarLogroDTO)
     {
+        if (actualizarLogroDTO == null)
+        {
+            return BadRequest("El logro proporcionado es nulo.");
+        }
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         if (id != actualizarLogroDTO.Id)
         {
             return BadRequest("El ID del logro no coincide con el ID proporcionado en la ruta.");
         }
 
-        var logroActualizado = await _actualizarLogroCasoDeUso.Ejecutar(actualizarLogroDTO);
-        if (logroActualizado == null)
+        try
         {
-            return NotFound();
+            var logroActualizado = await _actualizarLogroCasoDeUso.Ejecutar(actualizarLogroDTO);
+            if (logroActualizado == null)
+            {
+                return NotFound($"No se encontró ningún logro con ID {id} para actualizar.");
+            }
+
+            return Ok(logroActualizado);
         }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocurrió un error en el servidor.");
 
-        return Ok(logroActualizado);
-
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Eliminar(long id)
     {
-        var exito = await _eliminarLogroCasoDeUso.Ejecutar(id);
-        if (!exito)
+        try
         {
-            return NotFound();
+            var exito = await _eliminarLogroCasoDeUso.Ejecutar(id);
+            if (!exito)
+            {
+                return NotFound("No se encontró ningún logro con el ID proporcionado para eliminar.");
+            }
+            return NoContent();
         }
-        return NoContent();
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocurrió un error en el servidor.");
+        }
     }
 }
