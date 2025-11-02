@@ -14,7 +14,7 @@ public class ActualizarGimnasioCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerGimnasioDTO?> Ejecutar(ActualizarGimnasioDTO gimnasioDto)
+    public virtual async Task<ObtenerGimnasioDTO?> Ejecutar(ActualizarGimnasioDTO gimnasioDto)
     {
         var gimnasioEntity = _mapper.Map<Gimnasio>(gimnasioDto);
         var gimnasioActualizado = await _gimnasioRepositorio.ActualizarGimnasio(gimnasioEntity);

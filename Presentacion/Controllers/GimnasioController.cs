@@ -30,8 +30,15 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpGet]
         public async Task<ActionResult> ObtenerTodos()
         {
-            var gimnasios = await _obtenerGimnasiosCasoDeUso.Ejecutar();
-            return Ok(gimnasios);
+            try
+            {
+                var gimnasios = await _obtenerGimnasiosCasoDeUso.Ejecutar();
+                return Ok(gimnasios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
 
         [HttpGet("{id}")]
@@ -48,30 +55,71 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPost]
         public async Task<ActionResult> Agregar([FromBody] AgregarGimnasioDTO crearGimnasioDTO)
         {
-            var gimnasioCreado = await _agregarGimnasioCasoDeUso.Ejecutar(crearGimnasioDTO);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = gimnasioCreado.Id }, gimnasioCreado);
+            if (crearGimnasioDTO == null)
+            {
+                return BadRequest("El gimnasio no puede ser nulo.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var gimnasioCreado = await _agregarGimnasioCasoDeUso.Ejecutar(crearGimnasioDTO);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = gimnasioCreado.Id }, gimnasioCreado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Actualizar(long id, [FromBody] ActualizarGimnasioDTO actualizarGimnasioDTO)
         {
-            var gimnasioActualizado = await _actualizarGimnasioCasoDeUso.Ejecutar(actualizarGimnasioDTO);
-            if (gimnasioActualizado == null)
+            if (actualizarGimnasioDTO == null)
             {
-                return NotFound();
+                return BadRequest("El gimnasio no puede ser nulo.");
             }
-            return Ok(gimnasioActualizado);
+            if (id != actualizarGimnasioDTO.Id)
+            {
+                return BadRequest("El ID del gimnasio no coincide.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var gimnasioActualizado = await _actualizarGimnasioCasoDeUso.Ejecutar(actualizarGimnasioDTO);
+                if (gimnasioActualizado == null)
+                {
+                    return NotFound("Gimnasio no encontrado.");
+                }
+                return Ok(gimnasioActualizado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Eliminar(long id)
         {
-            var eliminado = await _eliminarGimnasioCasoDeUso.Ejecutar(id);
-            if (!eliminado)
+            try
             {
-                return NotFound();
+                var eliminado = await _eliminarGimnasioCasoDeUso.Ejecutar(id);
+                if (!eliminado)
+                {
+                    return NotFound();
+                }
+                return NoContent();
             }
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
     }
 }

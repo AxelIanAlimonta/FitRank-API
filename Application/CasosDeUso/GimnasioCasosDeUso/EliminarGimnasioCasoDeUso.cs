@@ -7,7 +7,7 @@ public class EliminarGimnasioCasoDeUso
     {
         _gimnasioRepositorio = gimnasioRepositorio;
     }
-    public async Task<bool> Ejecutar(long id)
+    public virtual async Task<bool> Ejecutar(long id)
     {
         return await _gimnasioRepositorio.EliminarGimnasio(id);
     }

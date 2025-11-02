@@ -13,7 +13,7 @@ public class ObtenerGimnasiosCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<List<ObtenerGimnasioDTO>> Ejecutar()
+    public virtual async Task<List<ObtenerGimnasioDTO>> Ejecutar()
     {
         var gimnasios = await _gimnasioRepositorio.ObtenerTodosLosGimnasios();
         return _mapper.Map<List<ObtenerGimnasioDTO>>(gimnasios);
