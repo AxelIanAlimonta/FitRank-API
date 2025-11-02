@@ -9,7 +9,7 @@ namespace FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso
         {
             _diaDeLaSemanaRepositorio = diaDeLaSemanaRepositorio;
         }
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             return await _diaDeLaSemanaRepositorio.EliminarDiaDeLaSemanaAsync(id);
         }

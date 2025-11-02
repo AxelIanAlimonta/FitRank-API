@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerDiaDeLaSemanaDTO?> Ejecutar(long id)
+        public virtual async Task<ObtenerDiaDeLaSemanaDTO?> Ejecutar(long id)
         {
             var diaDeLaSemana = await _diaDeLaSemanaRepositorio.ObtenerDiaDeLaSemanaPorIdAsync(id);
             if (diaDeLaSemana == null)

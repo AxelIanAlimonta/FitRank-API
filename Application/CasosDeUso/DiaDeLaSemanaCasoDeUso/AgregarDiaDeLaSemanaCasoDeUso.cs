@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso
             _diaDeLaSemanaRepositorio = diaDeLaSemanaRepositorio;
             _mapper = mapper;
         }
-        public async Task<ObtenerDiaDeLaSemanaDTO?> Ejecutar(AgregarDiaDeLaSemanaDTO agregarDiaDeLaSemanaDTO)
+        public virtual async Task<ObtenerDiaDeLaSemanaDTO?> Ejecutar(AgregarDiaDeLaSemanaDTO agregarDiaDeLaSemanaDTO)
         {
             var diaDeLaSemanaEntidad = _mapper.Map<DiaDeLaSemana>(agregarDiaDeLaSemanaDTO);
             var diaDeLaSemanaCreado = await _diaDeLaSemanaRepositorio.AgregarDiaDeLaSemanaAsync(diaDeLaSemanaEntidad);

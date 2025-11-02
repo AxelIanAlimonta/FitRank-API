@@ -32,8 +32,15 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerTodosAsync()
         {
-            var result = await _obtenerTodosLosDiasDeLaSemanaCasoDeUso.Ejecutar();
-            return Ok(result);
+            try
+            {
+                var result = await _obtenerTodosLosDiasDeLaSemanaCasoDeUso.Ejecutar();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+            }
 
         }
 
@@ -51,34 +58,71 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPost]
         public async Task<IActionResult> AgregarAsync([FromBody] AgregarDiaDeLaSemanaDTO diaDeLaSemanaDTO)
         {
-            var nuevoDia = await _agregarDiaDeLaSemanaCasoDeUso.Ejecutar(diaDeLaSemanaDTO);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoDia.Id }, nuevoDia);
+            if (diaDeLaSemanaDTO == null)
+            {
+                return BadRequest("El DTO de entrada no puede ser nulo.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var nuevoDia = await _agregarDiaDeLaSemanaCasoDeUso.Ejecutar(diaDeLaSemanaDTO);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoDia.Id }, nuevoDia);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarAsync(long id, [FromBody] ActualizarDiaDeLaSemanaDTO diaDeLaSemanaDTO)
         {
+            if (diaDeLaSemanaDTO == null)
+            {
+                return BadRequest("El DTO de entrada no puede ser nulo.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             if (id != diaDeLaSemanaDTO.Id)
             {
-                return BadRequest();
+                return BadRequest("El ID en la ruta no coincide con el ID en el cuerpo de la solicitud.");
             }
-            var diaActualizado = await _actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(diaDeLaSemanaDTO);
-            if (diaActualizado == null)
+            try
             {
-                return NotFound();
+                var diaActualizado = await _actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(diaDeLaSemanaDTO);
+                if (diaActualizado == null)
+                {
+                    return NotFound("Día de la semana no encontrado.");
+                }
+                return Ok(diaActualizado);
             }
-            return Ok(diaActualizado);
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarAsync(long id)
         {
-            var eliminado = await _eliminarDiaDeLaSemanaCasoDeUso.Ejecutar(id);
-            if (!eliminado)
+            try
             {
-                return NotFound();
+                var eliminado = await _eliminarDiaDeLaSemanaCasoDeUso.Ejecutar(id);
+                if (!eliminado)
+                {
+                    return NotFound();
+                }
+                return NoContent();
             }
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+            }
         }
     }
 }
