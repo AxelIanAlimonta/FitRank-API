@@ -14,7 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<ObtenerMaquinaDTO>> Ejecutar()
+        public virtual async Task<List<ObtenerMaquinaDTO>> Ejecutar()
         {
             var maquinas = await _maquinaRepositorio.ObtenerTodasLasMaquinas();
             return _mapper.Map<List<ObtenerMaquinaDTO>>(maquinas);

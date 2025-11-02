@@ -10,7 +10,7 @@ namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
         {
             _maquinaRepositorio = maquinaRepositorio;
         }
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             return await _maquinaRepositorio.EliminarMaquina(id);
         }

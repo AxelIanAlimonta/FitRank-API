@@ -29,8 +29,15 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerTodas()
         {
-            var maquinas = await _obtenerMaquinasCasoDeUso.Ejecutar();
-            return Ok(maquinas);
+            try
+            {
+                var maquinas = await _obtenerMaquinasCasoDeUso.Ejecutar();
+                return Ok(maquinas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error de servidor.");
+            }
         }
 
         [HttpGet("{id}")]
@@ -47,36 +54,75 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPost]
         public async Task<IActionResult> Agregar([FromBody] AgregarMaquinaDTO crearMaquinaDTO)
         {
-            var maquinaCreada = await _agregarMaquinaCasoDeUso.Ejecutar(crearMaquinaDTO);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = maquinaCreada.Id }, maquinaCreada);
+            if (crearMaquinaDTO == null)
+            {
+                return BadRequest("El objeto no puede ser nulo.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var maquinaCreada = await _agregarMaquinaCasoDeUso.Ejecutar(crearMaquinaDTO);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = maquinaCreada.Id }, maquinaCreada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error de servidor.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarMaquinaDTO actualizarLogroDTO)
         {
+            if (actualizarLogroDTO == null)
+            {
+                return BadRequest("El objeto no puede ser nulo.");
+            }
+
             if (id != actualizarLogroDTO.Id)
             {
                 return BadRequest("El ID de la ruta no coincide con el ID del cuerpo de la solicitud.");
             }
 
-            var maquinaActualizada = await _actualizarMaquinaCasoDeUso.Ejecutar(actualizarLogroDTO);
-            if (maquinaActualizada == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
-            return Ok(maquinaActualizada);
+
+            try
+            {
+                var maquinaActualizada = await _actualizarMaquinaCasoDeUso.Ejecutar(actualizarLogroDTO);
+                if (maquinaActualizada == null)
+                {
+                    return NotFound("Maquina no encontrada.");
+                }
+                return Ok(maquinaActualizada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error de servidor.");
+            }
 
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            var exito = await _eliminarMaquinaCasoDeUso.Ejecutar(id);
-            if (!exito)
+            try
             {
-                return NotFound();
+                var exito = await _eliminarMaquinaCasoDeUso.Ejecutar(id);
+                if (!exito)
+                {
+                    return NotFound("Maquina no encontrada.");
+                }
+                return NoContent();
             }
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error de servidor.");
+            }
         }
     }
 }
