@@ -16,7 +16,7 @@ public class AgregarEjercicioAsignadoCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerEjercicioAsignadoDTO> Ejecutar(AgregarEjercicioAsignadoDTO nuevoEjercicioAsignado)
+    public virtual async Task<ObtenerEjercicioAsignadoDTO> Ejecutar(AgregarEjercicioAsignadoDTO nuevoEjercicioAsignado)
     {
         var ejercicioAsignadoEntidad = _mapper.Map<EjercicioAsignado>(nuevoEjercicioAsignado);
         var ejercicioAsignadoAgregado = await _ejercicioAsignadoRepositorio.AgregarAsync(ejercicioAsignadoEntidad);

@@ -14,7 +14,7 @@ public class ActualizarEjercicioAsignadoCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerEjercicioAsignadoDTO?> Ejecutar(ActualizarEjercicioAsignadoDTO ejercicioAsignadoActualizado)
+    public virtual async Task<ObtenerEjercicioAsignadoDTO?> Ejecutar(ActualizarEjercicioAsignadoDTO ejercicioAsignadoActualizado)
     {
         var ejercicioAsignadoEntidad = _mapper.Map<Domain.Entities.EjercicioAsignado>(ejercicioAsignadoActualizado);
         var ejercicioAsignado = await _ejercicioAsignadoRepositorio.ActualizarAsync(ejercicioAsignadoEntidad);

@@ -9,7 +9,7 @@ public class EliminarEjercicioAsignadoCasoDeUso
     {
         _ejercicioAsignadoRepositorio = ejercicioAsignadoRepositorio;
     }
-    public async Task<bool> Ejecutar(long ejercicioAsignadoId)
+    public virtual async Task<bool> Ejecutar(long ejercicioAsignadoId)
     {
         return await _ejercicioAsignadoRepositorio.EliminarAsync(ejercicioAsignadoId);
     }

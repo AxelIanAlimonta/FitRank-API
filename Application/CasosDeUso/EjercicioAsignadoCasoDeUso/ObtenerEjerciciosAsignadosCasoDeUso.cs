@@ -14,7 +14,7 @@ public class ObtenerEjerciciosAsignadosCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<List<ObtenerEjercicioAsignadoDTO>> Ejecutar()
+    public virtual async Task<List<ObtenerEjercicioAsignadoDTO>> Ejecutar()
     {
         var ejerciciosAsignados = await _ejercicioAsignadoRepositorio.ObtenerTodosAsync();
         return _mapper.Map<List<ObtenerEjercicioAsignadoDTO>>(ejerciciosAsignados);
