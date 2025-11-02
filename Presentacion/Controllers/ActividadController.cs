@@ -30,35 +30,86 @@ namespace FitRank_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObtenerTodasLasActividades() => Ok(await _obtenerTodas.Ejecutar());
-
+        public async Task<IActionResult> ObtenerTodasLasActividades()
+        {
+            try
+            {
+                var actividades = await _obtenerTodas.Ejecutar();
+                return Ok(actividades);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerActividadPorId(long id)
         {
-            var act = await _obtenerPorId.Ejecutar(id);
-            return act == null ? NotFound() : Ok(act);
+            try
+            {
+                var act = await _obtenerPorId.Ejecutar(id);
+                return act == null ? NotFound($"La actividad con ID {id} no existe.") : Ok(act);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AgregarActividadDTO dto)
         {
-            var nueva = await _crear.Ejecutar(dto);
-            return CreatedAtAction(nameof(ObtenerActividadPorId), new { id = nueva.Id }, nueva);
+            if (dto == null) return BadRequest("El objeto Actividad es nulo.");
+            if (!ModelState.IsValid) return BadRequest("El objeto Actividad no es válido.");
+            try
+            {
+                var nueva = await _crear.Ejecutar(dto);
+                return CreatedAtAction(nameof(ObtenerActividadPorId), new { id = nueva.Id }, nueva);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarActividadDTO dto)
         {
-            if (id != dto.Id) return BadRequest();
-            await _actualizar.Ejecutar(dto);
-            return NoContent();
+            if (dto == null) return BadRequest("El objeto Actividad es nulo.");
+            if (!ModelState.IsValid) return BadRequest("El objeto Actividad no es válido.");
+            if (id != dto.Id) return BadRequest("El ID de la ruta no coincide con el ID del objeto.");
+            try
+            {
+
+                var actividadActualizada = await _actualizar.Ejecutar(dto);
+                if (actividadActualizada == null)
+                {
+                    return NotFound($"La actividad con ID {id} no existe.");
+                }
+                return Ok(actividadActualizada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            await _eliminar.Ejecutar(id);
-            return NoContent();
+            try
+            {
+                var resultado = await _eliminar.Ejecutar(id);
+                if (!resultado)
+                {
+                    return NotFound($"La actividad con ID {id} no existe.");
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
     }
 }

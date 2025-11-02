@@ -3,23 +3,22 @@ using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.ActividadDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
-namespace FitRank_API.Application.UseCases.Actividad
+namespace FitRank_API.Application.UseCases.Actividad;
+
+public class ObtenerActividadesCasoDeUso
 {
-    public class ObtenerActividadesCasoDeUso
+    private readonly IActividadRepositorio _repo;
+    private readonly IMapper _mapper;
+
+    public ObtenerActividadesCasoDeUso(IActividadRepositorio repo, IMapper mapper)
     {
-        private readonly IActividadRepositorio _repo;
-        private readonly IMapper _mapper;
+        _repo = repo;
+        _mapper = mapper;
+    }
 
-        public ObtenerActividadesCasoDeUso(IActividadRepositorio repo, IMapper mapper)
-        {
-            _repo = repo;
-            _mapper = mapper;
-        }
-
-        public async Task<IEnumerable<ObtenerActividadDTO>> Ejecutar()
-        {
-            var actividades = await _repo.ObtenerTodasAsync();
-            return _mapper.Map<IEnumerable<ObtenerActividadDTO>>(actividades);
-        }
+    public virtual async Task<IEnumerable<ObtenerActividadDTO>> Ejecutar()
+    {
+        var actividades = await _repo.ObtenerTodasAsync();
+        return _mapper.Map<IEnumerable<ObtenerActividadDTO>>(actividades);
     }
 }

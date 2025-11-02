@@ -16,7 +16,7 @@ namespace FitRank_API.Application.UseCases.Actividad
             _mapper = mapper;
         }
 
-        public async Task<ObtenerActividadDTO?> Ejecutar(ActualizarActividadDTO dto)
+        public virtual async Task<ObtenerActividadDTO?> Ejecutar(ActualizarActividadDTO dto)
         {
             var actividadExistente = await _repo.ObtenerPorIdAsync(dto.Id);
             if (actividadExistente == null)
