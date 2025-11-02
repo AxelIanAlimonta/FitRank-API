@@ -28,7 +28,11 @@ namespace FitRank_API.Infrastructure.Repositories
         {
             _context.Sesiones.Add(sesion);
             await _context.SaveChangesAsync();
-            return sesion;
+
+            var sesionDetallada = await _context.Sesiones
+                .Include(s => s.Rutina)
+                .FirstOrDefaultAsync(s => s.Id == sesion.Id);
+            return sesionDetallada;
         }
 
         public async Task<Sesion?> ActualizarAsync(long id, Sesion sesion)
@@ -43,6 +47,11 @@ namespace FitRank_API.Infrastructure.Repositories
             sesionExistente.RutinaId = sesion.RutinaId;
 
             await _context.SaveChangesAsync();
+
+            await _context.Entry(sesionExistente)
+                .Reference(s => s.Rutina)
+                .LoadAsync();
+
             return sesionExistente;
         }
 

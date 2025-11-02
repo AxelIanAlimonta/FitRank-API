@@ -6,7 +6,9 @@ namespace FitRank_API.Application.DTOs.ConfiguracionGrupoMuscularDTOs
     {
         public long Id { get; set; }
         public int GrupoMuscularId { get; set; } // FK
-        public double Multiplicadopeso { get; set; }
+        public double MultiplicadorPeso { get; set; }
         public double MultiplicadorRepeticiones { get; set; }
+        public double FactorProgresion { get; set; }
+
     }
 }

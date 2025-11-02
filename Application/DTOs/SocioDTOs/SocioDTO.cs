@@ -10,10 +10,8 @@ public class SocioDTO
     public string Nombre { get; set; } = string.Empty;
     public string Apellido { get; set; } = string.Empty;
 
-    public DateTime FechaRegistro { get; set; }
+    public string Nivel { get; set; } = string.Empty;
+  
 
-    public DateTime CuotaPagadaHasta { get; set; }
-
-
-    public ICollection<Puntaje> Puntajes { get; set; } = new List<Puntaje>();
+  
 }

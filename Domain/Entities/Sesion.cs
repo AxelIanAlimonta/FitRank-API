@@ -13,5 +13,7 @@ namespace FitRank_API.Domain.Entities
         [ForeignKey("Rutina")]
         public long RutinaId { get; set; }
         public Rutina Rutina { get;set; }
+
+        public ICollection<EjercicioAsignado>? EjerciciosAsignados { get; set; }
     }
 }

@@ -17,5 +17,8 @@ namespace FitRank_API.Domain.Entities
 
         // Relación con Ejercicio: un grupo muscular puede tener muchos ejercicios
         public ICollection<Ejercicio>? Ejercicios { get; set; }
+
+        public ICollection<ConfiguracionGrupoMuscular>? Configuraciones { get; set; }
+
     }
 }

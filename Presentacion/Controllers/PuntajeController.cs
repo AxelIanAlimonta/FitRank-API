@@ -1,86 +1,65 @@
-﻿using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
-using FitRank_API.Application.DTOs.PuntajeDTOs;
-using Microsoft.AspNetCore.Http;
+﻿using FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso;
+using FitRank_API.Application.UseCases;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Presentacion.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class PuntajeController : ControllerBase
+    [Route("api/[controller]")]
+    public class PuntajeController : Controller
     {
-        private readonly ObtenerTodosLosPuntajeCasoDeUso _obtenerTodosLosPuntajeCasoDeUso;
-        private readonly ObtenerPuntajePorIdCasoDeUso _obtenerPuntajePorIdCasoDeUso;
-        private readonly AgregarPuntajeCasoDeUso _agregarPuntajeCasoDeUso;
-        private readonly ActualizarPuntajeCasoDeUso _actualizarPuntajeCasoDeUso;
-        private readonly EliminarPuntajeCasoDeUso _eliminarPuntajeCasoDeUso;
-
-        public PuntajeController(
-            ObtenerTodosLosPuntajeCasoDeUso obtenerTodosLosPuntajeCasoDeUso,
-            ObtenerPuntajePorIdCasoDeUso obtenerPuntajePorIdCasoDeUso,
-            AgregarPuntajeCasoDeUso agregarPuntajeCasoDeUso,
-            ActualizarPuntajeCasoDeUso actualizarPuntajeCasoDeUso,
-            EliminarPuntajeCasoDeUso eliminarPuntajeCasoDeUso)
+        private readonly CalcularEstadisticaCorporalSocioCasoDeUso _calcularEstadisticaSocioCasoDeUso;
+        private readonly CalcularEstadisticaCombinadaPuntajeSocioCasoDeUso _calcularEstadisticaCombinadaPuntajeSocioCasoDeUso;
+        private readonly ObtenerPuntajePorGrupoMuscularSocioCasoDeUso _obtenerPuntajePorGrupoMuscularSocioCasoDeUso;
+        private readonly ObtenerRankingSociosCasoDeUso _obtenerRankingSociosCasoDeUso;
+        private readonly ObtenerPuntajeTotalSocioCasoDeUso _obtenerPuntajeTotalSocioCasoDeUso;
+        public PuntajeController(CalcularEstadisticaCorporalSocioCasoDeUso calcularEstadisticaSocioCasoDeUso, CalcularEstadisticaCombinadaPuntajeSocioCasoDeUso calcularEstadisticaCombinadaPuntajeSocioCasoDeUso, ObtenerPuntajePorGrupoMuscularSocioCasoDeUso obtenerPuntajePorGrupoMuscularSocioCasoDeUso, ObtenerRankingSociosCasoDeUso obtenerRankingSociosCasoDeUso, ObtenerPuntajeTotalSocioCasoDeUso obtenerPuntajeTotalSocioCasoDeUso)
         {
-            _obtenerTodosLosPuntajeCasoDeUso = obtenerTodosLosPuntajeCasoDeUso;
-            _obtenerPuntajePorIdCasoDeUso = obtenerPuntajePorIdCasoDeUso;
-            _agregarPuntajeCasoDeUso = agregarPuntajeCasoDeUso;
-            _actualizarPuntajeCasoDeUso = actualizarPuntajeCasoDeUso;
-            _eliminarPuntajeCasoDeUso = eliminarPuntajeCasoDeUso;
+            _calcularEstadisticaSocioCasoDeUso = calcularEstadisticaSocioCasoDeUso;
+            _calcularEstadisticaCombinadaPuntajeSocioCasoDeUso = calcularEstadisticaCombinadaPuntajeSocioCasoDeUso;
+            _obtenerPuntajePorGrupoMuscularSocioCasoDeUso = obtenerPuntajePorGrupoMuscularSocioCasoDeUso;
+            _obtenerRankingSociosCasoDeUso =  obtenerRankingSociosCasoDeUso;
+            _obtenerPuntajeTotalSocioCasoDeUso = obtenerPuntajeTotalSocioCasoDeUso;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ObtenerTodos()
+
+        [HttpGet("{socioId}/estadisticas")]
+        public async Task<IActionResult> ObtenerEstadisticaCorporal(long socioId)
         {
-            var puntajes = await _obtenerTodosLosPuntajeCasoDeUso.Ejecutar();
-            return Ok(puntajes);
+            var resultado = await _calcularEstadisticaSocioCasoDeUso.Ejecutar(socioId);
+            if (resultado == null) return NotFound("No se encontraron medidas corporales para este socio.");
+
+            return Ok(resultado);
         }
 
-        [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> ObtenerPorId(long id)
+        //Es un endpoint que trae el puntaje total de un socio y el puntaje de sus grupos musculares
+        [HttpGet ("{socioId}/puntaje-combinado")]
+        public async Task<IActionResult> ObtenerPuntajeCombiado(long socioId)
         {
-            var puntaje = await _obtenerPuntajePorIdCasoDeUso.Ejecutar(id);
-            if (puntaje == null)
-            {
-                return NotFound();
-            }
-            return Ok(puntaje);
+            var resultado = await _calcularEstadisticaCombinadaPuntajeSocioCasoDeUso.Ejecutar(socioId);
+            return resultado == null ? NotFound("No se encontraron actividades para este socio.") : Ok(resultado);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Agregar([FromBody] AgregarPuntajeDTO puntaje)
+        [HttpGet("{socioId}/puntaje-por-grupo")]
+        public async Task<IActionResult> ObtenerPuntajePorGrupoMuscular(long socioId)
         {
-            var nuevoPuntaje = await _agregarPuntajeCasoDeUso.Ejecutar(puntaje);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoPuntaje.Id }, nuevoPuntaje);
+            var resultado = await _obtenerPuntajePorGrupoMuscularSocioCasoDeUso.Ejecutar(socioId);
+            return resultado == null ? NotFound("No se encontraron actividades para este socio.") : Ok(resultado);
         }
 
-        [HttpPut]
-        [Route("{id}")]
-        public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarPuntajeDTO puntaje)
+        [HttpGet("ranking")]
+        public async Task<IActionResult> ObtenerRanking()
         {
-            if (id != puntaje.Id)
-            {
-                return BadRequest();
-            }
-            var puntajeActualizado = await _actualizarPuntajeCasoDeUso.Ejecutar(puntaje);
-            if (puntajeActualizado == null)
-            {
-                return NotFound();
-            }
-            return Ok(puntajeActualizado);
+            var resultado = await _obtenerRankingSociosCasoDeUso.Ejecutar();
+            return Ok(resultado);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public async Task<IActionResult> Eliminar(long id)
+        [HttpGet("{socioId}/puntaje-total")]
+        public async Task<IActionResult> ObtenerPuntajeTotal(long socioId)
         {
-            var eliminado = await _eliminarPuntajeCasoDeUso.Ejecutar(id);
-            if (!eliminado)
-            {
-                return NotFound();
-            }
-            return NoContent();
+            var resultado = await _obtenerPuntajeTotalSocioCasoDeUso.Ejecutar(socioId);
+            return resultado == null ? NotFound("No se encontraron actividades para este socio.") : Ok(resultado);
         }
+
     }
 }

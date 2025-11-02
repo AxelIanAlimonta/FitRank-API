@@ -1,4 +1,5 @@
-﻿using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
+﻿using System.Security.Claims;
+using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
 using FitRank_API.Application.DTOs.MedidaCorporalDTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,8 +38,8 @@ namespace FitRank_API.Presentacion.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-           
-            var socioId = long.Parse(User.FindFirst("id")!.Value);
+
+            var socioId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             var result = await _agregarCasoDeUso.Ejecutar(socioId, dto);
             return Ok(result);

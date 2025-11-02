@@ -9,4 +9,7 @@ public interface ISocioRepositorio
     Task<Socio> AgregarAsync(Socio socio);
     Task<Socio?> ActualizarAsync(Socio socio);
     Task<bool> EliminarAsync(long id);
+    Task<Socio?> ObtenerSocioConMedidasAsync(long socioId);
+    Task<Socio?> ObtenerSocioConEntrenamientosAsync(long socioId);
+    Task<IEnumerable<Socio>> ObtenerTodosConEntrenamientoAsync();
 }

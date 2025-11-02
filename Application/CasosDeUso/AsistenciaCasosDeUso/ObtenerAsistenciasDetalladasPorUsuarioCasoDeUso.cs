@@ -19,10 +19,9 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
 
         public async Task<List<AsistenciaDetalleUsuarioDTO>> Ejecutar(long usuarioId)
         {
-            // 1️⃣ Traemos las entidades desde la capa de infraestructura
+         
             var asistencias = await _asistenciaRepositorio.ObtenerPorUsuarioAsync(usuarioId);
 
-            // 2️⃣ Mapeamos entidades → DTOs con AutoMapper
             return _mapper.Map<List<AsistenciaDetalleUsuarioDTO>>(asistencias);
         }
     }

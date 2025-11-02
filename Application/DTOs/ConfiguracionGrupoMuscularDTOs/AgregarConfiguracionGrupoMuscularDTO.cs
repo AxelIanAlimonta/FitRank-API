@@ -3,7 +3,8 @@
     public class AgregarConfiguracionGrupoMuscularDTO
     {
         public int GrupoMuscularId { get; set; } // FK
-        public double Multiplicadopeso { get; set; }
+        public double MultiplicadorPeso { get; set; }
         public double MultiplicadorRepeticiones { get; set; }
+        public double FactorProgresion { get; set; }
     }
 }

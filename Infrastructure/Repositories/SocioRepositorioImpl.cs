@@ -60,5 +60,36 @@ public class SocioRepositorioImpl : ISocioRepositorio
         return true;
     }
 
+    public async Task<Socio?> ObtenerSocioConMedidasAsync(long socioId)
+    {
+        return await _context.Socios
+            .Include(s => s.MedidasCorporales)
+            .FirstOrDefaultAsync(s => s.Id == socioId);
+    }
 
+    public async Task<Socio?> ObtenerSocioConEntrenamientosAsync(long socioId)
+    {
+        return await _context.Socios
+                    .Include(s => s.Entrenamientos)
+                        .ThenInclude(e => e.Actividades)
+                            .ThenInclude(a => a.Serie)
+                    .Include(s => s.Entrenamientos)
+                        .ThenInclude(e => e.Actividades)
+                            .ThenInclude(a => a.EjercicioAsignado)
+                                .ThenInclude(ea => ea.Ejercicio)
+                                    .ThenInclude(ex => ex.GrupoMuscular)
+                    .FirstOrDefaultAsync(s => s.Id == socioId);
+    }
+
+    public async Task<IEnumerable<Socio>> ObtenerTodosConEntrenamientoAsync()
+    {
+        return await _context.Socios
+            .Include(s => s.Entrenamientos)
+            .ThenInclude(e => e.Actividades)
+            .ThenInclude(a => a.Serie)
+            .ThenInclude(s => s.EjercicioAsignado)
+            .ThenInclude(ea => ea.Ejercicio)
+            .ThenInclude(e => e.GrupoMuscular)
+            .ToListAsync();
+    }
 }

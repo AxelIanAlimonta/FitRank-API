@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.DTOs.RutinaDTOs;
+using FitRank_API.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FitRank_API.Presentacion.Controllers;
 
@@ -15,6 +17,7 @@ public class RutinaController : ControllerBase
     private readonly ActualizarRutinaCasoDeUso _actualizarRutinaCasoDeUso;
     private readonly EliminarRutinaCasoDeUso _eliminarRutinaCasoDeUso;
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
+   
 
     public RutinaController(
         AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
@@ -48,6 +51,8 @@ public class RutinaController : ControllerBase
         }
         return Ok(rutina);
     }
+
+  
 
     //post
     [HttpPost]

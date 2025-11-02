@@ -37,9 +37,10 @@ namespace FitRank_API.Infrastructure.Repositories
             {
                 return null;
             }
-            existente.Multiplicadopeso = configuracionGrupoMuscular.Multiplicadopeso;
+            existente.MultiplicadorPeso = configuracionGrupoMuscular.MultiplicadorPeso;
             existente.MultiplicadorRepeticiones = configuracionGrupoMuscular.MultiplicadorRepeticiones;
             existente.GrupoMuscularId = configuracionGrupoMuscular.GrupoMuscularId;
+            existente.FactorProgresion = configuracionGrupoMuscular.FactorProgresion;
             await _context.SaveChangesAsync();
             return existente;
         }

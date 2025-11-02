@@ -18,17 +18,17 @@ public class FitRankDbContext : DbContext
     public DbSet<Maquina> Maquinas { get; set; }
     public DbSet<GrupoMuscular> GruposMusculares { get; set; }
     public DbSet<Dificultad> Dificultades { get; set; }
-    public DbSet<SesionRealizadaDeEjercicios> SesionRealizadaDeEjercicios { get; set; }
+
     public DbSet<ConfiguracionGrupoMuscular> ConfiguracionesGrupoMuscular { get; set; }
     public DbSet<Ejercicio> Ejercicios { get; set; }
     public DbSet<Rutina> Rutinas { get; set; }
     public DbSet<Sesion> Sesiones { get; set; }
     public DbSet<EjercicioAsignado> EjerciciosAsignados { get; set; }
-    public DbSet<SerieAsignada> SeriesAsignadas { get; set; }
-    public DbSet<EjercicioRealizado> EjerciciosRealizados { get; set; }
-    public DbSet<SerieRealizada> SeriesRealizadas { get; set; }
+
+ 
+
     public DbSet<Puntaje> Puntajes { get; set; }
-    public DbSet<RutinaEjercicio> RutinasEjercicios { get; set; }
+ 
     public DbSet<Asistencia> Asistencias { get; set; }
     public DbSet<Invitacion> Invitaciones { get; set; }
     public DbSet<Logro> Logros { get; set; }
@@ -47,6 +47,11 @@ public class FitRankDbContext : DbContext
 
     public DbSet<Notificacion> Notificaciones { get; set; }
 
+    public DbSet<Entrenamiento> Entrenamientos { get; set; }
+
+    public DbSet<Serie> Series { get; set; }
+
+    public DbSet<Actividad> Actividades { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -115,15 +120,24 @@ public class FitRankDbContext : DbContext
             .HasForeignKey(i => i.UsuarioId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Rutina → Usuario creador
         modelBuilder.Entity<Rutina>()
             .HasOne(r => r.Usuario)
-            .WithMany(s => s.RutinasAsignadas)
+            .WithMany(u => u.RutinasCreadas) // colección en Usuario que representa rutinas creadas
             .HasForeignKey(r => r.UsuarioId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Rutina → Socio asignado
+        modelBuilder.Entity<Rutina>()
+            .HasOne(r => r.Socio)
+            .WithMany(s => s.RutinasAsignadas) // colección en Socio que representa rutinas asignadas
+            .HasForeignKey(r => r.SocioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Sesiones → Rutina
         modelBuilder.Entity<Sesion>()
             .HasOne(s => s.Rutina)
-            .WithMany(r => r.Sesiones)
+            .WithMany(r => r.Sesiones) // colección en Rutina de todas sus sesiones
             .HasForeignKey(s => s.RutinaId)
             .OnDelete(DeleteBehavior.Cascade);
 
