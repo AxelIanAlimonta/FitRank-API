@@ -160,7 +160,6 @@ public class SesionControllerTests
         okResult.Value.Should().BeEquivalentTo(sesiones);
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaVacia
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
     {

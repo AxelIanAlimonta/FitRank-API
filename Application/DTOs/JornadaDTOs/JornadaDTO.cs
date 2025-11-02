@@ -1,6 +1,6 @@
 ﻿namespace FitRank_API.Application.DTOs.JornadaDTOs
 {
-    public class JornadaDTO
+    public class ObtenerJornadaDTO
     {
         public long Id { get; set; }
         public long ProfesorId { get; set; }

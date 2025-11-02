@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.JornadaCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<JornadaDTO?> Ejecutar(ActualizarJornadaDTO actualizarJornadaDTO)
+        public virtual async Task<ObtenerJornadaDTO?> Ejecutar(ActualizarJornadaDTO actualizarJornadaDTO)
         {
             var jornadaActualizada = _mapper.Map<Jornada>(actualizarJornadaDTO);
             var resultado = await _jornadaRepository.ActualizarJornadaAsync(jornadaActualizada);
@@ -23,7 +23,7 @@ namespace FitRank_API.Application.CasosDeUso.JornadaCasosDeUso
             {
                 return null;
             }
-            return _mapper.Map<JornadaDTO>(resultado);
+            return _mapper.Map<ObtenerJornadaDTO>(resultado);
         }
     }
 }

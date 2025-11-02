@@ -9,7 +9,7 @@ namespace FitRank_API.Application.CasosDeUso.JornadaCasosDeUso
         {
             _jornadaRepositorio = jornadaRepositorio;
         }
-        public async Task<bool> Ejecutar(long idJornada)
+        public async virtual Task<bool> Ejecutar(long idJornada)
         {
             return await _jornadaRepositorio.EliminarJornadaAsync(idJornada);
         }

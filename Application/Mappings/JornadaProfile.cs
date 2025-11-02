@@ -8,7 +8,7 @@ namespace FitRank_API.Application.Mappings
     {
         public JornadaProfile()
         {
-            CreateMap<Jornada, JornadaDTO>().ReverseMap();
+            CreateMap<Jornada, ObtenerJornadaDTO>().ReverseMap();
             CreateMap<Jornada, AgregarJornadaDTO>().ReverseMap();
             CreateMap<Jornada, ActualizarJornadaDTO>().ReverseMap();
         }
