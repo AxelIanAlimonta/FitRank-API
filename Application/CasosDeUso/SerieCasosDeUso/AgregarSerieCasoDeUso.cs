@@ -17,7 +17,7 @@ public class AgregarSerieCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerSerieDTO> Ejecutar(AgregarSerieDTO dto)
+    public virtual async Task<ObtenerSerieDTO> Ejecutar(AgregarSerieDTO dto)
     {
         var nueva = _mapper.Map<Serie>(dto);
         var creada = await _serieRepo.AgregarAsync(nueva);

@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.SerieCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerSerieDTO?> Ejecutar(ActualizarSerieDTO dto)
+        public virtual async Task<ObtenerSerieDTO?> Ejecutar(ActualizarSerieDTO dto)
         {
             var serieExistente = await _repo.ObtenerPorIdAsync(dto.Id);
             if (serieExistente == null)

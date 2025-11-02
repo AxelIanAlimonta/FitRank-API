@@ -10,7 +10,7 @@ namespace FitRank_API.Application.CasosDeUso.SerieCasosDeUso
             _repo = repo;
         }
 
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             return await _repo.EliminarAsync(id);
         }
