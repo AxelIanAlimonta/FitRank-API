@@ -14,5 +14,5 @@ public interface IRutinaRepositorio
     Task<Rutina> ObtenerPorSocioIdAsync(long socioId);
     //RUTINA GENERADA POR IA
     Task<ResultadoConfirmarRutinaDTO> ValidarReferenciasAsync(ConfirmarRutinaDTO body);
-    Task GuardarRutinaCompletaAsync(Rutina rutina, List<SesionPlanDTO> sesiones);
+    Task GuardarRutinaCompletaAsync(Rutina rutina, List<SesionIADTO> sesiones);
 }

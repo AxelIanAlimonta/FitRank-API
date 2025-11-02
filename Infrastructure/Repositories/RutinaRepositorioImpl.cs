@@ -95,7 +95,7 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
         return ResultadoConfirmarRutinaDTO.Exito(0);
     }
 
-    public async Task GuardarRutinaCompletaAsync(Rutina rutina, List<SesionPlanDTO> sesiones)
+    public async Task GuardarRutinaCompletaAsync(Rutina rutina, List<SesionIADTO> sesiones)
     {
         await using var trx = await _context.Database.BeginTransactionAsync();
 
@@ -129,7 +129,7 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
                     {
                         NumeroDeSerie = sr.Nro,
                         Repeticiones = sr.Reps,
-                        Peso = sr.PesoObjetivo.HasValue ? (int)Math.Round(sr.PesoObjetivo.Value) : 0
+                        Peso = sr.PesoObjetivo
                     }).ToList()
                 };
 

@@ -281,6 +281,7 @@ builder.Services.AddScoped<IEjercicioCatalogo, EjercicioCatalogoImpl>();
 builder.Services.AddScoped<IRoutineBuilder, RoutineBuilderImpl>();
 
 builder.Services.AddScoped<GenerarRutinaIACasoDeUso>();
+builder.Services.AddScoped<ConfirmarRutinaIACasoDeUso>();
 
 
 

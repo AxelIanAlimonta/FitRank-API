@@ -10,5 +10,7 @@
         public long GrupoMuscularId { get; set; }
         public long? MaquinaId { get; set; }
         public List<string> ContraIndicaciones { get; set; } = new List<string>();
+
+        public List<string> Tags { get; set; } = new();
     }
 }

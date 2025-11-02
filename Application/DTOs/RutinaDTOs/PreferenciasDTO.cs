@@ -1,4 +1,6 @@
-﻿namespace FitRank_API.Application.DTOs.RutinaDTOs
+﻿using FitRank_API.Application.DTOs.EjercicioDTOs;
+
+namespace FitRank_API.Application.DTOs.RutinaDTOs
 {
     public sealed class PreferenciasDTO
     {

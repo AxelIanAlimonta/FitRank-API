@@ -29,7 +29,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
                 return new ResultadoGenerarRutinaDTO
                 {
                     RequiereDerivacion = true,
-                    Mensaje = "Se requiere derivación/validación profesional",
+                    Mensaje = "Se requiere derivación/validación profesional", //mensaje especifico del porque no se pudo crear la rutina
                     Decisiones = decisiones,
                     Rutina = null
                 };

@@ -101,9 +101,22 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
                 new CatalogoQuery(
                     Grupos: gruposDia,
                     EquiposPreferidos: d.EquipoPreferido,
-                    EvitarUsuario: input.Preferencias?.EjerciciosExcluidos?.ToArray() ?? Array.Empty<string>(),
+                    EvitarUsuario: Array.Empty<string>(),
                     Dolores: dolores
                 ));
+
+            // 🔹 Filtrar ejercicios excluidos explícitamente por el usuario usando los nombres como tags
+            if (input.Preferencias?.EjerciciosExcluidos?.Count > 0)
+            {
+                var nombresExcluidos = new HashSet<string>(
+                    input.Preferencias.EjerciciosExcluidos,
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+                candidatos = candidatos
+                    .Where(e => !e.Tags.Any(t => nombresExcluidos.Contains(t)) && !nombresExcluidos.Contains(e.Nombre))
+                    .ToList();
+            }
 
 
             // Fallback sin filtro de equipo si no hay candidatos
@@ -181,6 +194,7 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
 
                     var pesoRecomendado = CalcularPesoRecomendado(input, ej.Tipo);
 
+
                     // Patrón de repeticiones consistente (pequeña variación)
                     var baseReps = rng.Next(repsMin, repsMax + 1);
                     var series = Enumerable.Range(1, sets)
@@ -254,7 +268,7 @@ public sealed class RoutineBuilderImpl : IRoutineBuilder
                     // 3 series consistentes
                     var baseReps = rng.Next(repsMin, repsMax + 1);
                     var series = Enumerable.Range(1, 3)
-                        .Select(n => new SerieAsignadaIADTO(n, baseReps, rir, null))
+                        .Select(n => new SerieAsignadaIADTO(n, baseReps, rir, CalcularPesoRecomendado(input, ej.Tipo)))
                         .ToList();
 
                     ejerciciosDia.Add(new EjercicioAsignadoIADTO(
