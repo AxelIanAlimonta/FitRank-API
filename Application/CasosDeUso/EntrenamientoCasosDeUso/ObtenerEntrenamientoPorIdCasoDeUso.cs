@@ -16,7 +16,7 @@ namespace FitRank_API.Application.UseCases.Entrenamiento
             _mapper = mapper;
         }
 
-        public async Task<ObtenerEntrenamientoDTO?> Ejecutar(long id)
+        public virtual async Task<ObtenerEntrenamientoDTO?> Ejecutar(long id)
         {
             var ent = await _repo.ObtenerPorIdAsync(id);
             return ent == null ? null : _mapper.Map<ObtenerEntrenamientoDTO>(ent);

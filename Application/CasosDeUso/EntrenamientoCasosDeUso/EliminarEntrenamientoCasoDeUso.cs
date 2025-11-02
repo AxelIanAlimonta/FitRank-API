@@ -11,7 +11,7 @@ namespace FitRank_API.Application.UseCases.Entrenamiento
             _repo = repo;
         }
 
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             return await _repo.EliminarAsync(id);
         }

@@ -17,7 +17,7 @@ namespace FitRank_API.Application.UseCases.Entrenamiento
             _mapper = mapper;
         }
 
-        public async Task<ObtenerEntrenamientoDTO> Ejecutar(AgregarEntrenamientoDTO dto)
+        public virtual async Task<ObtenerEntrenamientoDTO> Ejecutar(AgregarEntrenamientoDTO dto)
         {
             var nuevo = _mapper.Map<Domain.Entities.Entrenamiento>(dto);
             var creado = await _repo.AgregarAsync(nuevo);

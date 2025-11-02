@@ -30,35 +30,80 @@ namespace FitRank_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _obtenerTodos.Ejecutar());
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var entrenamientos = await _obtenerTodos.Ejecutar();
+                return Ok(entrenamientos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var ent = await _obtenerPorId.Ejecutar(id);
-            return ent == null ? NotFound() : Ok(ent);
+            try
+            {
+                var ent = await _obtenerPorId.Ejecutar(id);
+                return ent == null ? NotFound($"No se encontró ningún entrenamiento con ID {id}.") : Ok(ent);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AgregarEntrenamientoDTO dto)
         {
-            var nuevo = await _crear.Ejecutar(dto);
-            return CreatedAtAction(nameof(GetById), new { id = nuevo.Id }, nuevo);
+            if (dto == null) return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                var nuevo = await _crear.Ejecutar(dto);
+                return CreatedAtAction(nameof(GetById), new { id = nuevo.Id }, nuevo);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarEntrenamientoDTO dto)
         {
-            if (id != dto.Id) return BadRequest();
-            await _actualizar.Ejecutar(dto);
-            return NoContent();
+            if (dto == null) return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (id != dto.Id) return BadRequest("El ID en la URL no coincide con el ID en el cuerpo de la solicitud.");
+            try
+            {
+                var resultado = await _actualizar.Ejecutar(dto);
+                if (resultado == null) return NotFound($"No se encontró ningún entrenamiento con ID {id}.");
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            await _eliminar.Ejecutar(id);
-            return NoContent();
+            try
+            {
+                var resultado = await _eliminar.Ejecutar(id);
+                if (!resultado) return NotFound($"No se encontró ningún entrenamiento con ID {id}.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace FitRank_API.Application.UseCases.Entrenamiento
             _mapper = mapper;
         }
 
-        public async Task<ObtenerEntrenamientoDTO?> Ejecutar(ActualizarEntrenamientoDTO dto)
+        public virtual async Task<ObtenerEntrenamientoDTO?> Ejecutar(ActualizarEntrenamientoDTO dto)
         {
             var entrenamientoExistente = await _repo.ObtenerPorIdAsync(dto.Id);
             if (entrenamientoExistente == null)
