@@ -34,43 +34,62 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPost("agregar")]
         public async Task<IActionResult> Agregar([FromBody] AgregarMedidaCorporalDTO dto)
         {
+            if (dto == null)
+                return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-
-            var socioId = long.Parse(User.FindFirst("id")!.Value);
-
-            var result = await _agregarCasoDeUso.Ejecutar(dto);
-            return Ok(result);
+            try
+            {
+                var result = await _agregarCasoDeUso.Ejecutar(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
 
         [HttpPut("actualizar")]
-        public async Task<IActionResult> Actualizar([FromBody] ActualizarMedidaCorporalDTO dto)
+        public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarMedidaCorporalDTO dto)
         {
+            if (dto == null)
+                return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (dto.Id != id)
+                return BadRequest("El ID en la ruta no coincide con el ID en el cuerpo de la solicitud.");
 
-            var socioId = long.Parse(User.FindFirst("id")!.Value);
 
-            var result = await _actualizarCasoDeUso.Ejecutar(dto);
-            if (result == null)
-                return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
-
-            return Ok(result);
+            try
+            {
+                var result = await _actualizarCasoDeUso.Ejecutar(dto);
+                if (result == null)
+                    return NotFound($"No se encontró ninguna medida corporal con ID {dto.Id}.");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(long id)
         {
-            var socioId = long.Parse(User.FindFirst("id")!.Value);
-            var result = await _obtenerPorIdCasoDeUso.Ejecutar(id);
-
-            if (result == null)
-                return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
-
-            return Ok(result);
+            try
+            {
+                var result = await _obtenerPorIdCasoDeUso.Ejecutar(id);
+                if (result == null)
+                    return NotFound($"No se encontró ninguna medida corporal con ID {id}.");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpGet("historial")]
@@ -93,14 +112,17 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpDelete("eliminar/{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            var socioId = long.Parse(User.FindFirst("id")!.Value);
-            var rol = User.FindFirst("rol")?.Value;
-
-            var eliminado = await _eliminarCasoDeUso.Ejecutar(id);
-            if (!eliminado)
-                return NotFound(new { Mensaje = "Medición no encontrada o no autorizada" });
-
-            return Ok(new { Mensaje = "Medición eliminada correctamente" });
+            try
+            {
+                var eliminado = await _eliminarCasoDeUso.Ejecutar(id);
+                if (!eliminado)
+                    return NotFound("Medición no encontrada o no autorizada");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
     }
 }

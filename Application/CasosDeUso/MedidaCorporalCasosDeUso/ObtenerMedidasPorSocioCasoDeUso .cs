@@ -18,7 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ObtenerMedidaCorporalDTO>> Ejecutar(long socioId)
+        public virtual async Task<IEnumerable<ObtenerMedidaCorporalDTO>> Ejecutar(long socioId)
         {
             
             var medidas = await _medidaRepositorio.ObtenerPorSocioAsync(socioId);
