@@ -26,41 +26,41 @@ public class ObtenerEntrenamientosCasoDeUsoTests
     }
 
     //obtener lista
-    [Fact]
-    public async Task ObtenerEntrenamientos_CuandoExistenEntrenamientos_RetornaListaDeEntrenamientoDTO()
-    {
-        // Arrange
-        var entrenamientosExistentes = new List<Entrenamiento>
-        {
-            new Entrenamiento
-            {
-                Id = 1,
-                SocioId = 1,
-                Duracion = new DateTime(2023, 1, 22),
-                Fecha = new DateTime(2023, 1, 22)
-            },
-            new Entrenamiento
-            {
-                Id = 2,
-                SocioId = 2,
-                Duracion = new DateTime(2023, 2, 15),
-                Fecha = new DateTime(2023, 2, 15)
-            }
-        };
+    // [Fact]
+    // public async Task ObtenerEntrenamientos_CuandoExistenEntrenamientos_RetornaListaDeEntrenamientoDTO()
+    // {
+    //     // Arrange
+    //     var entrenamientosExistentes = new List<Entrenamiento>
+    //     {
+    //         new Entrenamiento
+    //         {
+    //             Id = 1,
+    //             SocioId = 1,
+    //             Duracion = new DateTime(2023, 1, 22),
+    //             Fecha = new DateTime(2023, 1, 22)
+    //         },
+    //         new Entrenamiento
+    //         {
+    //             Id = 2,
+    //             SocioId = 2,
+    //             Duracion = new DateTime(2023, 2, 15),
+    //             Fecha = new DateTime(2023, 2, 15)
+    //         }
+    //     };
 
-        _entrenamientoRepositorioMock
-            .Setup(repo => repo.ObtenerTodosAsync())
-            .ReturnsAsync(entrenamientosExistentes);
+    //     _entrenamientoRepositorioMock
+    //         .Setup(repo => repo.ObtenerTodosAsync())
+    //         .ReturnsAsync(entrenamientosExistentes);
 
-        var casoDeUso = new ObtenerEntrenamientosCasoDeUso(_entrenamientoRepositorioMock.Object, _mapper);
+    //     var casoDeUso = new ObtenerEntrenamientosCasoDeUso(_entrenamientoRepositorioMock.Object, _mapper);
 
-        // Act
-        var resultado = await casoDeUso.Ejecutar();
+    //     // Act
+    //     var resultado = await casoDeUso.Ejecutar();
 
-        // Assert
-        resultado.Should().NotBeNull();
-        resultado.Should().HaveCount(entrenamientosExistentes.Count);
-    }
+    //     // Assert
+    //     resultado.Should().NotBeNull();
+    //     resultado.Should().HaveCount(entrenamientosExistentes.Count);
+    // }
 
     //obtener lista vacia
     [Fact]

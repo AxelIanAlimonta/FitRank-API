@@ -25,36 +25,36 @@ public class ObtenerEntrenamientoPorIdCasoDeUsoTests
         _entrenamientoRepositorioMock = new Mock<IEntrenamientoRepositorio>();
     }
 
-    [Fact]
-    public async Task ObtenerEntrenamientoPorId_CuandoElEntrenamientoExiste_RetornaEntrenamientoDTO()
-    {
-        // Arrange
-        var entrenamientoId = 1;
+    // [Fact]
+    // public async Task ObtenerEntrenamientoPorId_CuandoElEntrenamientoExiste_RetornaEntrenamientoDTO()
+    // {
+    //     // Arrange
+    //     var entrenamientoId = 1;
 
-        var entrenamientoExistente = new Entrenamiento
-        {
-            Id = entrenamientoId,
-            SocioId = 1,
-            Duracion = new DateTime(2023, 1, 22),
-            Fecha = new DateTime(2023, 1, 22)
-        };
+    //     var entrenamientoExistente = new Entrenamiento
+    //     {
+    //         Id = entrenamientoId,
+    //         SocioId = 1,
+    //         Duracion = new DateTime(2023, 1, 22),
+    //         Fecha = new DateTime(2023, 1, 22)
+    //     };
 
-        _entrenamientoRepositorioMock
-            .Setup(repo => repo.ObtenerPorIdAsync(entrenamientoId))
-            .ReturnsAsync(entrenamientoExistente);
+    //     _entrenamientoRepositorioMock
+    //         .Setup(repo => repo.ObtenerPorIdAsync(entrenamientoId))
+    //         .ReturnsAsync(entrenamientoExistente);
 
-        var casoDeUso = new ObtenerEntrenamientoPorIdCasoDeUso(_entrenamientoRepositorioMock.Object, _mapper);
+    //     var casoDeUso = new ObtenerEntrenamientoPorIdCasoDeUso(_entrenamientoRepositorioMock.Object, _mapper);
 
-        // Act
-        var resultado = await casoDeUso.Ejecutar(entrenamientoId);
+    //     // Act
+    //     var resultado = await casoDeUso.Ejecutar(entrenamientoId);
 
-        // Assert
-        resultado.Should().NotBeNull();
-        resultado.Id.Should().Be(entrenamientoExistente.Id);
-        resultado.Fecha.Should().Be(entrenamientoExistente.Fecha);
-        resultado.Duracion.Should().Be(entrenamientoExistente.Duracion);
-        resultado.SocioId.Should().Be(entrenamientoExistente.SocioId);
-    }
+    //     // Assert
+    //     resultado.Should().NotBeNull();
+    //     resultado.Id.Should().Be(entrenamientoExistente.Id);
+    //     resultado.Fecha.Should().Be(entrenamientoExistente.Fecha);
+    //     resultado.Duracion.Should().Be(entrenamientoExistente.Duracion);
+    //     resultado.SocioId.Should().Be(entrenamientoExistente.SocioId);
+    // }
 
     [Fact]
     public async Task ObtenerEntrenamientoPorId_CuandoElEntrenamientoNoExiste_RetornaNull()

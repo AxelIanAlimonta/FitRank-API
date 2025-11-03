@@ -4,7 +4,7 @@
         {
                 public long Id { get; set; }
                 public TimeSpan? Duracion { get; set; }
-                public DateTime? Fecha { get; set; }
+                public DateTime Fecha { get; set; }
                 public long SocioId { get; set; }
         }
 }

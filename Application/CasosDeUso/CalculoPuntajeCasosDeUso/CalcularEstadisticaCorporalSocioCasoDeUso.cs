@@ -29,8 +29,8 @@ namespace FitRank_API.Application.UseCases
             var ultimaMedida = socio.MedidasCorporales
                 .OrderByDescending(m => m.Fecha)
                 .First();
-            
-            if(ultimaMedida == null)
+
+            if (ultimaMedida == null)
             {
                 throw new Exception("El socio no tiene medidas corporales registradas.");
             }
