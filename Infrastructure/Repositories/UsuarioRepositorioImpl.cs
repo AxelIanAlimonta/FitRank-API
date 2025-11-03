@@ -29,38 +29,73 @@ namespace FitRank_API.Infrastructure.Repositorios
             => await _context.Usuarios.FirstOrDefaultAsync(u =>
                 u.TokenRecuperacion == token && u.TokenExpira > DateTime.UtcNow && !u.EsActivado);
 
-        public async  Task<Usuario> AgregarAsync(Usuario usuario)
+      
+
+
+        public async Task<Usuario> AgregarAsync(Usuario usuario)
         {
-            var resultado = await _context.Usuarios.AddAsync(usuario);
+            if (usuario is Socio socio)
+                _context.Socios.Add(socio);
+            else
+                _context.Usuarios.Add(usuario);
+
             await _context.SaveChangesAsync();
             return usuario;
         }
 
+        // 🔹 Obtener por condición, incluyendo tipos derivados
+        public async Task<Usuario?> ObtenerPorCondicionAsync(Expression<Func<Usuario, bool>> predicate)
+        {
+            return await _context.Usuarios
+                .FirstOrDefaultAsync(predicate);
+        }
+
+
         public async Task<Usuario> ActualizarAsync(Usuario usuario)
         {
-            var existenteUsuario = await _context.Usuarios.FindAsync(usuario.Id);
-            if (existenteUsuario == null) return null;
-            existenteUsuario.Nombre = usuario.Nombre;
-            existenteUsuario.Apellido = usuario.Apellido;
-            existenteUsuario.Dni = usuario.Dni;
-            existenteUsuario.NombreUsuario = usuario.NombreUsuario;
-            existenteUsuario.PasswordHash = usuario.PasswordHash;
-            existenteUsuario.Rol = usuario.Rol;
-            existenteUsuario.Sexo = usuario.Sexo;
-            existenteUsuario.QrToken = usuario.QrToken;
-            existenteUsuario.TokenRecuperacion = usuario.TokenRecuperacion;
-            existenteUsuario.TokenExpira = usuario.TokenExpira;
-            existenteUsuario.FechaNacimiento = usuario.FechaNacimiento;
-            existenteUsuario.FotoDePerfil = usuario.FotoDePerfil;
-            existenteUsuario.Estado = usuario.Estado;
-            existenteUsuario.Email = usuario.Email;
-            existenteUsuario.CuotaPagadaHasta = usuario.CuotaPagadaHasta;
-            existenteUsuario.Telefono = usuario.Telefono;
-            existenteUsuario.EsActivado = usuario.EsActivado;
-             _context.Usuarios.Update(usuario);
+            // Trae la entidad existente (trackeada por EF)
+            var existente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == usuario.Id);
+
+            if (existente == null)
+                return null;
+
+            // ⚡ Actualizá manualmente los campos importantes
+            existente.Nombre = usuario.Nombre;
+            existente.Apellido = usuario.Apellido;
+            existente.Dni = usuario.Dni;
+            existente.NombreUsuario = usuario.NombreUsuario;
+
+            // 🔐 Aseguramos que la nueva contraseña se guarde correctamente
+            if (!string.IsNullOrEmpty(usuario.PasswordHash) && usuario.PasswordHash != existente.PasswordHash)
+            {
+                existente.PasswordHash = usuario.PasswordHash;
+            }
+
+            existente.Rol = usuario.Rol;
+            existente.Sexo = usuario.Sexo;
+            existente.QrToken = usuario.QrToken;
+
+            // ⚡ Token y activación
+            existente.TokenRecuperacion = usuario.TokenRecuperacion;
+            existente.TokenExpira = usuario.TokenExpira;
+            existente.EsActivado = usuario.EsActivado;
+
+            existente.FechaNacimiento = usuario.FechaNacimiento;
+            existente.FotoDePerfil = usuario.FotoDePerfil;
+            existente.Estado = usuario.Estado;
+            existente.Email = usuario.Email;
+            existente.CuotaPagadaHasta = usuario.CuotaPagadaHasta;
+            existente.Telefono = usuario.Telefono;
+
+            // 🚀 Guardamos todo
             await _context.SaveChangesAsync();
-            return existenteUsuario;
+
+            Console.WriteLine($"[ActualizarAsync] Usuario {existente.Email} actualizado correctamente ✅");
+
+            return existente;
         }
+
+
 
         public async Task EliminarAsync(Usuario usuario)
         {
@@ -72,9 +107,6 @@ namespace FitRank_API.Infrastructure.Repositorios
             => await _context.Usuarios.ToListAsync();
 
 
-        public async Task<Usuario?> ObtenerPorCondicionAsync(Expression<Func<Usuario, bool>> predicado)
-        {
-            return await _context.Usuarios.FirstOrDefaultAsync(predicado);
-        }
+        
     }
 }

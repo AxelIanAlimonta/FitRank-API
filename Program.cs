@@ -52,6 +52,7 @@ using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using FitRank_API.Application.UseCases.Actividad;
 using FitRank_API.Application.UseCases.Entrenamiento;
+using FitRank_API.Application.CasosDeUso.Asistencia;
 
 
 
@@ -133,6 +134,8 @@ builder.Services.AddScoped<ObtenerRutinaPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarRutinaCasoDeUso>();
 builder.Services.AddScoped<ActualizarRutinaCasoDeUso>();
 builder.Services.AddScoped<EliminarRutinaCasoDeUso>();
+builder.Services.AddScoped<ObtenerRutinaCompletaCasoDeUso>();
+
 
 builder.Services.AddScoped<ISesionRepositorio, SesionRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodasLasSesionesCasoDeUso>();
@@ -213,7 +216,7 @@ builder.Services.AddScoped<ValidarQrCasoDeUso>();
 builder.Services.AddScoped<ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso>();
 builder.Services.AddScoped<ObtenerAsistenciasPorDiaCasoDeUso>();
 builder.Services.AddScoped<AgregarAsistenciaCasoDeUso>();
-
+builder.Services.AddScoped<ValidarAsistenciaQrCasoDeUso>();
 
 builder.Services.AddScoped<IProfesorRepositorio, ProfesorRepositorioImpl>();
 builder.Services.AddScoped<AgregarProfesorCasoDeUso>();
@@ -239,6 +242,7 @@ builder.Services.AddScoped<EnviarEmailQrCasoDeUso>();
 builder.Services.AddScoped<FallbackEfectivoCasoDeUso>();
 builder.Services.AddScoped<AgregarInvitacionCasoDeUso>();
 builder.Services.AddScoped<AgregarAdministradorCasoDeUso>();
+builder.Services.AddScoped<ObtenerAdministradorCasoDeUso>();
 
 builder.Services.AddScoped<IMedidaCorporalRepositorio, MedidaCorporalRepositorioImpl>();
 builder.Services.AddScoped<AgregarMedidaCorporalCasoDeUso>();

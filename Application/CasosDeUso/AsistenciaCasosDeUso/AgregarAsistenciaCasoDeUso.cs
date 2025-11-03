@@ -33,7 +33,8 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
                 };
             }
 
-            var asistencia = _mapper.Map<Asistencia>(dto);
+            var asistencia = _mapper.Map<FitRank_API.Domain.Entities.Asistencia>(dto);
+
             asistencia.Fecha = DateTime.UtcNow.Date;
             asistencia.HoraEntrada = DateTime.UtcNow;
             asistencia.Presente = true;

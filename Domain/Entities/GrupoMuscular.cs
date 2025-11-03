@@ -15,7 +15,7 @@ namespace FitRank_API.Domain.Entities
         [MaxLength(255)]
         public string? Imagen { get; set; }
 
-        // Relación con Ejercicio: un grupo muscular puede tener muchos ejercicios
+        
         public ICollection<Ejercicio>? Ejercicios { get; set; }
 
         public ICollection<ConfiguracionGrupoMuscular>? Configuraciones { get; set; }

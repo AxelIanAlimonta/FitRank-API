@@ -31,10 +31,16 @@ namespace FitRank_API.Infrastructure.Repositories
         public async Task<Administrador?> ObtenerPorIdAsync(long id)
         {
             return await _context.Administradores
-                .Include(a => a.Gimnasio)
-                .FirstOrDefaultAsync(a => a.Id == id);
+       .AsNoTracking()
+       .FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        public async Task<IEnumerable<Administrador>> ObtenerTodosAsync()
+        {
+            return await _context.Administradores
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
 
         public async Task<Gimnasio?> ObtenerPorAdministradorIdAsync(long administradorId)

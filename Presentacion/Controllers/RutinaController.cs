@@ -5,6 +5,7 @@ using FitRank_API.Application.DTOs.RutinaDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
+
 namespace FitRank_API.Presentacion.Controllers;
 
 [Route("api/[controller]")]
@@ -17,30 +18,53 @@ public class RutinaController : ControllerBase
     private readonly ActualizarRutinaCasoDeUso _actualizarRutinaCasoDeUso;
     private readonly EliminarRutinaCasoDeUso _eliminarRutinaCasoDeUso;
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
-   
+    private readonly ObtenerRutinaCompletaCasoDeUso _obtenerRutinaCompletaCasoDeUso;
+
+
 
 
     public RutinaController(
-        AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
-        ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
-        ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
-        ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
-        EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso)
+
+          AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
+          ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
+          ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
+          
+          ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
+          EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
+          ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso
+          )
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
-        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _actualizarRutinaCasoDeUso = actualizarRutinaCasoDeUso;
+        
+        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
+        _obtenerRutinaCompletaCasoDeUso = obtenerRutinaCompletaCasoDeUso;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> ObtenerTodo()
+   
+  
+  
+
+    //post
+    [HttpPost]
+    public async Task<IActionResult> Agregar([FromBody] AgregarRutinaDTO rutinaDTO)
     {
+        if (rutinaDTO == null)
+        {
+            return BadRequest("El objeto rutina no puede ser nulo.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
-            var rutinas = await _obtenerTodasLasRutinasCasoDeUso.Ejecutar();
-            return Ok(rutinas);
+            var rutinaCreada = await _agregarRutinaCasoDeUso.Ejecutar(rutinaDTO);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = rutinaCreada.Id }, rutinaCreada);
         }
         catch (Exception ex)
         {
@@ -69,32 +93,8 @@ public class RutinaController : ControllerBase
         }
     }
 
-  
 
-    //post
-    [HttpPost]
-    public async Task<IActionResult> Agregar([FromBody] AgregarRutinaDTO rutinaDTO)
-    {
-        if (rutinaDTO == null)
-        {
-            return BadRequest("El objeto rutina no puede ser nulo.");
-        }
 
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        try
-        {
-            var rutinaCreada = await _agregarRutinaCasoDeUso.Ejecutar(rutinaDTO);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = rutinaCreada.Id }, rutinaCreada);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarRutinaDTO rutinaDTO)
@@ -132,6 +132,21 @@ public class RutinaController : ControllerBase
 
     }
 
+    [HttpGet]
+    public async Task<IActionResult> ObtenerTodo()
+    {
+        try
+        {
+            var rutinas = await _obtenerTodasLasRutinasCasoDeUso.Ejecutar();
+            return Ok(rutinas);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+
     [HttpDelete]
     [Route("{id:long}")]
     public async Task<IActionResult> Eliminar(long id)
@@ -150,6 +165,17 @@ public class RutinaController : ControllerBase
         {
             return StatusCode(500, "Error al eliminar rutina");
         }
+    }
+
+    [HttpGet("socio/{socioId}/detalle")]
+    public async Task<IActionResult> ObtenerRutinaCompletaPorSocio(long socioId)
+    {
+        var resultado = await _obtenerRutinaCompletaCasoDeUso.Ejecutar(socioId);
+
+        if (resultado == null || !resultado.Any())
+            return NotFound("No se encontraron rutinas para este socio.");
+
+        return Ok(resultado);
     }
 
 }

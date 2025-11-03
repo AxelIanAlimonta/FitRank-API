@@ -20,6 +20,7 @@ public class RutinaControllerTests
     private readonly Mock<EliminarRutinaCasoDeUso> _mockEliminar;
     private readonly Mock<ObtenerRutinaPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerTodasLasRutinasCasoDeUso> _mockObtenerTodos;
+    private readonly Mock<ObtenerRutinaCompletaCasoDeUso> mockObtenerCompleta = new();
 
     public RutinaControllerTests()
     {
@@ -32,12 +33,14 @@ public class RutinaControllerTests
         _mockObtenerPorId = new Mock<ObtenerRutinaPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerTodasLasRutinasCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
 
+
         _controller = new RutinaController(
             _mockAgregar.Object,
             _mockObtenerPorId.Object,
             _mockActualizar.Object,
             _mockObtenerTodos.Object,
-            _mockEliminar.Object
+            _mockEliminar.Object,
+              mockObtenerCompleta.Object
         );
     }
 

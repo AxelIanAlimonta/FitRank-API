@@ -22,6 +22,11 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
         return asistencia;
     }
 
+    public async Task<Asistencia?> ObtenerPorUsuarioYFechaAsync(long usuarioId, DateTime fecha)
+    {
+        return await _context.Asistencias
+            .FirstOrDefaultAsync(a => a.UsuarioId == usuarioId && a.Fecha.Date == fecha.Date);
+    }
 
     public async Task<List<Asistencia>> ObtenerPorUsuarioAsync(long usuarioId)
     {
@@ -46,15 +51,13 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
     {
         var existingAsistencia = await _context.Asistencias.FindAsync(asistencia.Id);
         if (existingAsistencia == null)
-        {
             return null;
-        }
 
         _context.Entry(existingAsistencia).CurrentValues.SetValues(asistencia);
         await _context.SaveChangesAsync();
         return existingAsistencia;
-
     }
+
 
     public async Task<IEnumerable<Asistencia>> ObtenerTodasAsync()
     {
@@ -80,6 +83,14 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
         return await query.ToListAsync();
     }
 
+
+
+
+
+
+
+
+
     public async Task<bool> EliminarAsync(long Id)
     {
         var asistencia = await _context.Asistencias.FindAsync(Id);
@@ -91,4 +102,5 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
         return true;
     }
 
+    
 }

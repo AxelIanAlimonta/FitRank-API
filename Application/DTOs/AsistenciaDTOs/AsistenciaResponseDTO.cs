@@ -6,6 +6,6 @@
         public string Mensaje { get; set; } = string.Empty;
         public long AsistenciaId { get; set; }
         public string? NombreUsuario { get; set; }
-        public DateTime? HoraEntrada { get; set; }
+        public TimeSpan? HoraEntrada { get; set; }
     }
 }

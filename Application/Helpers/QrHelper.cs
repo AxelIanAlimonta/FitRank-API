@@ -53,6 +53,31 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
             return $"data:image/png;base64,{base64}";
         }
+            
+    
+
+    public string GenerarQrDePaseJWT(Socio socio, long gimnasioId)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["QrSecret"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+        new Claim("userId", socio.Id.ToString()),
+        new Claim("gymId", gimnasioId.ToString()),
+        new Claim("validoHasta", socio.CuotaPagadaHasta?.ToString("O") ?? DateTime.UtcNow.AddDays(30).ToString("O"))
+    };
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: socio.CuotaPagadaHasta ?? DateTime.UtcNow.AddDays(30),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
     }
 }

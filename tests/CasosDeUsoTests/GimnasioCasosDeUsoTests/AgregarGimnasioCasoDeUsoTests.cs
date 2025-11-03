@@ -14,6 +14,7 @@ public class AgregarGimnasioCasoDeUsoTests
 {
     private readonly IMapper _mapper;
     private readonly Mock<IGimnasioRepositorio> _gimnasioRepositorioMock;
+    private readonly Mock<IAdministradorRepositorio> _adminRepositorioMock;
 
     public AgregarGimnasioCasoDeUsoTests()
     {
@@ -25,6 +26,7 @@ public class AgregarGimnasioCasoDeUsoTests
         );
         _mapper = mappingConfig.CreateMapper();
         _gimnasioRepositorioMock = new Mock<IGimnasioRepositorio>();
+        _adminRepositorioMock = new Mock<IAdministradorRepositorio>();
     }
 
     [Fact]
@@ -53,7 +55,7 @@ public class AgregarGimnasioCasoDeUsoTests
         _gimnasioRepositorioMock.Setup(repo => repo.AgregarGimnasio(It.IsAny<Gimnasio>()))
             .ReturnsAsync(gimnasioAgregado);
 
-        var agregarGimnasioCasoDeUso = new AgregarGimnasioCasoDeUso(_gimnasioRepositorioMock.Object, _mapper);
+        var agregarGimnasioCasoDeUso = new AgregarGimnasioCasoDeUso(_gimnasioRepositorioMock.Object, _mapper, _adminRepositorioMock.Object);
 
         // Act
         var resultado = await agregarGimnasioCasoDeUso.Ejecutar(nuevoGimnasioDTO);
@@ -64,5 +66,6 @@ public class AgregarGimnasioCasoDeUsoTests
         resultado.Direccion.Should().Be(nuevoGimnasioDTO.Direccion);
         resultado.Telefono.Should().Be(nuevoGimnasioDTO.Telefono);
         resultado.Email.Should().Be(nuevoGimnasioDTO.Email);
+
     }
 }

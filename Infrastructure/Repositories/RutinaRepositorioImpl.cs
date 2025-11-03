@@ -18,6 +18,7 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
         return await _context.Rutinas
                         .Include(r => r.Usuario)
                         .Include(r => r.Socio)
+
                         .ToListAsync();
     }
 
@@ -69,4 +70,22 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
     {
         throw new NotImplementedException();
     }
+
+    public async Task<List<Rutina>> ObtenerRutinasPorSocioAsync(long socioId)
+    {
+        return await _context.Rutinas
+            .Where(r => r.SocioId == socioId)
+            .Include(r => r.Sesiones!)
+                .ThenInclude(s => s.EjerciciosAsignados!)
+                    .ThenInclude(ea => ea.Series!)
+            .Include(r => r.Sesiones!)
+                .ThenInclude(s => s.EjerciciosAsignados!)
+                    .ThenInclude(ea => ea.Ejercicio!)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+
 }
+
+

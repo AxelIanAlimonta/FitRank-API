@@ -18,7 +18,7 @@ public class Ejercicio
     [MaxLength(250)]
     public string? UrlImagen { get; set; } = string.Empty;
 
-    public int? DuracionEstimada { get; set; } // en minutos o segundos según convengan
+    public int? DuracionEstimada { get; set; } 
 
     [MaxLength(250)]
     public string? UrlVideo { get; set; } = string.Empty;

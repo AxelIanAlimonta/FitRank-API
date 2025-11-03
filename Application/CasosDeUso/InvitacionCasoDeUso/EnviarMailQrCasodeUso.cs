@@ -14,6 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         private readonly ISendGridClient _sendGridClient;
         private readonly IConfiguration _config;
 
+
         public EnviarEmailQrCasoDeUso(
             IUsuarioRepositorio usuarioRepositorio,
             ISendGridClient sendGridClient,

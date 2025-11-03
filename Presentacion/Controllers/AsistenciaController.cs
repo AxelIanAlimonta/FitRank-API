@@ -1,4 +1,6 @@
-﻿using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
+﻿using FitRank_API.Application.CasosDeUso.Asistencia;
+using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
+using FitRank_API.Application.DTOs.QR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,15 +14,17 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ObtenerAsistenciasPorUsuarioCasoDeUso _obtenerAsistenciasPorUsuarioCasoDeUso;
         private readonly ObtenerAsistenciasPorDiaCasoDeUso _obtenerAsistenciasPorDiaCasoDeUso;
         private readonly ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso _obtenerAsistenciasDetalladasPorUsuarioCasoDeUso;
+        private readonly ValidarAsistenciaQrCasoDeUso _validarAsistenciaQrCasoDeUso;
 
         public AsistenciaController(
              ObtenerAsistenciasPorUsuarioCasoDeUso obtenerAsistenciasPorUsuarioCasoDeUso,
              ObtenerAsistenciasPorDiaCasoDeUso obtenerAsistenciasPorDiaCasoDeUso,
-             ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso obtenerAsistenciasDetalladasPorUsuarioCasoDeUso)
+             ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso obtenerAsistenciasDetalladasPorUsuarioCasoDeUso, ValidarAsistenciaQrCasoDeUso validarAsistenciaQrCasoDeUso)
         {
             _obtenerAsistenciasPorUsuarioCasoDeUso = obtenerAsistenciasPorUsuarioCasoDeUso;
             _obtenerAsistenciasPorDiaCasoDeUso = obtenerAsistenciasPorDiaCasoDeUso;
             _obtenerAsistenciasDetalladasPorUsuarioCasoDeUso = obtenerAsistenciasDetalladasPorUsuarioCasoDeUso;
+            _validarAsistenciaQrCasoDeUso = validarAsistenciaQrCasoDeUso;
         }
 
 
@@ -72,5 +76,22 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(resultado);
         }
 
+    
+           [HttpPost("validar-qr")]
+        
+        public async Task<IActionResult> ValidarQr([FromBody] QrValidationDTO dto)
+        {
+            // En producción, el adminId vendría del token JWT del usuario logueado (dueño del gym)
+            // Por ahora, en desarrollo, lo dejamos null o simulado para porbarlo con los profes.
+
+            int? adminId = null;
+
+            var result = await _validarAsistenciaQrCasoDeUso.Ejecutar(dto, adminId);
+
+            if (!result.Valido)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }

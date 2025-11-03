@@ -12,7 +12,11 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<Asistencia?> ActualizarAsync(Asistencia asistencia);
         Task<IEnumerable<Asistencia>> ObtenerTodasAsync();
         Task<List<Asistencia>> ObtenerPorUsuarioAsync(long usuarioId);
+
+        Task<Asistencia?> ObtenerPorUsuarioYFechaAsync(long usuarioId, DateTime fecha);
+
         Task<bool> EliminarAsync(long Id);
+
 
     }
 }
