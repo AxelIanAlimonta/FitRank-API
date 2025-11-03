@@ -16,16 +16,10 @@ namespace FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerMedidaCorporalDTO?> Ejecutar(long socioId, long id)
+        public virtual async Task<ObtenerMedidaCorporalDTO?> Ejecutar(long id)
         {
-            var medida = await _repo.ObtenerPorIdAsync(id);
-            if (medida == null)
-                return null;
-
-            if (medida.SocioId != socioId)
-                throw new UnauthorizedAccessException("No estás autorizado para acceder a esta medición.");
-
-            return _mapper.Map<ObtenerMedidaCorporalDTO>(medida);
+            var medidaCorporal = await _repo.ObtenerPorIdAsync(id);
+            return medidaCorporal == null ? null : _mapper.Map<ObtenerMedidaCorporalDTO>(medidaCorporal);
         }
     }
 }

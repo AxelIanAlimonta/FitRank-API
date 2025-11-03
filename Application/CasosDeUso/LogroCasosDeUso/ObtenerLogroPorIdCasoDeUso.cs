@@ -14,7 +14,7 @@ public class ObtenerLogroPorIdCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerLogroDTO?> Ejecutar(long id)
+    public virtual async Task<ObtenerLogroDTO?> Ejecutar(long id)
     {
         var logro = await _logroRepositorio.ObtenerLogroPorId(id);
         if (logro == null)

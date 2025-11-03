@@ -6,13 +6,11 @@ namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
     public class EliminarMaquinaCasoDeUso
     {
         private readonly IMaquinaRepositorio _maquinaRepositorio;
-        private readonly IMapper _mapper;
-        public EliminarMaquinaCasoDeUso(IMaquinaRepositorio maquinaRepositorio, IMapper mapper)
+        public EliminarMaquinaCasoDeUso(IMaquinaRepositorio maquinaRepositorio)
         {
             _maquinaRepositorio = maquinaRepositorio;
-            _mapper = mapper;
         }
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             return await _maquinaRepositorio.EliminarMaquina(id);
         }

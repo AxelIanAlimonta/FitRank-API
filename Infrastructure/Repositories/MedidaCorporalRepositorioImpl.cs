@@ -41,19 +41,27 @@ namespace FitRank_API.Infrastructure.Repositories
             var existente = await _context.MedidasCorporales.FindAsync(medida.Id);
             if (existente == null) return null;
 
-            _context.Entry(existente).CurrentValues.SetValues(medida);
+            existente.Fecha = medida.Fecha;
+            existente.SocioId = medida.SocioId;
+            existente.BrazoDerechoCm = medida.BrazoDerechoCm;
+            existente.BrazoIzquierdoCm = medida.BrazoIzquierdoCm;
+            existente.PechoCm = medida.PechoCm;
+            existente.CinturaCm = medida.CinturaCm;
+            existente.CaderaCm = medida.CaderaCm;
+            existente.PesoKg = medida.PesoKg;
+
+
             await _context.SaveChangesAsync();
             return existente;
         }
 
-        public async Task<bool> EliminarAsync(MedidaCorporal medida)
+        public async Task<bool> EliminarAsync(long id)
         {
-            var medidaExistente = await _context.MedidasCorporales.FindAsync(medida.Id);
-            if (medidaExistente == null)
-            {
+            var medida = await _context.MedidasCorporales.FindAsync(id);
+            if (medida == null)
                 return false;
-            }
-            _context.MedidasCorporales.Remove(medidaExistente);
+
+            _context.MedidasCorporales.Remove(medida);
             await _context.SaveChangesAsync();
             return true;
         }

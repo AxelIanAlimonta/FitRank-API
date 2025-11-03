@@ -13,7 +13,7 @@ public class AgregarGimnasioCasoDeUso
         _gimnasioRepositorio = gimnasioRepositorio;
         _mapper = mapper;
     }
-    public async Task<ObtenerGimnasioDTO> Ejecutar(AgregarGimnasioDTO crearGimnasioDTO)
+    public virtual async Task<ObtenerGimnasioDTO> Ejecutar(AgregarGimnasioDTO crearGimnasioDTO)
     {
         var gimnasioEntidad = _mapper.Map<Gimnasio>(crearGimnasioDTO);
         var gimnasioCreado = await _gimnasioRepositorio.AgregarGimnasio(gimnasioEntidad);

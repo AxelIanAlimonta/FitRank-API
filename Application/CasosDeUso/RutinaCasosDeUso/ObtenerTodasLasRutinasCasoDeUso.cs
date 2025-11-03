@@ -14,7 +14,7 @@ public class ObtenerTodasLasRutinasCasoDeUso
         _rutinaRepositorio = rutinaRepositorio;
         _mapper = mapper;
     }
-    public async Task<List<ObtenerRutinaDTO>> Ejecutar()
+    public virtual async Task<List<ObtenerRutinaDTO>> Ejecutar()
     {
         var rutinas = await _rutinaRepositorio.ObtenerTodasAsync();
         return _mapper.Map<List<ObtenerRutinaDTO>>(rutinas);

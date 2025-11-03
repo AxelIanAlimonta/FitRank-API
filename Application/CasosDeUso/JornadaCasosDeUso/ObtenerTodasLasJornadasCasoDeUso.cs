@@ -14,10 +14,10 @@ namespace FitRank_API.Application.CasosDeUso.JornadaCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<JornadaDTO>> Ejecutar()
+        public virtual async Task<List<ObtenerJornadaDTO>> Ejecutar()
         {
             var jornadas = await _jornadaRepository.ObtenerTodasLasJornadasAsync();
-            return _mapper.Map<List<JornadaDTO>>(jornadas);
+            return _mapper.Map<List<ObtenerJornadaDTO>>(jornadas);
         }
     }
 }

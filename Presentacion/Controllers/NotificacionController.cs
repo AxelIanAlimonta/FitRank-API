@@ -22,9 +22,9 @@ public class NotificacionController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Crear([FromBody] AgregarNotificacionDTO dto)
     {
-        var usuarioId = long.Parse(User.FindFirst("id")!.Value);
-        var resultado = await _agregarCaso.Ejecutar(usuarioId, dto);
-        return CreatedAtAction(nameof(Crear), resultado);
+        var notificacionCreada = await _agregarCaso.Ejecutar(dto);
+        return CreatedAtAction(nameof(Crear), new { id = notificacionCreada.Id }, notificacionCreada);
+
     }
 
     [HttpGet("usuario")]

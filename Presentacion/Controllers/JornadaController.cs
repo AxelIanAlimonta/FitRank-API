@@ -32,8 +32,15 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerTodasAsync()
         {
-            var jornadas = await _obtenerTodasLasJornadaCasoDeUso.Ejecutar();
-            return Ok(jornadas);
+            try
+            {
+                var jornadas = await _obtenerTodasLasJornadaCasoDeUso.Ejecutar();
+                return Ok(jornadas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error al obtener las jornadas");
+            }
         }
 
         [HttpGet("{id}")]
@@ -42,7 +49,7 @@ namespace FitRank_API.Presentacion.Controllers
             var jornada = await _obtenerJornadaPorIdCasoDeUso.Ejecutar(id);
             if (jornada == null)
             {
-                return NotFound();
+                return NotFound($"La jornada con ID {id} no fue encontrada.");
             }
             return Ok(jornada);
         }
@@ -50,34 +57,63 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPost]
         public async Task<IActionResult> Agregar([FromBody] AgregarJornadaDTO agregarJornadaDTO)
         {
-            var nuevaJornada = await _agregarJornadaCasoDeUso.Ejecutar(agregarJornadaDTO);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaJornada.Id }, nuevaJornada);
+            if (agregarJornadaDTO == null)
+            {
+                return BadRequest("El objeto JornadaDTO no puede ser nulo.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var nuevaJornada = await _agregarJornadaCasoDeUso.Ejecutar(agregarJornadaDTO);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaJornada.Id }, nuevaJornada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error al agregar la jornada");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarJornadaDTO actualizarJornadaDTO)
         {
+            if (actualizarJornadaDTO == null)
+            {
+                return BadRequest("El objeto ActualizarJornadaDTO no puede ser nulo.");
+            }
             if (id != actualizarJornadaDTO.Id)
             {
-                return BadRequest();
+                return BadRequest("El ID de la jornada no coincide con el ID proporcionado en la ruta.");
             }
-            var jornadaActualizada = await _actualizarJornadaCasoDeUso.Ejecutar(actualizarJornadaDTO);
-            if (jornadaActualizada == null)
+            try
             {
-                return NotFound();
+                var jornadaActualizada = await _actualizarJornadaCasoDeUso.Ejecutar(actualizarJornadaDTO);
+                if (jornadaActualizada == null)
+                {
+                    return NotFound($"La jornada con ID {id} no fue encontrada para actualizar.");
+                }
+                return Ok(jornadaActualizada);
             }
-            return Ok(jornadaActualizada);
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error al actualizar la jornada");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            var eliminado = await _eliminarJornadaCasoDeUso.Ejecutar(id);
+            try{var eliminado = await _eliminarJornadaCasoDeUso.Ejecutar(id);
             if (!eliminado)
             {
-                return NotFound();
+                return NotFound($"La jornada con ID {id} no fue encontrada para eliminar.");
             }
-            return NoContent();
+            return NoContent();}catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error al eliminar la jornada");
+            }
         }
 
 

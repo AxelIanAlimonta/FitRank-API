@@ -14,15 +14,18 @@ namespace FitRank_API.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Maquina?> ActualizarMaquina(long id, ActualizarMaquinaDTO dto)
+        public async Task<Maquina?> ActualizarMaquina(Maquina maquina)
         {
-            var maquinaExistente = await _context.Maquinas.FirstOrDefaultAsync(x => x.Id == id);
-            if (maquinaExistente is null)
+            var maquinaExistente = await _context.Maquinas.FindAsync(maquina.Id);
+            if (maquinaExistente == null)
+            {
                 return null;
+            }
 
-            if (!string.IsNullOrWhiteSpace(dto.Nombre)) maquinaExistente.Nombre = dto.Nombre;
-            if (!string.IsNullOrWhiteSpace(dto.UrlImagen)) maquinaExistente.UrlImagen = dto.UrlImagen;
-            if (!string.IsNullOrWhiteSpace(dto.Qr)) maquinaExistente.Qr = dto.Qr;
+            maquinaExistente.Nombre = maquina.Nombre;
+            maquinaExistente.GimnasioId = maquina.GimnasioId;
+            maquinaExistente.UrlImagen = maquina.UrlImagen;
+            maquinaExistente.Qr = maquina.Qr;
 
             await _context.SaveChangesAsync();
             return maquinaExistente;

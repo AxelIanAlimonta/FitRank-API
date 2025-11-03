@@ -8,7 +8,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<Serie?> ObtenerPorIdAsync(long id);
         Task<IEnumerable<Serie>> ObtenerPorEjercicioAsync(long ejercicioAsignadoId);
         Task<Serie> AgregarAsync(Serie serie);
-        Task ActualizarAsync(Serie serie);
-        Task EliminarAsync(long id);
+        Task<Serie?> ActualizarAsync(Serie serie);
+        Task<bool> EliminarAsync(long id);
     }
 }

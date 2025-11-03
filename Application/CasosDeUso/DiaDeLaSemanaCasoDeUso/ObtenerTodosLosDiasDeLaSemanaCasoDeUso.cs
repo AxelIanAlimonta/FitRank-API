@@ -15,10 +15,10 @@ namespace FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<DiaDeLaSemanaDTO>> Ejecutar()
+        public virtual async Task<List<ObtenerDiaDeLaSemanaDTO>> Ejecutar()
         {
             var diasDeLaSemana = await _diaDeLaSemanaRepositorio.ObtenerTodosLosDiasDeLaSemanaAsync();
-            return _mapper.Map<List<DiaDeLaSemanaDTO>>(diasDeLaSemana);
+            return _mapper.Map<List<ObtenerDiaDeLaSemanaDTO>>(diasDeLaSemana);
         }
     }
 }

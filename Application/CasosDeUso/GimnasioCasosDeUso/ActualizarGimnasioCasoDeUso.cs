@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.GimnasioDTOs;
+using FitRank_API.Domain.Entities;
 
 namespace FitRank_API.Application.CasosDeUso.GimnasioCasosDeUso;
 
@@ -13,12 +14,16 @@ public class ActualizarGimnasioCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerGimnasioDTO?> Ejecutar(long id, ActualizarGimnasioDTO dto)
+    public virtual async Task<ObtenerGimnasioDTO?> Ejecutar(ActualizarGimnasioDTO gimnasioDto)
     {
-        var gimnasioActualizado = await _gimnasioRepositorio.ActualizarGimnasio(id, dto);
-        if (gimnasioActualizado is null) return null;
-
+        var gimnasioEntity = _mapper.Map<Gimnasio>(gimnasioDto);
+        var gimnasioActualizado = await _gimnasioRepositorio.ActualizarGimnasio(gimnasioEntity);
+        if (gimnasioActualizado == null)
+        {
+            return null;
+        }
         return _mapper.Map<ObtenerGimnasioDTO>(gimnasioActualizado);
+
     }
 
 }

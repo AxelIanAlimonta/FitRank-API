@@ -1,6 +1,6 @@
 ﻿using FitRank_API.Infrastructure.Interfaces;
 
-namespace FitRank_API.Application.UseCases.Serie
+namespace FitRank_API.Application.CasosDeUso.SerieCasosDeUso
 {
     public class EliminarSerieCasoDeUso
     {
@@ -10,9 +10,9 @@ namespace FitRank_API.Application.UseCases.Serie
             _repo = repo;
         }
 
-        public async Task Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
-            await _repo.EliminarAsync(id);
+            return await _repo.EliminarAsync(id);
         }
     }
 }

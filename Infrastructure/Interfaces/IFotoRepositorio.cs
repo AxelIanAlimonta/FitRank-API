@@ -6,6 +6,6 @@ namespace FitRank_API.Infrastructure.Interfaces
     {
         Task<Foto> AgregarAsync(Foto foto);
         Task<IEnumerable<Foto>> ObtenerPorSocioAsync(long socioId);
-        Task EliminarAsync(long id);
+        Task<bool> EliminarAsync(long id);
     }
 }

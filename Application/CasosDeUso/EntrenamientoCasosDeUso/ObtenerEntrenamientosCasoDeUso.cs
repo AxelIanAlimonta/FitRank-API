@@ -16,7 +16,7 @@ namespace FitRank_API.Application.UseCases.Entrenamiento
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ObtenerEntrenamientoDTO>> Ejecutar()
+        public virtual async Task<IEnumerable<ObtenerEntrenamientoDTO>> Ejecutar()
         {
             var lista = await _repo.ObtenerTodosAsync();
             return _mapper.Map<IEnumerable<ObtenerEntrenamientoDTO>>(lista);

@@ -8,7 +8,7 @@ namespace FitRank_API.Application.Mappings
     {
         public DiaDeLaSemanaProfile()
         {
-            CreateMap<DiaDeLaSemana, DiaDeLaSemanaDTO>().ReverseMap();
+            CreateMap<DiaDeLaSemana, ObtenerDiaDeLaSemanaDTO>().ReverseMap();
             CreateMap<DiaDeLaSemana, AgregarDiaDeLaSemanaDTO>().ReverseMap();
             CreateMap<DiaDeLaSemana, ActualizarDiaDeLaSemanaDTO>().ReverseMap();
         }

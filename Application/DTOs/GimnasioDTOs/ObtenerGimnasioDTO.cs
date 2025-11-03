@@ -12,5 +12,6 @@
         public string Email { get; set; }
         public string Telefono { get; set; }
         public string Cuil { get; set; }
+        public long? AdministradorId { get; set; }
     }
 }

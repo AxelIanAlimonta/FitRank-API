@@ -9,7 +9,7 @@ public class EliminarLogroCasoDeUso
     {
         _logroRepositorio = logroRepositorio;
     }
-    public async Task<bool> Ejecutar(long id)
+    public virtual async Task<bool> Ejecutar(long id)
     {
         return await _logroRepositorio.EliminarLogro(id);
     }

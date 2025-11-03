@@ -15,7 +15,7 @@ public class ObtenerRutinaPorIdCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerRutinaDTO?> Ejecutar(long id)
+    public virtual async Task<ObtenerRutinaDTO?> Ejecutar(long id)
     {
         var rutina = await _rutinaRepositorio.ObtenerPorIdAsync(id);
         if (rutina == null)

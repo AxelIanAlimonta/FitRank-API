@@ -8,7 +8,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<List<Maquina>> ObtenerTodasLasMaquinas();
         Task<Maquina?> ObtenerMaquinaPorId(long id);
         Task<Maquina> AgregarMaquina(Maquina m);
-        Task<Maquina?> ActualizarMaquina(long id, ActualizarMaquinaDTO dto);
+        Task<Maquina?> ActualizarMaquina(Maquina m);
         Task<bool> EliminarMaquina(long id);
     }
 }

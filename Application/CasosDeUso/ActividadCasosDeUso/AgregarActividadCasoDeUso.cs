@@ -17,7 +17,7 @@ namespace FitRank_API.Application.UseCases.Actividad
             _mapper = mapper;
         }
 
-        public async Task<ObtenerActividadDTO> Ejecutar(AgregarActividadDTO dto)
+        public virtual async Task<ObtenerActividadDTO> Ejecutar(AgregarActividadDTO dto)
         {
             var nueva = _mapper.Map<Domain.Entities.Actividad>(dto);
             var creada = await _repo.AgregarAsync(nueva);

@@ -9,7 +9,7 @@ public class EliminarGrupoMuscularCasoDeUso
     {
         this.grupoMuscularRepositorio = grupoMuscularRepositorio;
     }
-    public async Task<bool> Ejecutar(long id)
+    public virtual async Task<bool> Ejecutar(long id)
     {
         return await grupoMuscularRepositorio.EliminarAsync(id);
     }

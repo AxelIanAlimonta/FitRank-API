@@ -13,7 +13,7 @@ public class ObtenerGimnasioPorIdCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerGimnasioDTO?> Ejecutar(long id)
+    public virtual async Task<ObtenerGimnasioDTO?> Ejecutar(long id)
     {
         var gimnasio = await _gimnasioRepositorio.ObtenerGimnasioPorId(id);
         if (gimnasio == null)

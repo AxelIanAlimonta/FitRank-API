@@ -11,9 +11,9 @@ namespace FitRank_API.Application.CasosDeUso.FotoCasosDeUso
             _fotoRepositorio = fotoRepositorio;
         }
 
-        public async Task Ejecutar(long id)
+        public async Task<bool> Ejecutar(long id)
         {
-            await _fotoRepositorio.EliminarAsync(id);
+            return await _fotoRepositorio.EliminarAsync(id);
         }
     }
 }

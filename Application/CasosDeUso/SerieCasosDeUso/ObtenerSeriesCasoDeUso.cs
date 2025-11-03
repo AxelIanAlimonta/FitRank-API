@@ -3,7 +3,7 @@ using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.SerieDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
-namespace FitRank_API.Application.UseCases.Serie
+namespace FitRank_API.Application.CasosDeUso.SerieCasosDeUso
 {
     public class ObtenerSeriesCasoDeUso
     {
@@ -16,7 +16,7 @@ namespace FitRank_API.Application.UseCases.Serie
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ObtenerSerieDTO>> Ejecutar()
+        public virtual async Task<IEnumerable<ObtenerSerieDTO>> Ejecutar()
         {
             var series = await _repo.ObtenerTodasAsync();
             return _mapper.Map<IEnumerable<ObtenerSerieDTO>>(series);

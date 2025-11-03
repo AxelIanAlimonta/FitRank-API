@@ -34,18 +34,25 @@ public class EjercicioController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetEjercicios()
     {
-        var ejercicios = await _obtenerEjerciciosCasoDeUso.EjecutarAsync();
-        return Ok(ejercicios);
+        try
+        {
+            var ejercicios = await _obtenerEjerciciosCasoDeUso.EjecutarAsync();
+            return Ok(ejercicios);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
     }
 
     //get id
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEjercicioPorId(long id)
     {
-        var ejercicio = await _obtenerEjercicioPorIdCasoDeUso.EjecutarAsync(id);
+        var ejercicio = await _obtenerEjercicioPorIdCasoDeUso.Ejecutar(id);
         if (ejercicio == null)
         {
-            return NotFound();
+            return NotFound($"El ejercicio con ID {id} no fue encontrado.");
         }
         return Ok(ejercicio);
     }
@@ -53,32 +60,69 @@ public class EjercicioController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AgregarEjercicio([FromBody] AgregarEjercicioDTO ejercicio)
     {
-        var nuevoEjercicio = await _agregarEjercicioCasoDeUso.EjecutarAsync(ejercicio);
-        return CreatedAtAction(nameof(GetEjercicioPorId), new { id = nuevoEjercicio.Id }, nuevoEjercicio);
+        if (ejercicio == null)
+        {
+            return BadRequest("El ejercicio no puede ser nulo.");
+        }
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var nuevoEjercicio = await _agregarEjercicioCasoDeUso.Ejecutar(ejercicio);
+            return CreatedAtAction(nameof(GetEjercicioPorId), new { id = nuevoEjercicio.Id }, nuevoEjercicio);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
 
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> ActualizarEjercicio(long id, [FromBody] ActualizarEjercicioDTO ejercicio)
     {
-        if (id != ejercicio.Id) return BadRequest("El ID no coincide.");
-        var ejercicioActualizado = await _actualizarEjercicioCasoDeUso.EjecutarAsync(id, ejercicio);
-        if (ejercicioActualizado == null)
+        if (ejercicio == null)
         {
-            return NotFound();
+            return BadRequest("El ejercicio no puede ser nulo.");
         }
-        return Ok(ejercicioActualizado);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        if (id != ejercicio.Id) return BadRequest("El ID del ejercicio no coincide con el ID proporcionado en la ruta.");
+        try
+        {
+            var ejercicioActualizado = await _actualizarEjercicioCasoDeUso.Ejecutar(ejercicio);
+            if (ejercicioActualizado == null)
+            {
+                return NotFound($"El ejercicio con ID {id} no fue encontrado para actualizar.");
+            }
+            return Ok(ejercicioActualizado);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error al actualizar ejercicio");
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> EliminarEjercicio(long id)
     {
-        var resultado = await _eliminarEjercicioCasoDeUso.EjecutarAsync(id);
-        if (!resultado)
+        try
         {
-            return NotFound();
+            var resultado = await _eliminarEjercicioCasoDeUso.Ejecutar(id);
+            if (!resultado)
+            {
+                return NotFound($"El ejercicio con ID {id} no fue encontrado para eliminar.");
+            }
+            return NoContent();
         }
-        return NoContent();
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error al eliminar ejercicio");
+        }
     }
 
     //[HttpGet("grupo/{grupoFuncionalId}")]

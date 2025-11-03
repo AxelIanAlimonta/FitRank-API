@@ -26,40 +26,86 @@ namespace FitRank_API.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerTodas()
         {
-            var sesiones = await _obtenerTodasLasSesionCasoDeUso.Ejecutar();
-            return Ok(sesiones);
+            try
+            {
+                var sesiones = await _obtenerTodasLasSesionCasoDeUso.Ejecutar();
+                return Ok(sesiones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(long id)
         {
-            var sesion = await _obtenerSesionCasoDeUso.Ejecutar(id);
-            if (sesion == null) return NotFound();
-            return Ok(sesion);
+            try
+            {
+                var sesion = await _obtenerSesionCasoDeUso.Ejecutar(id);
+                if (sesion == null) return NotFound("Sesión no encontrada.");
+                return Ok(sesion);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Agregar([FromBody] AgregarSesionDTO dto)
         {
-            var nueva = await _agregarSesionCasoDeUso.Ejecutar(dto);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nueva.Id }, nueva);
+            if (dto == null)
+            {
+                return BadRequest("Solicitud inválida.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var nueva = await _agregarSesionCasoDeUso.Ejecutar(dto);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nueva.Id }, nueva);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarSesionDTO dto)
         {
+            if (dto == null) return BadRequest("Solicitud inválida.");
             if (id != dto.Id) return BadRequest("El ID no coincide.");
-            var actualizada = await _actualizarSesionCasoDeUso.Ejecutar(id,dto);
-            if (actualizada == null) return NotFound();
-            return Ok(actualizada);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                var actualizada = await _actualizarSesionCasoDeUso.Ejecutar(dto);
+                if (actualizada == null) return NotFound("Sesión no encontrada.");
+                return Ok(actualizada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            var eliminado = await _eliminarSesionCasoDeUso.Ejecutar(id);
-            if (!eliminado) return NotFound();
-            return NoContent();
+            try
+            {
+                var eliminado = await _eliminarSesionCasoDeUso.Ejecutar(id);
+                if (!eliminado) return NotFound("Sesión no encontrada.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
     }
 }

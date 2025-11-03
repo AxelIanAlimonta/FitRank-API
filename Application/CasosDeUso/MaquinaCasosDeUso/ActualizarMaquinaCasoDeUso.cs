@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.MaquinaDTOs;
+using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
@@ -13,12 +14,11 @@ namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
             _maquinaRepositorio = maquinaRepositorio;
             _mapper = mapper;
         }
-        public async Task<ObtenerMaquinaDTO?> Ejecutar(long id, ActualizarMaquinaDTO dto)
+        public virtual async Task<ObtenerMaquinaDTO?> Ejecutar(ActualizarMaquinaDTO dto)
         {
-            var maquinaActualizada = await _maquinaRepositorio.ActualizarMaquina(id, dto);
-            if (maquinaActualizada is null) return null;
-
+            var maquinaActualizada = await _maquinaRepositorio.ActualizarMaquina(_mapper.Map<Maquina>(dto));
             return _mapper.Map<ObtenerMaquinaDTO>(maquinaActualizada);
+
         }
     }
 }

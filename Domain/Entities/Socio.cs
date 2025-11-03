@@ -6,10 +6,10 @@ public class Socio : Usuario
     public Gimnasio Gimnasio { get; set; } = null!;
     public DateTime FechaRegistro { get; set; }
 
-    public double Altura { get; set; }
-    public double Peso { get; set; }
+    public double? Altura { get; set; }
+    public double? Peso { get; set; }
 
-    public string Nivel { get; set; }
+    public string? Nivel { get; set; }
 
     public double Puntaje { get; set; }
 

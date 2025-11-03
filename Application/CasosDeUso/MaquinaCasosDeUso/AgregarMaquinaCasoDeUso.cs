@@ -14,7 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
             _maquinaRepositorio = maquinaRepositorio;
             _mapper = mapper;
         }
-        public async Task<ObtenerMaquinaDTO> Ejecutar(AgregarMaquinaDTO crearMaquinaDTO)
+        public virtual async Task<ObtenerMaquinaDTO> Ejecutar(AgregarMaquinaDTO crearMaquinaDTO)
         {
             var maquinaEntidad = _mapper.Map<Maquina>(crearMaquinaDTO);
             var maquinaCreada = await _maquinaRepositorio.AgregarMaquina(maquinaEntidad);

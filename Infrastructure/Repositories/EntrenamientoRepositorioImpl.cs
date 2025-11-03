@@ -51,21 +51,6 @@ namespace FitRank_API.Infrastructure.Repositories
             return entrenamiento;
         }
 
-        public async Task ActualizarAsync(Entrenamiento entrenamiento)
-        {
-            _context.Entrenamientos.Update(entrenamiento);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task EliminarAsync(long id)
-        {
-            var ent = await _context.Entrenamientos.FindAsync(id);
-            if (ent != null)
-            {
-                _context.Entrenamientos.Remove(ent);
-                await _context.SaveChangesAsync();
-            }
-        }
 
         public async Task<Entrenamiento?> ObtenerEntrenamientoActivoPorSocioIdAsync(long socioId)
         {
@@ -75,6 +60,35 @@ namespace FitRank_API.Infrastructure.Repositories
                 .Where(e => e.SocioId == socioId && e.Fecha.Date == todayUtc)
                 .OrderByDescending(e => e.Fecha)
                 .FirstOrDefaultAsync();
+        }
+        public async Task<Entrenamiento?> ActualizarAsync(Entrenamiento entrenamiento)
+        {
+            var entrenamientoExistente = await _context.Entrenamientos.FindAsync(entrenamiento.Id);
+            if (entrenamientoExistente == null)
+            {
+                return null;
+            }
+
+            entrenamientoExistente.Fecha = entrenamiento.Fecha;
+            entrenamientoExistente.Duracion = entrenamiento.Duracion;
+            entrenamientoExistente.SocioId = entrenamiento.SocioId;
+
+            await _context.SaveChangesAsync();
+            return entrenamientoExistente;
+        }
+
+        public async Task<bool> EliminarAsync(long id)
+        {
+            var entrenamiento = await _context.Entrenamientos.FindAsync(id);
+            if (entrenamiento == null)
+            {
+                return false;
+            }
+
+            _context.Entrenamientos.Remove(entrenamiento);
+            await _context.SaveChangesAsync();
+            return true;
+
         }
     }
 }

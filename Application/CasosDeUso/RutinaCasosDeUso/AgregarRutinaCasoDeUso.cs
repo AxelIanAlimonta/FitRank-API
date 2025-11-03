@@ -15,7 +15,7 @@ public class AgregarRutinaCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerRutinaDTO> Ejecutar(AgregarRutinaDTO nuevaRutina)
+    public virtual async Task<ObtenerRutinaDTO> Ejecutar(AgregarRutinaDTO nuevaRutina)
     {
         var rutinaEntidad = _mapper.Map<Domain.Entities.Rutina>(nuevaRutina);
         var rutinaAgregada = await _rutinaRepositorio.AgregarAsync(rutinaEntidad);

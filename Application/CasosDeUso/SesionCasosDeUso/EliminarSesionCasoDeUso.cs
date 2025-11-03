@@ -11,7 +11,7 @@ public class EliminarSesionCasoDeUso
     {
         _sesionRepositorio = sesionRepositorio;
     }
-    public async Task<bool> Ejecutar(long id)
+    public virtual async Task<bool> Ejecutar(long id)
     {
         return await _sesionRepositorio.EliminarAsync(id);
     }

@@ -16,7 +16,7 @@ public class ActualizarRutinaCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerRutinaDTO?> Ejecutar(ActualizarRutinaDTO rutinaActualizada)
+    public virtual async Task<ObtenerRutinaDTO?> Ejecutar(ActualizarRutinaDTO rutinaActualizada)
     {
         var rutinaEntidad = _mapper.Map<Rutina>(rutinaActualizada);
         var rutinaActualizadaEntidad = await _rutinaRepositorio.ActualizarAsync(rutinaEntidad);

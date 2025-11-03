@@ -16,16 +16,12 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerNotificacionDTO> Ejecutar(long emisorId,AgregarNotificacionDTO dto)
+        public async Task<ObtenerNotificacionDTO?> Ejecutar(AgregarNotificacionDTO dto)
         {
             var notificacion = _mapper.Map<Notificacion>(dto);
-            notificacion.UsuarioEmisorId = emisorId;
-            notificacion.FechaEnvio = DateTime.UtcNow;
-            notificacion.Activa = true;
-            notificacion.Leido = false;
+            var notificacionCreada = await _repo.AgregarAsync(notificacion);
+            return _mapper.Map<ObtenerNotificacionDTO>(notificacionCreada);
 
-            var creada = await _repo.AgregarAsync(notificacion);
-            return _mapper.Map<ObtenerNotificacionDTO>(creada);
         }
     }
 }

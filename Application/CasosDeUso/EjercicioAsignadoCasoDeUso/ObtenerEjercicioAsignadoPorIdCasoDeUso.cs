@@ -14,7 +14,7 @@ public class ObtenerEjercicioAsignadoPorIdCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<ObtenerEjercicioAsignadoDTO?> Ejecutar(long ejercicioAsignadoId)
+    public virtual async Task<ObtenerEjercicioAsignadoDTO?> Ejecutar(long ejercicioAsignadoId)
     {
         var ejercicioAsignado = await _ejercicioAsignadoRepositorio.ObtenerPorIdAsync(ejercicioAsignadoId);
         if (ejercicioAsignado == null)

@@ -16,14 +16,20 @@ namespace FitRank_API.Application.UseCases.Entrenamiento
             _mapper = mapper;
         }
 
-        public async Task Ejecutar(ActualizarEntrenamientoDTO dto)
+        public virtual async Task<ObtenerEntrenamientoDTO?> Ejecutar(ActualizarEntrenamientoDTO dto)
         {
-            var ent = await _repo.ObtenerPorIdAsync(dto.Id);
-            if (ent == null)
-                throw new Exception("Entrenamiento no encontrado");
+            var entrenamientoExistente = await _repo.ObtenerPorIdAsync(dto.Id);
+            if (entrenamientoExistente == null)
+            {
+                return null;
+            }
 
-            _mapper.Map(dto, ent);
-            await _repo.ActualizarAsync(ent);
+            entrenamientoExistente.Fecha = dto.Fecha;
+            entrenamientoExistente.Duracion = dto.Duracion;
+            entrenamientoExistente.SocioId = dto.SocioId;
+
+            var entrenamientoActualizado = await _repo.ActualizarAsync(entrenamientoExistente);
+            return _mapper.Map<ObtenerEntrenamientoDTO>(entrenamientoActualizado);
         }
     }
 }

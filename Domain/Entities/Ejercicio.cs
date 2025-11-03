@@ -16,12 +16,12 @@ public class Ejercicio
     public string? Descripcion { get; set; } = string.Empty;
 
     [MaxLength(250)]
-    public string UrlImagen { get; set; } = string.Empty;
+    public string? UrlImagen { get; set; } = string.Empty;
 
-    public int DuracionEstimada { get; set; } // en minutos o segundos según convengan
+    public int? DuracionEstimada { get; set; } // en minutos o segundos según convengan
 
     [MaxLength(250)]
-    public string UrlVideo { get; set; } = string.Empty;
+    public string? UrlVideo { get; set; } = string.Empty;
 
     // 🔗 Relación con GrupoMuscular
     [ForeignKey("GrupoMuscular")]

@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso
             _mapper = mapper;
         }
 
-        public async Task<DiaDeLaSemanaDTO?> Ejecutar(ActualizarDiaDeLaSemanaDTO actualizarDiaDeLaSemanaDTO)
+        public virtual async Task<ObtenerDiaDeLaSemanaDTO?> Ejecutar(ActualizarDiaDeLaSemanaDTO actualizarDiaDeLaSemanaDTO)
         {
             var diaDeLaSemanaEntidad = _mapper.Map<DiaDeLaSemana>(actualizarDiaDeLaSemanaDTO);
             var diaDeLaSemanaActualizado = await _diaDeLaSemanaRepositorio.ActualizarDiaDeLaSemanaAsync(diaDeLaSemanaEntidad);
@@ -24,7 +24,7 @@ namespace FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso
             {
                 return null;
             }
-            return _mapper.Map<DiaDeLaSemanaDTO>(diaDeLaSemanaActualizado);
+            return _mapper.Map<ObtenerDiaDeLaSemanaDTO>(diaDeLaSemanaActualizado);
         }
     }
 }

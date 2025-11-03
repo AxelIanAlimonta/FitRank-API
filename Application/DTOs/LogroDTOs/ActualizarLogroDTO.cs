@@ -2,6 +2,7 @@
 
 public class ActualizarLogroDTO
 {
+    public long Id { get; set; }
     public string? NombreClave { get; set; }
     public string? Nombre { get; set; }
     public string? Descripcion { get; set; }

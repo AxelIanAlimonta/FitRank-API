@@ -8,16 +8,11 @@ namespace FitRank_API.Application.Mappings
     {
         public MaquinaProfile()
         {
-            CreateMap<Maquina, ObtenerMaquinaDTO>();
+            CreateMap<Maquina, ObtenerMaquinaDTO>().ReverseMap();
 
-            CreateMap<AgregarMaquinaDTO, Maquina>();
+            CreateMap<AgregarMaquinaDTO, Maquina>().ReverseMap();
 
-            CreateMap<ActualizarMaquinaDTO, Maquina>()
-                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) =>
-                {
-                    if (srcMember == null) return false;
-                    return srcMember is string s ? !string.IsNullOrWhiteSpace(s) : true;
-                }));
+            CreateMap<ActualizarMaquinaDTO, Maquina>().ReverseMap();
         }
     }
 }

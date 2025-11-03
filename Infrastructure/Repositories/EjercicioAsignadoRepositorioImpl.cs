@@ -23,7 +23,7 @@ public class EjercicioAsignadoRepositorioImpl : IEjercicioAsignadoRepositorio
             .Include(e => e.Ejercicio)
                 .ThenInclude(e => e.GrupoMuscular)
             .Include(e => e.Ejercicio)
-            .   ThenInclude(e=>e.Maquina )
+                .ThenInclude(e => e.Maquina)
             .Include(e => e.Sesion)
             .FirstOrDefaultAsync(e => e.Id == resultado.Entity.Id);
         return ejercicioConDetalles;
@@ -86,6 +86,4 @@ public class EjercicioAsignadoRepositorioImpl : IEjercicioAsignadoRepositorio
 
         return ejercicioExistente;
     }
-
-
 }

@@ -32,8 +32,15 @@ public class GrupoMuscularController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> ObtenerTodos()
     {
-        var gruposMusculares = await _obtenerTodosLosGruposMuscularesCasoDeUso.Ejecutar();
-        return Ok(gruposMusculares);
+        try
+        {
+            var gruposMusculares = await _obtenerTodosLosGruposMuscularesCasoDeUso.Ejecutar();
+            return Ok(gruposMusculares);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     [HttpGet]
@@ -51,36 +58,72 @@ public class GrupoMuscularController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Agregar([FromBody] AgregarGrupoMuscularDTO grupoMuscular)
     {
-        var nuevoGrupoMuscular = await _agregarGrupoMuscularCasoDeUso.Ejecutar(grupoMuscular);
-        return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoGrupoMuscular.Id }, nuevoGrupoMuscular);
+        if (grupoMuscular == null)
+        {
+            return BadRequest("El grupo muscular no puede ser nulo.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+
+        try
+        {
+            var nuevoGrupoMuscular = await _agregarGrupoMuscularCasoDeUso.Ejecutar(grupoMuscular);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoGrupoMuscular.Id }, nuevoGrupoMuscular);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<IActionResult> Actualizar(long id, [FromBody] ObtenerGrupoMuscularDTO grupoMuscular)
+    public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarGrupoMuscularDTO grupoMuscular)
     {
+        if (grupoMuscular == null)
+        {
+            return BadRequest("El grupo muscular no puede ser nulo.");
+
+        }
         if (id != grupoMuscular.Id)
         {
             return BadRequest("El ID del grupo muscular no coincide.");
         }
-        var grupoMuscularActualizado = await _actualizarGrupoMuscularCasoDeUso.Ejecutar(grupoMuscular);
-        if (grupoMuscularActualizado == null)
+        try
         {
-            return NotFound();
+            var grupoMuscularActualizado = await _actualizarGrupoMuscularCasoDeUso.Ejecutar(grupoMuscular);
+            if (grupoMuscularActualizado == null)
+            {
+                return NotFound();
+            }
+            return Ok(grupoMuscularActualizado);
         }
-        return Ok(grupoMuscularActualizado);
-
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     [HttpDelete]
     [Route("{id}")]
     public async Task<IActionResult> Eliminar(long id)
     {
-        var eliminado = await _eliminarGrupoMuscularCasoDeUso.Ejecutar(id);
-        if (!eliminado)
+        try
         {
-            return NotFound();
+            var eliminado = await _eliminarGrupoMuscularCasoDeUso.Ejecutar(id);
+            if (eliminado)
+                return NoContent();
+            else
+                return NotFound();
         }
-        return NoContent();
+        catch (Exception ex)
+        {
+            // Puedes loguear el error aquí si lo deseas
+            return StatusCode(500, ex.Message);
+        }
     }
 }

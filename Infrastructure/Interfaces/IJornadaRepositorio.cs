@@ -7,7 +7,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<List<Jornada>> ObtenerTodasLasJornadasAsync();
         Task<Jornada?> ObtenerJornadaPorIdAsync(long id);
         Task<Jornada> AgregarJornadaAsync(Jornada nuevaJornada);
-        Task<Jornada> ActualizarJornadaAsync(Jornada jornadaActualizada);
+        Task<Jornada?> ActualizarJornadaAsync(Jornada jornadaActualizada);
         Task<bool> EliminarJornadaAsync(long id);
     }
 }

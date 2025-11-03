@@ -8,15 +8,8 @@ public class GimnasioProfile : Profile
 {
     public GimnasioProfile()
     {
-        CreateMap<Domain.Entities.Gimnasio, DTOs.GimnasioDTOs.ObtenerGimnasioDTO>().ReverseMap();
-        CreateMap<Domain.Entities.Gimnasio, DTOs.GimnasioDTOs.AgregarGimnasioDTO>().ReverseMap();
-
-        // Mapeo para ActualizarGimnasioDTO a Gimnasio, ignorando atributos vacíos/nulos
-        CreateMap<ActualizarGimnasioDTO, Gimnasio>()
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) =>
-            {
-                if (srcMember == null) return false;
-                return srcMember is string s ? !string.IsNullOrWhiteSpace(s) : true;
-            }));
+        CreateMap<Gimnasio, ObtenerGimnasioDTO>().ReverseMap();
+        CreateMap<Gimnasio, AgregarGimnasioDTO>().ReverseMap();
+        CreateMap<Gimnasio, ActualizarGimnasioDTO>().ReverseMap();
     }
 }

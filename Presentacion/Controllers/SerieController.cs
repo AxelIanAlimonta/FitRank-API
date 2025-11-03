@@ -1,6 +1,6 @@
 ﻿using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.SerieDTOs;
-using FitRank_API.Application.UseCases.Serie;
+using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Controllers
@@ -32,38 +32,72 @@ namespace FitRank_API.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerTodaslasSeries()
         {
-            var lista = await _obtenerTodas.Ejecutar();
-            return Ok(lista);
+            try
+            {
+                var lista = await _obtenerTodas.Ejecutar();
+                return Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerSeriePorId(long id)
         {
             var serie = await _obtenerPorId.Ejecutar(id);
-            if (serie == null) return NotFound();
+            if (serie == null) return NotFound($"La serie con ID {id} no existe.");
             return Ok(serie);
         }
 
         [HttpPost]
         public async Task<IActionResult> Agregar([FromBody] AgregarSerieDTO dto)
         {
-            var nueva = await _crear.Ejecutar(dto);
-            return CreatedAtAction(nameof(ObtenerSeriePorId), new { id = nueva.Id }, nueva);
+            if (dto == null) return BadRequest("El objeto no puede ser nulo.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                var nueva = await _crear.Ejecutar(dto);
+                return CreatedAtAction(nameof(ObtenerSeriePorId), new { id = nueva.Id }, nueva);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarSerieDTO dto)
         {
-            if (id != dto.Id) return BadRequest();
-            await _actualizar.Ejecutar(dto);
-            return NoContent();
+            if (dto == null) return BadRequest("El objeto no puede ser nulo.");
+            if (id != dto.Id) return BadRequest("El ID en la URL no coincide con el ID en el cuerpo.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                var actualizada = await _actualizar.Ejecutar(dto);
+                if (actualizada == null) return NotFound($"La serie con ID {id} no existe.");
+                return Ok(actualizada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            await _eliminar.Ejecutar(id);
-            return NoContent();
+            try
+            {
+                var resultado = await _eliminar.Ejecutar(id);
+                if (!resultado) return NotFound($"La serie con ID {id} no existe.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error en el servidor.");
+            }
         }
     }
 }

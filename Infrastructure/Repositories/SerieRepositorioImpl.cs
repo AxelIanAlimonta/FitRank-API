@@ -43,20 +43,40 @@ namespace FitRank_API.Infrastructure.Repositories
             return serie;
         }
 
-        public async Task ActualizarAsync(Serie serie)
+
+        public async Task<Serie?> ActualizarAsync(Serie serie)
         {
-            _context.Series.Update(serie);
+            var serieExistente = await _context.Series.FindAsync(serie.Id);
+            if (serieExistente == null)
+            {
+                return null;
+            }
+
+            serieExistente.NumeroDeSerie = serie.NumeroDeSerie;
+            serieExistente.Duracion = serie.Duracion;
+            serieExistente.Repeticiones = serie.Repeticiones;
+            serieExistente.Peso = serie.Peso;
+            serieExistente.EjercicioAsignadoId = serie.EjercicioAsignadoId;
+
+
+            _context.Series.Update(serieExistente);
             await _context.SaveChangesAsync();
+            return serieExistente;
+
         }
 
-        public async Task EliminarAsync(long id)
+        public async Task<bool> EliminarAsync(long id)
         {
-            var serie = await _context.Series.FindAsync(id);
-            if (serie != null)
+            var serieExistente = await _context.Series.FindAsync(id);
+            if (serieExistente == null)
             {
-                _context.Series.Remove(serie);
-                await _context.SaveChangesAsync();
+                return false;
             }
+
+            _context.Series.Remove(serieExistente);
+            await _context.SaveChangesAsync();
+            return true;
+
         }
     }
 }

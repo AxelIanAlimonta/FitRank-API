@@ -30,24 +30,29 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
         return gimnasio;
     }
 
-    public async Task<Gimnasio?> ActualizarGimnasio(long id, ActualizarGimnasioDTO dto)
+    public async Task<Gimnasio?> ActualizarGimnasio(Gimnasio gimnasio)
     {
-        var gimnasioExistente = await _context.Gimnasios.FirstOrDefaultAsync(x => x.Id == id);
-        if (gimnasioExistente is null)
+        var existingGimnasio = await _context.Gimnasios.FindAsync(gimnasio.Id);
+        if (existingGimnasio == null)
+        {
             return null;
+        }
 
-        if (!string.IsNullOrWhiteSpace(dto.Nombre)) gimnasioExistente.Nombre = dto.Nombre!;
-        if (!string.IsNullOrWhiteSpace(dto.Direccion)) gimnasioExistente.Direccion = dto.Direccion!;
-        if (!string.IsNullOrWhiteSpace(dto.RazonSocial)) gimnasioExistente.RazonSocial = dto.RazonSocial!;
-        if (!string.IsNullOrWhiteSpace(dto.LogoUrl)) gimnasioExistente.LogoUrl = dto.LogoUrl!;
-        if (!string.IsNullOrWhiteSpace(dto.ColorPrincipal)) gimnasioExistente.ColorPrincipal = dto.ColorPrincipal!; //VER SI NORMALIZAR O NO
-        if (!string.IsNullOrWhiteSpace(dto.ColorSecundario)) gimnasioExistente.ColorSecundario = dto.ColorSecundario!; //VER SI NORMALIZAR O NO
-        if (!string.IsNullOrWhiteSpace(dto.Email)) gimnasioExistente.Email = dto.Email!;
-        if (!string.IsNullOrWhiteSpace(dto.Telefono)) gimnasioExistente.Telefono = dto.Telefono!;
-        if (!string.IsNullOrWhiteSpace(dto.Cuil)) gimnasioExistente.Cuil = dto.Cuil!;  //VER SI NORMALIZAR O NO
+        existingGimnasio.Nombre = gimnasio.Nombre;
+        existingGimnasio.Direccion = gimnasio.Direccion;
+        existingGimnasio.RazonSocial = gimnasio.RazonSocial;
+        existingGimnasio.LogoUrl = gimnasio.LogoUrl;
+        existingGimnasio.ColorPrincipal = gimnasio.ColorPrincipal;
+        existingGimnasio.ColorSecundario = gimnasio.ColorSecundario;
+        existingGimnasio.Email = gimnasio.Email;
+        existingGimnasio.Telefono = gimnasio.Telefono;
+        existingGimnasio.Cuil = gimnasio.Cuil;
+        existingGimnasio.AdministradorId = gimnasio.AdministradorId;
+        
 
-            await _context.SaveChangesAsync();
-        return gimnasioExistente;
+        await _context.SaveChangesAsync();
+        return existingGimnasio;
+
     }
 
     public async Task<bool> EliminarGimnasio(long id)
@@ -69,5 +74,5 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
             .FirstOrDefaultAsync(g => g.AdministradorId == adminId);
     }
 
-   
+
 }
