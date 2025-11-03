@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
+﻿using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.DTOs.RutinaDTOs;
-using FitRank_API.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 
 namespace FitRank_API.Presentacion.Controllers;
@@ -18,12 +17,22 @@ public class RutinaController : ControllerBase
     private readonly ActualizarRutinaCasoDeUso _actualizarRutinaCasoDeUso;
     private readonly EliminarRutinaCasoDeUso _eliminarRutinaCasoDeUso;
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
+
+    private readonly GenerarRutinaIACasoDeUso _generarRutinaIACasoDeUso;
+    private readonly ConfirmarRutinaIACasoDeUso _confirmarRutinaIACasoDeUso;
     private readonly ObtenerRutinaCompletaCasoDeUso _obtenerRutinaCompletaCasoDeUso;
 
 
 
 
     public RutinaController(
+        AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
+        ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
+        ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
+        ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
+        EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
+        GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso,
+        ConfirmarRutinaIACasoDeUso confirmarRutinaIACasoDeUso)
 
           AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
           ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
@@ -40,6 +49,8 @@ public class RutinaController : ControllerBase
         
         _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
+        _generarRutinaIACasoDeUso = generarRutinaIACasoDeUso;
+        _confirmarRutinaIACasoDeUso = confirmarRutinaIACasoDeUso;
         _obtenerRutinaCompletaCasoDeUso = obtenerRutinaCompletaCasoDeUso;
     }
 
@@ -178,4 +189,45 @@ public class RutinaController : ControllerBase
         return Ok(resultado);
     }
 
+    [HttpPost("generar")]
+    //[Authorize(Roles = "Socio")]
+    public async Task<IActionResult> Generar(long idSocio,[FromBody] RutinaRequestDTO input)
+    {
+
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
+
+        var resultado = await _generarRutinaIACasoDeUso.EjecutarAsync(input);
+
+        if (resultado.RequiereDerivacion)
+            return StatusCode(409, new { ok = false, explain = resultado.Mensaje, decisions = resultado.Decisiones });
+
+        ConfirmarRutinaDTO confirmarBody = new ConfirmarRutinaDTO(idSocio, idSocio, resultado.Rutina);
+
+        var rutina = await _confirmarRutinaIACasoDeUso.EjecutarAsync(confirmarBody);
+        
+
+        return Ok(new
+        {
+            ok = true,
+            decisions = resultado.Decisiones,
+            rutina = resultado.Rutina,
+            id = rutina.RutinaId
+        });
+    }
+
+    /*
+    [HttpPost("confirmar")]
+    public async Task<IActionResult> Confirmar([FromBody] ConfirmarRutinaDTO body)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
+
+        var resultado = await _confirmarRutinaIACasoDeUso.EjecutarAsync(body);
+
+        if (!resultado.Ok)
+            return BadRequest(resultado.Mensaje);
+
+        return Ok(new { ok = true, id = resultado.RutinaId });
+    }*/
 }
