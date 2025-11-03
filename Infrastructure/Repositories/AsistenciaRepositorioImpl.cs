@@ -22,7 +22,11 @@ namespace FitRank_API.Infrastructure.Repositories
             return asistencia;
         }
 
-
+        public async Task<Asistencia?> ObtenerPorUsuarioYFechaAsync(long usuarioId, DateTime fecha)
+        {
+            return await _context.Asistencias
+                .FirstOrDefaultAsync(a => a.UsuarioId == usuarioId && a.Fecha.Date == fecha.Date);
+        }
         public async Task<List<Asistencia>> ObtenerPorUsuarioAsync(long usuarioId)
         {
             return await _context.Asistencias

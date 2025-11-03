@@ -1,15 +1,19 @@
-﻿namespace FitRank_API.Application.DTOs.GimnasioDTOs
+﻿using FitRank_API.Domain.Entities;
+
+namespace FitRank_API.Application.DTOs.GimnasioDTOs
 {
     public class AgregarGimnasioDTO
     {
         public string Nombre { get; set; }
         public string Direccion { get; set; }
         public string RazonSocial { get; set; }
-        public string LogoUrl { get; set; }
-        public string ColorPrincipal { get; set; }
-        public string ColorSecundario { get; set; }
+        public string? LogoUrl { get; set; }
+        public string? ColorPrincipal { get; set; }
+        public string? ColorSecundario { get; set; }
         public string Email { get; set; }
         public string Telefono { get; set; }
         public string Cuil { get; set; }
+
+        public long? AdministradorId { get; set; }
     }
 }

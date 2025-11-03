@@ -18,7 +18,8 @@ namespace FitRank_API.Application.Mappings
                 .ForMember(dest => dest.AsistenciaId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.HoraEntrada, opt => opt.MapFrom(src => src.HoraEntrada));
 
-  
+            CreateMap<AgregarAsistenciaDTO, Asistencia>();
+
 
         }
     }

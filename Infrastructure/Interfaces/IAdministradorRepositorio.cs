@@ -7,5 +7,6 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<Administrador> AgregarAsync(Administrador admin);
         Task EliminarAsync(Administrador admin);
         Task <Administrador>ObtenerPorIdAsync(long id);
+        Task<IEnumerable<Administrador>> ObtenerTodosAsync();
     }
 }

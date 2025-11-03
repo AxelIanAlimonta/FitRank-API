@@ -8,6 +8,16 @@ namespace FitRank_API.Application.Mappings
     {
         public AdminProfile()
         {
+            CreateMap<Administrador, ObtenerAdministradorDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre))
+                .ForMember(dest => dest.Apellido, opt => opt.MapFrom(src => src.Apellido))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Telefono, opt => opt.MapFrom(src => src.Telefono))
+                .ForMember(dest => dest.Cuil, opt => opt.MapFrom(src => src.Cuil))
+                .ForMember(dest => dest.Direccion, opt => opt.MapFrom(src => src.Direccion))
+                .ForMember(dest => dest.Localidad, opt => opt.MapFrom(src => src.Localidad))
+                .ReverseMap();
             CreateMap<AgregarAdministradorDTO, Administrador>()
             
                 .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Nombre))

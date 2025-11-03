@@ -77,12 +77,15 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
                 FechaNacimiento = dto.FechaNacimiento,
                 CuotaPagadaHasta = invitacion.CuotaPagadaHasta,
                 EsActivado = true,
+            
 
                 FechaRegistro = DateTime.UtcNow,
                 Nivel = "Inicial",
                 Peso = 0,
                 Altura = 0,
-                Puntaje = 0
+                Puntaje = 0,
+             
+                GimnasioId = invitacion.GimnasioId
             };
 
 

@@ -5,6 +5,7 @@ using FitRank_API.Application.DTOs.RutinaDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
+
 namespace FitRank_API.Presentacion.Controllers;
 
 [Route("api/[controller]")]
@@ -17,20 +18,25 @@ public class RutinaController : ControllerBase
     private readonly ActualizarRutinaCasoDeUso _actualizarRutinaCasoDeUso;
     private readonly EliminarRutinaCasoDeUso _eliminarRutinaCasoDeUso;
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
-   
+    private readonly ObtenerRutinaCompletaCasoDeUso _obtenerRutinaCompletaCasoDeUso;
+
+
 
     public RutinaController(
-        AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
-        ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
-        ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
-        ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
-        EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso)
+          AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
+          ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
+          ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
+          EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
+          ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
+          ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso
+          )
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
-        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _actualizarRutinaCasoDeUso = actualizarRutinaCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
+        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
+        _obtenerRutinaCompletaCasoDeUso = obtenerRutinaCompletaCasoDeUso;
     }
 
     [HttpGet]
@@ -87,6 +93,17 @@ public class RutinaController : ControllerBase
             return NotFound();
         }
         return NoContent();
+    }
+
+    [HttpGet("socio/{socioId}/detalle")]
+    public async Task<IActionResult> ObtenerRutinaCompletaPorSocio(long socioId)
+    {
+        var resultado = await _obtenerRutinaCompletaCasoDeUso.Ejecutar(socioId);
+
+        if (resultado == null || !resultado.Any())
+            return NotFound("No se encontraron rutinas para este socio.");
+
+        return Ok(resultado);
     }
 
 }
