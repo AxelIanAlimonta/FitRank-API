@@ -141,7 +141,6 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
 
         await trx.CommitAsync();
     }
-}
 
     public async Task<List<Rutina>> ObtenerRutinasPorSocioAsync(long socioId)
     {

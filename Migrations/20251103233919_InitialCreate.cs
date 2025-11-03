@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -377,7 +379,11 @@ namespace FitRank_API.Migrations
                     DuracionEstimada = table.Column<int>(type: "integer", nullable: true),
                     UrlVideo = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
                     GrupoMuscularId = table.Column<long>(type: "bigint", nullable: false),
-                    MaquinaId = table.Column<long>(type: "bigint", nullable: true)
+                    MaquinaId = table.Column<long>(type: "bigint", nullable: true),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
+                    EquipoNecesario = table.Column<int>(type: "integer", nullable: false),
+                    Tags = table.Column<List<string>>(type: "text[]", nullable: false),
+                    ContraIndicaciones = table.Column<List<string>>(type: "text[]", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -532,6 +538,8 @@ namespace FitRank_API.Migrations
                     Activa = table.Column<bool>(type: "boolean", nullable: false),
                     SocioId = table.Column<long>(type: "bigint", nullable: false),
                     UsuarioId = table.Column<long>(type: "bigint", nullable: false),
+                    InputSnapshotJson = table.Column<JsonDocument>(type: "jsonb", nullable: true),
+                    RulesExplainJson = table.Column<JsonDocument>(type: "jsonb", nullable: true),
                     AdministradorId = table.Column<long>(type: "bigint", nullable: true),
                     ProfesorId = table.Column<long>(type: "bigint", nullable: true)
                 },

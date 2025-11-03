@@ -20,7 +20,9 @@ public class RutinaControllerTests
     private readonly Mock<EliminarRutinaCasoDeUso> _mockEliminar;
     private readonly Mock<ObtenerRutinaPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerTodasLasRutinasCasoDeUso> _mockObtenerTodos;
-    private readonly Mock<ObtenerRutinaCompletaCasoDeUso> mockObtenerCompleta = new();
+    private readonly Mock<ObtenerRutinaCompletaCasoDeUso> _mockObtenerCompleta;
+    private readonly Mock<GenerarRutinaIACasoDeUso> _mockGenerarRutinaIA;
+    private readonly Mock<ConfirmarRutinaIACasoDeUso> _mockConfirmarRutinaIA;
 
     public RutinaControllerTests()
     {
@@ -32,6 +34,9 @@ public class RutinaControllerTests
         _mockEliminar = new Mock<EliminarRutinaCasoDeUso>(mockRepositorio.Object);
         _mockObtenerPorId = new Mock<ObtenerRutinaPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerTodasLasRutinasCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockGenerarRutinaIA = new Mock<GenerarRutinaIACasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockConfirmarRutinaIA = new Mock<ConfirmarRutinaIACasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockObtenerCompleta = new Mock<ObtenerRutinaCompletaCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
 
 
         _controller = new RutinaController(
@@ -40,7 +45,9 @@ public class RutinaControllerTests
             _mockActualizar.Object,
             _mockObtenerTodos.Object,
             _mockEliminar.Object,
-              mockObtenerCompleta.Object
+            _mockGenerarRutinaIA.Object,
+            _mockConfirmarRutinaIA.Object,
+            _mockObtenerCompleta.Object
         );
     }
 

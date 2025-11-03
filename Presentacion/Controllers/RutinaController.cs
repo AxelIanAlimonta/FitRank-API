@@ -32,16 +32,8 @@ public class RutinaController : ControllerBase
         ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
         EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
         GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso,
-        ConfirmarRutinaIACasoDeUso confirmarRutinaIACasoDeUso)
-
-          AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
-          ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
-          ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
-          
-          ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
-          EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
-          ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso
-          )
+        ConfirmarRutinaIACasoDeUso confirmarRutinaIACasoDeUso,
+        ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso)
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
