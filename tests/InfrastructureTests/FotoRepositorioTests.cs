@@ -23,7 +23,8 @@ public class FotoRepositorioTests
         {
             Nombre = "Pedro",
             Apellido = "Gonzalez",
-            Email = "pedro.gonzalez@example.com"
+            Email = "pedro.gonzalez@example.com",
+            Nivel = "Basico"
         };
         context.Socios.Add(socio);
         await context.SaveChangesAsync();

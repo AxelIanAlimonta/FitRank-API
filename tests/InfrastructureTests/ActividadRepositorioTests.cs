@@ -19,6 +19,16 @@ public class ActividadRepositorioTests
 
     private async Task<(Serie, EjercicioAsignado, Entrenamiento)> SeedData(FitRankDbContext context)
     {
+
+        var Socio = new Socio
+        {
+            Nombre = "Test Socio",
+            Email = "test@socio.com",
+            Nivel = "Medio"
+        };
+        context.Socios.Add(Socio);
+        await context.SaveChangesAsync();
+
         var ejercicioAsignado = new EjercicioAsignado
         {
             NumeroEjercicio = 1,
@@ -32,7 +42,8 @@ public class ActividadRepositorioTests
             NumeroDeSerie = 1,
             Repeticiones = 10,
             Peso = 50,
-            EjercicioAsignadoId = ejercicioAsignado.Id
+            EjercicioAsignadoId = ejercicioAsignado.Id,
+
         };
 
         context.Series.Add(serie);
@@ -41,10 +52,12 @@ public class ActividadRepositorioTests
         var entrenamiento = new Entrenamiento
         {
             Fecha = DateTime.UtcNow,
-            SocioId = 1,
+            SocioId = Socio.Id,
         };
 
         context.Entrenamientos.Add(entrenamiento);
+
+
         await context.SaveChangesAsync();
 
         return (serie, ejercicioAsignado, entrenamiento);

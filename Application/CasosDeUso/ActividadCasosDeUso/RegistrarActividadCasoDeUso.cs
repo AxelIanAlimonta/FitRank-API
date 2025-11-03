@@ -33,7 +33,7 @@ namespace FitRank_API.Application.UseCases
             _rutinaRepo = rutinaRepositorio;
         }
 
-        public async Task<Domain.Entities.Actividad> Ejecutar(RegistrarActividadDTO dto)
+        public virtual async Task<Domain.Entities.Actividad> Ejecutar(RegistrarActividadDTO dto)
         {
             // 1️⃣ Obtener la serie y socio
             var serie = await _actividadRepo.ObtenerSeriePorIdAsync(dto.SerieId);
@@ -60,8 +60,8 @@ namespace FitRank_API.Application.UseCases
             var calculo = new CalculoGenerico();
             var resultado = calculo.CalcularPuntos(
                 ejercicio,
-                dto.Repeticiones ,
-                dto.Repeticiones ,
+                dto.Repeticiones,
+                dto.Repeticiones,
                 dto.Peso,
                 socio,
                 ultimaMedida,

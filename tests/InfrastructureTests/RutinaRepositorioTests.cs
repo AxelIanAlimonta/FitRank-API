@@ -35,6 +35,7 @@ public class RutinaTests
             Nombre = "Test Socio",
             Apellido = "Usuario",
             Email = "test.socio@example.com",
+            Nivel = "Intermedio"
         };
         context.Usuarios.Add(_usuarioMock);
         context.Socios.Add(_socioMock);

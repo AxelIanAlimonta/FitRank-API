@@ -22,7 +22,8 @@ public class MedidaCorporalRepositorioTests
         {
             Nombre = "Luis",
             Apellido = "Martinez",
-            Email = "luis.martinez@example.com"
+            Email = "luis.martinez@example.com",
+            Nivel = "Intermedio",
         };
 
         context.Socios.Add(socio);

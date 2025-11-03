@@ -103,8 +103,20 @@ namespace FitRank_API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            await _eliminar.Ejecutar(id);
-            return NoContent();
+            try
+            {
+                var resultado = await _eliminar.Ejecutar(id);
+                if (!resultado)
+                {
+                    return NotFound($"La actividad con ID {id} no existe.");
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error interno del servidor.");
+            }
+
         }
 
         [HttpPost("registrar")]

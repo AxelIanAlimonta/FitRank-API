@@ -18,6 +18,24 @@ public class EjercicioAsignadoRepositorioTests
 
     private async Task<(Sesion, Ejercicio)> SeedData(FitRankDbContext context)
     {
+
+        var Maquina = new Maquina
+        {
+            Nombre = "Máquina de Prueba",
+            GimnasioId = 1,
+            UrlImagen = "http://imagen.com/maquina.jpg",
+            Qr = "QR12345"
+        };
+        context.Maquinas.Add(Maquina);
+        await context.SaveChangesAsync();
+
+        var GrupoMuscular = new GrupoMuscular
+        {
+            Nombre = "Grupo Muscular de Prueba"
+        };
+        context.GruposMusculares.Add(GrupoMuscular);
+        await context.SaveChangesAsync();
+
         var sesion = new Sesion
         {
             NumeroDeSesion = 1,
@@ -32,6 +50,8 @@ public class EjercicioAsignadoRepositorioTests
         {
             Nombre = "Ejercicio de Prueba",
             Descripcion = "Descripción del ejercicio de prueba",
+            MaquinaId = Maquina.Id,
+            GrupoMuscularId = GrupoMuscular.Id
         };
 
         context.Ejercicios.Add(ejercicio);

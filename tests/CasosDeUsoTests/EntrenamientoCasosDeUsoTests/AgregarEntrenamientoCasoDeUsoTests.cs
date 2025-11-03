@@ -25,46 +25,46 @@ public class AgregarEntrenamientoCasoDeUsoTests
         _entrenamientoRepositorioMock = new Mock<IEntrenamientoRepositorio>();
     }
 
-    // [Fact]
-    // public async Task AgregarEntrenamiento_CuandoLosDatosSonValidos_RetornaEntrenamientoDTO()
-    // {
-    //     // Arrange
-    //     var nuevoEntrenamientoDTO = new AgregarEntrenamientoDTO
-    //     {
-    //         SocioId = 1,
-    //         Duracion = new DateTime(2023, 1, 22),
-    //         Fecha = new DateTime(2023, 1, 22)
-    //     };
+    [Fact]
+    public async Task AgregarEntrenamiento_CuandoLosDatosSonValidos_RetornaEntrenamientoDTO()
+    {
+        // Arrange
+        var nuevoEntrenamientoDTO = new AgregarEntrenamientoDTO
+        {
+            SocioId = 1,
+            Duracion = new TimeSpan(1, 0, 0),
+            Fecha = new DateTime(2023, 1, 22)
+        };
 
-    //     var entrenamientoAGuardar = new Entrenamiento
-    //     {
-    //         SocioId = nuevoEntrenamientoDTO.SocioId,
-    //         Duracion = nuevoEntrenamientoDTO.Duracion,
-    //         Fecha = nuevoEntrenamientoDTO.Fecha
-    //     };
+        var entrenamientoAGuardar = new Entrenamiento
+        {
+            SocioId = nuevoEntrenamientoDTO.SocioId,
+            Duracion = nuevoEntrenamientoDTO.Duracion,
+            Fecha = nuevoEntrenamientoDTO.Fecha
+        };
 
-    //     var entrenamientoGuardado = new Entrenamiento
-    //     {
-    //         Id = 1,
-    //         SocioId = nuevoEntrenamientoDTO.SocioId,
-    //         Duracion = nuevoEntrenamientoDTO.Duracion,
-    //         Fecha = nuevoEntrenamientoDTO.Fecha
-    //     };
+        var entrenamientoGuardado = new Entrenamiento
+        {
+            Id = 1,
+            SocioId = nuevoEntrenamientoDTO.SocioId,
+            Duracion = nuevoEntrenamientoDTO.Duracion,
+            Fecha = nuevoEntrenamientoDTO.Fecha
+        };
 
-    //     _entrenamientoRepositorioMock
-    //         .Setup(repo => repo.AgregarAsync(It.IsAny<Entrenamiento>()))
-    //         .ReturnsAsync(entrenamientoGuardado);
+        _entrenamientoRepositorioMock
+            .Setup(repo => repo.AgregarAsync(It.IsAny<Entrenamiento>()))
+            .ReturnsAsync(entrenamientoGuardado);
 
-    //     var casoDeUso = new AgregarEntrenamientoCasoDeUso(_entrenamientoRepositorioMock.Object, _mapper);
+        var casoDeUso = new AgregarEntrenamientoCasoDeUso(_entrenamientoRepositorioMock.Object, _mapper);
 
-    //     // Act
-    //     var resultado = await casoDeUso.Ejecutar(nuevoEntrenamientoDTO);
+        // Act
+        var resultado = await casoDeUso.Ejecutar(nuevoEntrenamientoDTO);
 
-    //     // Assert
-    //     resultado.Should().NotBeNull();
-    //     resultado.Id.Should().Be(entrenamientoGuardado.Id);
-    //     resultado.SocioId.Should().Be(entrenamientoGuardado.SocioId);
-    //     resultado.Duracion.Should().Be(entrenamientoGuardado.Duracion);
-    //     resultado.Fecha.Should().Be(entrenamientoGuardado.Fecha);
-    // }
+        // Assert
+        resultado.Should().NotBeNull();
+        resultado.Id.Should().Be(entrenamientoGuardado.Id);
+        resultado.SocioId.Should().Be(entrenamientoGuardado.SocioId);
+        resultado.Duracion.Should().Be(entrenamientoGuardado.Duracion);
+        resultado.Fecha.Should().Be(entrenamientoGuardado.Fecha);
+    }
 }
