@@ -45,6 +45,7 @@ using FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Asistencia;
+using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
 
 
 
@@ -296,6 +297,11 @@ builder.Services.AddScoped<IRoutineBuilder, RoutineBuilderImpl>();
 builder.Services.AddScoped<GenerarRutinaIACasoDeUso>();
 builder.Services.AddScoped<ConfirmarRutinaIACasoDeUso>();
 
+builder.Services.AddScoped<ISolicitudRutinaProfesorRepositorio, SolicitudRutinaProfesorRepositorioImpl>();
+builder.Services.AddScoped<CrearSolicitudRutinaProfesorCasoDeUso>();
+builder.Services.AddScoped<TomarSolicitudCasoDeUso>();
+builder.Services.AddScoped<FinalizarSolicitudCasoDeUso>();
+builder.Services.AddScoped<RechazarSolicitudCasoDeUso>();
 
 
 builder.Services.AddCors(options =>
