@@ -20,15 +20,15 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         private readonly IConfiguration _config;
         private readonly ISendGridClient _sendGridClient;
         private readonly QrHelper _qrHelper;
-        private readonly IGimnasioRepositorio _gimnasioRepositorio; 
+        private readonly IGimnasioRepositorio _gimnasioRepositorio;
 
-  public AgregarInvitacionCasoDeUso(
-            IInvitacionRepositorio invitacionRepositorio,
-            IUsuarioRepositorio usuarioRepositorio,
-            IConfiguration config,
-            ISendGridClient sendGridClient,
-            QrHelper qrHelper,
-            IGimnasioRepositorio gimnasioRepositorio)
+        public AgregarInvitacionCasoDeUso(
+                  IInvitacionRepositorio invitacionRepositorio,
+                  IUsuarioRepositorio usuarioRepositorio,
+                  IConfiguration config,
+                  ISendGridClient sendGridClient,
+                  QrHelper qrHelper,
+                  IGimnasioRepositorio gimnasioRepositorio)
         {
             _invitacionRepositorio = invitacionRepositorio;
             _usuarioRepositorio = usuarioRepositorio;
@@ -103,6 +103,9 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 Rol = "Socio",
                 Estado = "Activo",
                 EsActivado = false,
+                Nivel = "Beginner",
+                Altura = 0,
+                Peso = 0,
                 CuotaPagadaHasta = invitacion.CuotaPagadaHasta,
                 TokenRecuperacion = tokenActivacion,
                 TokenExpira = DateTime.Now.AddHours(24)
