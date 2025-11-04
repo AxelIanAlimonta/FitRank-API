@@ -15,5 +15,13 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<List<Usuario>> ObtenerTodosAsync();
         
         Task<Usuario?> ObtenerPorCondicionAsync(Expression<Func<Usuario, bool>> predicado);
+
+        Task<Socio?> ObtenerSocioConGimnasioPorIdAsync(long id);
+
+        Task<List<Socio>> ObtenerSociosActivosAsync();
+
+
+
+
     }
 }

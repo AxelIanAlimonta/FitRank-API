@@ -106,7 +106,23 @@ namespace FitRank_API.Infrastructure.Repositorios
         public async Task<List<Usuario>> ObtenerTodosAsync()
             => await _context.Usuarios.ToListAsync();
 
+        public async Task<Socio?> ObtenerSocioConGimnasioPorIdAsync(long id)
+        {
+            return await _context.Socios
+                .Include(s => s.Gimnasio)
+                .FirstOrDefaultAsync(s => s.Id == id);
+        }
 
-        
+
+        public async Task<List<Socio>> ObtenerSociosActivosAsync()
+        {
+
+            return await _context.Socios
+    .Where(s => s.Estado == "Activo" &&
+                s.CuotaPagadaHasta >= DateTime.UtcNow.Date)
+    .Include(s => s.Gimnasio)
+    .ToListAsync();
+        }
+
     }
 }

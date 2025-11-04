@@ -58,6 +58,15 @@ namespace FitRank_API.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        
+
+
+
+        public async Task ActualizarAsync(Notificacion notificacion)
+        {
+            _context.Notificaciones.Update(notificacion);
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }

@@ -208,6 +208,8 @@ builder.Services.AddScoped<ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso>();
 builder.Services.AddScoped<ObtenerAsistenciasPorDiaCasoDeUso>();
 builder.Services.AddScoped<AgregarAsistenciaCasoDeUso>();
 builder.Services.AddScoped<ValidarAsistenciaQrCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodasLasAsistenciasCasoDeUso>();
+builder.Services.AddScoped<DetectarSociosInactivosCasoDeUso>();
 
 builder.Services.AddScoped<IProfesorRepositorio, ProfesorRepositorioImpl>();
 builder.Services.AddScoped<AgregarProfesorCasoDeUso>();
@@ -258,7 +260,8 @@ builder.Services.AddScoped<EliminarJornadaCasoDeUso>();
 builder.Services.AddScoped<INotificacionRepositorio, NotificacionRepositorioImpl>();
 builder.Services.AddScoped<AgregarNotificacionCasoDeUso>();
 builder.Services.AddScoped<ObtenerNotificacionPorUsuarioCasoDeUso>();
-
+builder.Services.AddScoped<RetenerSocioCasoDeUso>();
+builder.Services.AddScoped<MarcarNotificacionLeidaCasoDeUso>();
 
 
 builder.Services.AddScoped<ISerieRepositorio, SerieRepositorioImpl>();

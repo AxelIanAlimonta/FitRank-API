@@ -92,6 +92,7 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                         Valido = true,
                         Mensaje = "✅ Acceso permitido — entrada registrada",
                         AsistenciaId = (int)nueva.Id,
+                        UsuarioId = userId,
                         User = new UsuarioAuthDTO
                         {
                             Id = user.Id,

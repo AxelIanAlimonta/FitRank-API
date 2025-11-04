@@ -14,8 +14,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    [Migration("20251104050524_SolicitudEntity")]
-    partial class SolicitudEntity
+    [Migration("20251104122610_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

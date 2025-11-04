@@ -19,7 +19,11 @@ namespace FitRank_API.Application.Mappings
                 .ForMember(dest => dest.HoraEntrada, opt => opt.MapFrom(src => src.HoraEntrada));
 
             CreateMap<AgregarAsistenciaDTO, Asistencia>();
-
+            CreateMap<Asistencia, AsistenciaListadoDTO>()
+                   .ForMember(dest => dest.NombreSocio,
+                       opt => opt.MapFrom(src => $"{src.Usuario.Nombre} {src.Usuario.Apellido}"))
+                   .ForMember(dest => dest.GimnasioNombre,
+                       opt => opt.MapFrom(src => (src.Usuario as Socio)!.Gimnasio.Nombre));
 
         }
     }

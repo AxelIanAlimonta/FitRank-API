@@ -102,5 +102,20 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
         return true;
     }
 
-    
+    public async Task<List<Asistencia>> ObtenerTodasConUsuarioAsync()
+    {
+        return await _context.Asistencias
+            .Include(a => a.Usuario)
+            .ThenInclude(u => (u as Socio)!.Gimnasio)
+            .OrderByDescending(a => a.Fecha)
+            .ToListAsync();
+    }
+    public async Task<Asistencia?> ObtenerUltimaAsistenciaPorUsuarioAsync(long usuarioId)
+    {
+        return await _context.Asistencias
+            .Where(a => a.UsuarioId == usuarioId)
+            .OrderByDescending(a => a.Fecha)
+            .FirstOrDefaultAsync();
+    }
+
 }

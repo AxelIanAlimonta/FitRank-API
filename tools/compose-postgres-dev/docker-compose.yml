@@ -7,6 +7,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: midatabase
+      TZ: America/Argentina/Buenos_Aires
     ports:
       - "5432:5432"
     volumes:

@@ -11,6 +11,7 @@ namespace FitRank_API.Application.DTOs.Asistencia
             public UsuarioAuthDTO? User { get; set; }
             public long? AsistenciaId { get; set; }
         public DateTime? ValidoHasta { get; set; }
+        public long UsuarioId { get; set; }
 
     }
 }

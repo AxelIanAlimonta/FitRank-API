@@ -17,6 +17,8 @@ namespace FitRank_API.Infrastructure.Interfaces
 
         Task<bool> EliminarAsync(long Id);
 
+        Task<List<Asistencia>> ObtenerTodasConUsuarioAsync();
+        Task<Asistencia?> ObtenerUltimaAsistenciaPorUsuarioAsync(long usuarioId);
 
     }
 }

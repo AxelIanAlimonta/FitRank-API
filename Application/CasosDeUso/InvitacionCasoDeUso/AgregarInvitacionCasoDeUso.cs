@@ -72,27 +72,27 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
      string tokenActivacion,
      Domain.Entities.Invitacion invitacion)
         {
-            // 🧩 1️⃣ Buscar socio creado (por email)
+           
             var socio = await _usuarioRepositorio.ObtenerPorEmailAsync(dto.Email);
             if (socio == null)
                 throw new Exception("No se encontró el socio asociado a la invitación.");
 
-            // 🏋️‍♂️ 2️⃣ Buscar gimnasio del administrador
+            
             var gimnasio = await _gimnasioRepositorio.ObtenerGimnasioPorId(invitacion.GimnasioId);
             if (gimnasio == null)
                 throw new Exception("No se encontró gimnasio asociado a la invitación.");
 
-            // 🔒 3️⃣ Generar QR del pase JWT (seguro, firmado y con vencimiento)
+          
             var qrTokenPase = _qrHelper.GenerarQrDePaseJWT((Socio)socio, gimnasio.Id);
             var qrData = $"{_config["FrontendUrl"]}/acceso?token={qrTokenPase}";
             var qrImage = await _qrHelper.GenerarQrImage(qrData);
 
-            // ✉️ 4️⃣ Generar link de activación de cuenta (tokenActivacion)
+          
             var linkActivacion = $"{_config["FrontendUrl"]}/activar-cuenta?token={tokenActivacion}";
             var from = new EmailAddress(_config["Email:From"], "FitRank");
             var to = new EmailAddress(dto.Email);
 
-            // 💌 5️⃣ Cuerpo del email
+           
             var html = $@"
         <div style='font-family: Arial, sans-serif; color:#222; text-align:center;'>
             <h2>¡Hola {dto.Nombre}!</h2>
@@ -113,7 +113,6 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             </a>
         </div>";
 
-            // 📎 6️⃣ Adjuntar la imagen del QR inline para Gmail/Outlook
             var qrBytes = Convert.FromBase64String(qrImage.Split(',')[1]);
             var msg = MailHelper.CreateSingleEmail(from, to, "Tu pase FitRank y activación de cuenta", html, html);
 
@@ -123,14 +122,13 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 Type = "image/png",
                 Filename = "qr.png",
                 Disposition = "inline",
-                ContentId = "QrImage" // 🔗 igual que el cid del <img>
+                ContentId = "QrImage" 
             };
             msg.AddAttachment(attachment);
 
-            // 📤 7️⃣ Enviar mail
+           
             await _sendGridClient.SendEmailAsync(msg);
 
-            // 📦 8️⃣ Retornar valores
             return (qrTokenPase, qrImage);
         }
 
@@ -154,6 +152,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 TokenExpira = DateTime.Now.AddHours(24),
                 Nivel="Principiante",
                 QrToken = Guid.NewGuid().ToString("N"),
+                GimnasioId = invitacion.GimnasioId,
             };
 
             await _usuarioRepositorio.AgregarAsync(socio);
