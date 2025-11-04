@@ -3,7 +3,7 @@
     public class CrearSolicitudRutinaProfesorDTO
     {
         public string? MensajeSocio { get; set; }
-
+        public string NombreSocio { get; set; }
         public int Edad { get; set; }
         public double PesoKg { get; set; }
         public double AlturaCm { get; set; }

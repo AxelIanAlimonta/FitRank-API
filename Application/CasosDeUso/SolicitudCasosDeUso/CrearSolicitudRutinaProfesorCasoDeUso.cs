@@ -18,6 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
             {
                 SocioId = socioId,
                 MensajeSocio = dto.MensajeSocio,
+                NombreSocio = dto.NombreSocio,
                 Edad = dto.Edad,
                 PesoKg = dto.PesoKg,
                 AlturaCm = dto.AlturaCm,

@@ -10,6 +10,8 @@ public class SolicitudRutinaProfesor
     public long? ProfesorId { get; set; }
     public Profesor? Profesor { get; set; }
 
+    public string NombreSocio { get; set; } = string.Empty;
+
     public EstadoSolicitud Estado { get; set; } = EstadoSolicitud.Pendiente;
 
     public DateTime FechaSolicitud { get; set; } = DateTime.UtcNow;
