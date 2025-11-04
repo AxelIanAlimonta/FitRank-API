@@ -38,7 +38,7 @@ namespace FitRank_API.Infrastructure.Repositories
                 {
                     Id = s.Id,
                     SocioId = s.SocioId,
-                    NombreSocio = $"{s.Socio.Nombre} {s.Socio.Apellido}",
+                    NombreSocio = s.NombreSocio,
                     ProfesorId = s.ProfesorId,
                     Estado = s.Estado.ToString(),
                     FechaSolicitud = s.FechaSolicitud,
@@ -49,7 +49,18 @@ namespace FitRank_API.Infrastructure.Repositories
                     Nivel = s.Nivel,
                     SesionesPorSemana = s.SesionesPorSemana,
                     MinutosPorSesion = s.MinutosPorSesion,
-                    Objetivo = s.Objetivo
+                    Objetivo = s.Objetivo,
+
+                    DolorLumbar = s.DolorLumbar,
+                    DolorRodilla = s.DolorRodilla,
+                    DolorHombro = s.DolorHombro,
+                    CirugiaReciente = s.CirugiaReciente,
+                    Sincope = s.Sincope,
+                    Embarazo = s.Embarazo,
+                    Hipertension = s.Hipertension,
+                    HipertensionControlada = s.HipertensionControlada,
+                    Diabetes = s.Diabetes,
+                    DolorToracico = s.DolorToracico
                 })
                 .ToListAsync();
         }

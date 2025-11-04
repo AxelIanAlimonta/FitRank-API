@@ -33,19 +33,21 @@ namespace FitRank_API.Presentacion.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Socio")]
-        public async Task<ActionResult> Crear([FromBody] CrearSolicitudRutinaProfesorDTO dto)
+        //[Authorize(Roles = "Socio")]
+        public async Task<ActionResult> Crear(long socioId, [FromBody] CrearSolicitudRutinaProfesorDTO dto)
         {
+            /*
             var socioIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!long.TryParse(socioIdStr, out var socioId))
-                return Unauthorized();
+                if (!long.TryParse(socioIdStr, out var socioId))
+            return Unauthorized();
+            */
 
             var solicitudId = await _crearCasoDeUso.EjecutarAsync(dto, socioId);
             return Ok(new { SolicitudId = solicitudId });
         }
 
         [HttpGet("pendientes")]
-        [Authorize(Roles = "Profesor")]
+        //[Authorize(Roles = "Profesor")]
         public async Task<ActionResult<List<SolicitudRutinaProfesorDTO>>> ObtenerPendientes()
         {
             var solicitudes = await _repositorio.ObtenerPendientesAsync();
