@@ -1,30 +1,33 @@
-﻿
+﻿using FitRank.API.Application.Rutinas.Abstractions;
+using FitRank.API.Infrastructure.RulesEngineImpl;
+using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
 using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
-
+using FitRank_API.Application.CasosDeUso.FotoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GimnasioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
+using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.LogroCasosDeUso;
-using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
+using FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso;
+using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
-
-
-using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
-
+using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.Services;
-
+using FitRank_API.Application.UseCases.Actividad;
+using FitRank_API.Application.UseCases.Entrenamiento;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Infrastructure.Repositories;
@@ -36,23 +39,13 @@ using Microsoft.OpenApi.Models;
 using SendGrid;
 using System;
 using System.Text;
-
-using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
-using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
-using FitRank_API.Application.CasosDeUso.FotoCasosDeUso;
-using FitRank_API.Application.DTOs.GimnasioDTOs;
-using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
-using FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso;
-using FitRank_API.Application.DTOs.NotificacionDTOs;
-using FitRank_API.Application.UseCases.Actividad;
-using FitRank_API.Application.UseCases.Entrenamiento;
+using System.Text.Json.Serialization;
 using FitRank_API.Application.UseCases;
 using FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
-using FitRank_API.Application.UseCases.Actividad;
-using FitRank_API.Application.UseCases.Entrenamiento;
-
+using FitRank_API.Application.CasosDeUso.Asistencia;
+using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
 
 
 
@@ -72,7 +65,8 @@ if (string.IsNullOrEmpty(qrSecretFromConfig) || qrSecretFromConfig.Length < 32)
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -118,8 +112,6 @@ builder.Services.AddScoped<AgregarDificultadCasoDeUso>();
 builder.Services.AddScoped<ActualizarDificultadCasoDeUso>();
 builder.Services.AddScoped<EliminarDificultadCasoDeUso>();
 
-
-
 builder.Services.AddScoped<IConfiguracionGrupoMuscularRepositorio, ConfiguracionGrupoMuscularImpl>();
 builder.Services.AddScoped<ObtenerTodasLasConfiguracionGrupoMuscularCasoDeUso>();
 builder.Services.AddScoped<ObtenerConfiguracionGrupoMuscularPorIdCasoDeUso>();
@@ -133,6 +125,8 @@ builder.Services.AddScoped<ObtenerRutinaPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarRutinaCasoDeUso>();
 builder.Services.AddScoped<ActualizarRutinaCasoDeUso>();
 builder.Services.AddScoped<EliminarRutinaCasoDeUso>();
+builder.Services.AddScoped<ObtenerRutinaCompletaCasoDeUso>();
+
 
 builder.Services.AddScoped<ISesionRepositorio, SesionRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodasLasSesionesCasoDeUso>();
@@ -213,7 +207,9 @@ builder.Services.AddScoped<ValidarQrCasoDeUso>();
 builder.Services.AddScoped<ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso>();
 builder.Services.AddScoped<ObtenerAsistenciasPorDiaCasoDeUso>();
 builder.Services.AddScoped<AgregarAsistenciaCasoDeUso>();
-
+builder.Services.AddScoped<ValidarAsistenciaQrCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodasLasAsistenciasCasoDeUso>();
+builder.Services.AddScoped<DetectarSociosInactivosCasoDeUso>();
 
 builder.Services.AddScoped<IProfesorRepositorio, ProfesorRepositorioImpl>();
 builder.Services.AddScoped<AgregarProfesorCasoDeUso>();
@@ -239,6 +235,7 @@ builder.Services.AddScoped<EnviarEmailQrCasoDeUso>();
 builder.Services.AddScoped<FallbackEfectivoCasoDeUso>();
 builder.Services.AddScoped<AgregarInvitacionCasoDeUso>();
 builder.Services.AddScoped<AgregarAdministradorCasoDeUso>();
+builder.Services.AddScoped<ObtenerAdministradorCasoDeUso>();
 
 builder.Services.AddScoped<IMedidaCorporalRepositorio, MedidaCorporalRepositorioImpl>();
 builder.Services.AddScoped<AgregarMedidaCorporalCasoDeUso>();
@@ -263,7 +260,8 @@ builder.Services.AddScoped<EliminarJornadaCasoDeUso>();
 builder.Services.AddScoped<INotificacionRepositorio, NotificacionRepositorioImpl>();
 builder.Services.AddScoped<AgregarNotificacionCasoDeUso>();
 builder.Services.AddScoped<ObtenerNotificacionPorUsuarioCasoDeUso>();
-
+builder.Services.AddScoped<RetenerSocioCasoDeUso>();
+builder.Services.AddScoped<MarcarNotificacionLeidaCasoDeUso>();
 
 
 builder.Services.AddScoped<ISerieRepositorio, SerieRepositorioImpl>();
@@ -294,6 +292,19 @@ builder.Services.AddScoped<ObtenerEntrenamientosCasoDeUso>();
 builder.Services.AddScoped<ObtenerEntrenamientoPorIdCasoDeUso>();
 builder.Services.AddScoped<RegistrarEntrenamientoCasoDeUso>();
 
+builder.Services.AddScoped<IRulesEvaluator, RulesEvaluator>();
+builder.Services.AddScoped<IRoutineRulesRunner, RoutineRulesRunner>();
+builder.Services.AddScoped<IEjercicioCatalogo, EjercicioCatalogoImpl>();
+builder.Services.AddScoped<IRoutineBuilder, RoutineBuilderImpl>();
+
+builder.Services.AddScoped<GenerarRutinaIACasoDeUso>();
+builder.Services.AddScoped<ConfirmarRutinaIACasoDeUso>();
+
+builder.Services.AddScoped<ISolicitudRutinaProfesorRepositorio, SolicitudRutinaProfesorRepositorioImpl>();
+builder.Services.AddScoped<CrearSolicitudRutinaProfesorCasoDeUso>();
+builder.Services.AddScoped<TomarSolicitudCasoDeUso>();
+builder.Services.AddScoped<FinalizarSolicitudCasoDeUso>();
+builder.Services.AddScoped<RechazarSolicitudCasoDeUso>();
 
 
 builder.Services.AddCors(options =>

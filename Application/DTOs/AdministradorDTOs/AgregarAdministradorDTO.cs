@@ -12,6 +12,6 @@
         public string Cuil { get; set; } = string.Empty;
         public string Direccion { get; set; } = string.Empty;
         public string Localidad { get; set; } = string.Empty;
-        public long? GimnasioId { get; set; }
+       
     }
 }

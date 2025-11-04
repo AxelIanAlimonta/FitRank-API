@@ -32,14 +32,12 @@ public class AgregarNotificacionCasoDeUsoTests
         // Arrange
         var nuevaNotificacionDTO = new AgregarNotificacionDTO
         {
-            Id = 0,
+           
             Mensaje = "Nueva notificación",
             Titulo = "Notificación",
             UsuarioEmisorId = 1,
             UsuarioReceptorId = 2,
-            Activa = true,
-            Leido = false,
-            FechaEnvio = new DateTime(2024, 6, 1)
+            
         };
 
         var notificacionAGuardar = new Notificacion
@@ -82,8 +80,6 @@ public class AgregarNotificacionCasoDeUsoTests
         resultado.Titulo.Should().Be(nuevaNotificacionDTO.Titulo);
         resultado.UsuarioEmisorId.Should().Be(nuevaNotificacionDTO.UsuarioEmisorId);
         resultado.UsuarioReceptorId.Should().Be(nuevaNotificacionDTO.UsuarioReceptorId);
-        resultado.FechaEnvio.Should().Be(nuevaNotificacionDTO.FechaEnvio);
-        resultado.Activa.Should().Be(nuevaNotificacionDTO.Activa);
-        resultado.Leido.Should().Be(nuevaNotificacionDTO.Leido);
+     
     }
 }

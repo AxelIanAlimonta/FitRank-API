@@ -1,0 +1,31 @@
+﻿[
+  {
+    "WorkflowName": "Preferencias",
+    "Rules": [
+      {
+        "RuleName": "Preferencia_Maquinas",
+        "SuccessEvent": "EQUIPO_MAQUINAS",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Preferencias.PrefiereMaquinas"
+      },
+      {
+        "RuleName": "Preferencia_Mancuernas",
+        "SuccessEvent": "EQUIPO_MANCUERNAS",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Preferencias.PrefiereMancuernas"
+      },
+      {
+        "RuleName": "Incluir_Cardio",
+        "SuccessEvent": "INCLUIR_CARDIO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Preferencias.IncluirCardio"
+      },
+      {
+        "RuleName": "ListaUsuario_AEvitar_NoVacia",
+        "SuccessEvent": "LISTA_USUARIO_EVITAR",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.Preferencias.EvitarEjercicios != null && input.Preferencias.EvitarEjercicios.Count > 0"
+      }
+    ]
+  }
+]

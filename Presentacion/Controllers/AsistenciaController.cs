@@ -1,4 +1,7 @@
-﻿using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
+﻿using FitRank_API.Application.CasosDeUso.Asistencia;
+using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
+using FitRank_API.Application.DTOs.QR;
+using FitRank_API.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,16 +15,28 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ObtenerAsistenciasPorUsuarioCasoDeUso _obtenerAsistenciasPorUsuarioCasoDeUso;
         private readonly ObtenerAsistenciasPorDiaCasoDeUso _obtenerAsistenciasPorDiaCasoDeUso;
         private readonly ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso _obtenerAsistenciasDetalladasPorUsuarioCasoDeUso;
+        private readonly ValidarAsistenciaQrCasoDeUso _validarAsistenciaQrCasoDeUso;
+        private readonly ObtenerTodasLasAsistenciasCasoDeUso _obtenerTodasLasAsistenciasCasoDeUso;
+        private readonly DetectarSociosInactivosCasoDeUso _detectarSociosInactivosCasoDeUso;
 
         public AsistenciaController(
-             ObtenerAsistenciasPorUsuarioCasoDeUso obtenerAsistenciasPorUsuarioCasoDeUso,
-             ObtenerAsistenciasPorDiaCasoDeUso obtenerAsistenciasPorDiaCasoDeUso,
-             ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso obtenerAsistenciasDetalladasPorUsuarioCasoDeUso)
+            ObtenerAsistenciasPorUsuarioCasoDeUso obtenerAsistenciasPorUsuarioCasoDeUso,
+            ObtenerAsistenciasPorDiaCasoDeUso obtenerAsistenciasPorDiaCasoDeUso,
+            ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso obtenerAsistenciasDetalladasPorUsuarioCasoDeUso,
+            ValidarAsistenciaQrCasoDeUso validarAsistenciaQrCasoDeUso,
+            ObtenerTodasLasAsistenciasCasoDeUso obtenerTodasLasAsistenciasCasoDeUso,
+            DetectarSociosInactivosCasoDeUso detectarSociosInactivosCasoDeUso)
         {
             _obtenerAsistenciasPorUsuarioCasoDeUso = obtenerAsistenciasPorUsuarioCasoDeUso;
             _obtenerAsistenciasPorDiaCasoDeUso = obtenerAsistenciasPorDiaCasoDeUso;
             _obtenerAsistenciasDetalladasPorUsuarioCasoDeUso = obtenerAsistenciasDetalladasPorUsuarioCasoDeUso;
+            _validarAsistenciaQrCasoDeUso = validarAsistenciaQrCasoDeUso;
+            _obtenerTodasLasAsistenciasCasoDeUso = obtenerTodasLasAsistenciasCasoDeUso;
+            _detectarSociosInactivosCasoDeUso = detectarSociosInactivosCasoDeUso;
         }
+
+
+
 
 
         [HttpGet("mias")]
@@ -46,6 +61,14 @@ namespace FitRank_API.Presentacion.Controllers
             var resultado = await _obtenerAsistenciasPorDiaCasoDeUso.Ejecutar(gimnasioId, desde, hasta);
             return Ok(resultado);
         }
+        [HttpGet("todas")]
+        [Authorize(Roles = "Admin,Profesor")]
+        public async Task<IActionResult> ObtenerTodasLasAsistencias()
+        {
+            var asistencias = await _obtenerTodasLasAsistenciasCasoDeUso.Ejecutar();
+            return Ok(asistencias);
+        }
+
 
 
         [HttpGet("por-usuario/{usuarioId}")]
@@ -58,7 +81,7 @@ namespace FitRank_API.Presentacion.Controllers
 
 
         [HttpGet("detalle-usuarioAsistencia/{usuarioId}")]
-        [Authorize(Roles = "Admin,Profesor")]
+        [Authorize(Roles = "Admin,Profesor,Socio")]
         public async Task<IActionResult> ObtenerAsistenciasDetalladasPorUsuario(long usuarioId)
         {
 
@@ -69,6 +92,33 @@ namespace FitRank_API.Presentacion.Controllers
                 return Forbid("No puedes acceder al historial de otro usuario.");
 
             var resultado = await _obtenerAsistenciasDetalladasPorUsuarioCasoDeUso.Ejecutar((int)usuarioId);
+            return Ok(resultado);
+        }
+
+
+        [HttpPost("validar-qr")]
+
+        public async Task<IActionResult> ValidarQr([FromBody] QrValidationDTO dto)
+        {
+            // En producción, el adminId vendría del token JWT del usuario logueado (dueño del gym)
+            // Por ahora, en desarrollo, lo dejamos null o simulado para porbarlo con los profes.
+
+            int? adminId = null;
+
+            var result = await _validarAsistenciaQrCasoDeUso.Ejecutar(dto, adminId);
+
+            if (!result.Valido)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+    
+
+    [HttpGet("socios-inactivos/{dias?}")]
+        [Authorize(Roles = "Admin,Profesor")]
+        public async Task<IActionResult> ObtenerSociosInactivos(int dias = 5)
+        {
+            var resultado = await _detectarSociosInactivosCasoDeUso.Ejecutar(dias);
             return Ok(resultado);
         }
 

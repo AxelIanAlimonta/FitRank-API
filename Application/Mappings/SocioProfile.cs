@@ -39,5 +39,14 @@ public class SocioProfile : Profile
             .ForMember(dest => dest.Rol, opt => opt.MapFrom(src => "User"))
             .ForMember(dest => dest.GimnasioId, opt => opt.Ignore()) 
             .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
-    }
+    
+
+    // 🔹 Mapeo de Socio → SocioDTO
+    CreateMap<Socio, SocioDTO>()
+                // Mapea propiedades del padre (Usuario)
+                .ForMember(dest => dest.FotoUrl, opt => opt.MapFrom(src => src.FotoDePerfil))
+                // Mapea propiedades del hijo (Socio)
+                .ForMember(dest => dest.GimnasioId, opt => opt.MapFrom(src => src.GimnasioId ?? 0))
+                .ForMember(dest => dest.GimnasioNombre, opt => opt.MapFrom(src => src.Gimnasio.Nombre));
+        }
 }

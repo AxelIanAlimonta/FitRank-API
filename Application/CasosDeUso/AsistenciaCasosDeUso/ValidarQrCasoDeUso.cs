@@ -93,7 +93,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoD
                 }
 
 
-                var asistencia = new Asistencia
+                var asistencia = new FitRank_API.Domain.Entities.Asistencia
                 {
                     UsuarioId = userId,
                     Fecha = DateTime.Today,

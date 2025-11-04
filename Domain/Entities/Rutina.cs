@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace FitRank_API.Domain.Entities
 {
@@ -35,7 +36,8 @@ namespace FitRank_API.Domain.Entities
         public long UsuarioId { get; set; }
         public Usuario? Usuario { get; set; }
 
-
+        public JsonDocument? InputSnapshotJson { get; set; }
+        public JsonDocument? RulesExplainJson { get; set; }
         public ICollection<Sesion>? Sesiones { get; set; }
        
     }

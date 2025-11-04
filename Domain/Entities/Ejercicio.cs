@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FitRank_API.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FitRank_API.Domain.Entities;
@@ -18,7 +19,7 @@ public class Ejercicio
     [MaxLength(250)]
     public string? UrlImagen { get; set; } = string.Empty;
 
-    public int? DuracionEstimada { get; set; } // en minutos o segundos según convengan
+    public int? DuracionEstimada { get; set; } 
 
     [MaxLength(250)]
     public string? UrlVideo { get; set; } = string.Empty;
@@ -35,4 +36,9 @@ public class Ejercicio
 
     // 🔗 Relación con EjercicioAsignado
     public ICollection<EjercicioAsignado>? EjerciciosAsignados { get; set; }
+
+    public TipoEjercicio Tipo { get; set; }
+    public EquipoNecesario EquipoNecesario { get; set; }
+    public List<string> Tags { get; set; } = new();
+    public List<string> ContraIndicaciones { get; set; } = new();
 }

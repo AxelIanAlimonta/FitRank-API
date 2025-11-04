@@ -67,27 +67,71 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             };
         }
 
-        private async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(GenerarInvitacionDTO dto, string tokenActivacion, Domain.Entities.Invitacion invitacion)
+        private async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(
+     GenerarInvitacionDTO dto,
+     string tokenActivacion,
+     Domain.Entities.Invitacion invitacion)
         {
-            var tokenInvitacion = _qrHelper.GenerarQrToken(invitacion);
-            var qrData = $"{_config["FrontendUrl"]}/invitacion?token={tokenInvitacion}";
+           
+            var socio = await _usuarioRepositorio.ObtenerPorEmailAsync(dto.Email);
+            if (socio == null)
+                throw new Exception("No se encontró el socio asociado a la invitación.");
+
+            
+            var gimnasio = await _gimnasioRepositorio.ObtenerGimnasioPorId(invitacion.GimnasioId);
+            if (gimnasio == null)
+                throw new Exception("No se encontró gimnasio asociado a la invitación.");
+
+          
+            var qrTokenPase = _qrHelper.GenerarQrDePaseJWT((Socio)socio, gimnasio.Id);
+            var qrData = $"{_config["FrontendUrl"]}/acceso?token={qrTokenPase}";
             var qrImage = await _qrHelper.GenerarQrImage(qrData);
 
-
+          
             var linkActivacion = $"{_config["FrontendUrl"]}/activar-cuenta?token={tokenActivacion}";
             var from = new EmailAddress(_config["Email:From"], "FitRank");
             var to = new EmailAddress(dto.Email);
 
+           
             var html = $@"
-                <h3>¡Hola {dto.Nombre}!</h3>
-                <p>Tu invitación vence el {invitacion.CuotaPagadaHasta?.ToShortDateString()}.</p>
-                <img src='data:image/png;base64,{qrImage.Split(',')[1]}' alt='QR' width='200'/>
-                <p><a href='{linkActivacion}'>Activar cuenta y crear contraseña</a></p>";
+        <div style='font-family: Arial, sans-serif; color:#222; text-align:center;'>
+            <h2>¡Hola {dto.Nombre}!</h2>
+            <p>Tu pase FitRank vence el <strong>{invitacion.CuotaPagadaHasta?.ToShortDateString()}</strong>.</p>
+            <p>Mostrá este QR en tu gimnasio para ingresar:</p>
+            <img src='data:image/png;base64,{qrImage.Split(',')[1]}' alt='QR de acceso' width='200'/>
+             <p>O abrí tu pase directamente desde este enlace:</p>
+             <a href='{qrData}' 
+           style='display:inline-block; background-color:#5f00ff; color:#fff; 
+                  padding:10px 20px; border-radius:8px; text-decoration:none;'>
+           Ver mi pase FitRank
+        </a>
+            <hr style='margin:20px 0;'/>
+            <p>Si aún no activaste tu cuenta, hacelo desde el siguiente enlace:</p>
+            <a href='{linkActivacion}'
+               style='background-color:#5f00ff; color:#fff; padding:10px 20px; text-decoration:none; border-radius:6px;'>
+               Activar cuenta
+            </a>
+        </div>";
 
-            var msg = MailHelper.CreateSingleEmail(from, to, "Invitación a FitRank", html, html);
+            var qrBytes = Convert.FromBase64String(qrImage.Split(',')[1]);
+            var msg = MailHelper.CreateSingleEmail(from, to, "Tu pase FitRank y activación de cuenta", html, html);
+
+            var attachment = new Attachment
+            {
+                Content = Convert.ToBase64String(qrBytes),
+                Type = "image/png",
+                Filename = "qr.png",
+                Disposition = "inline",
+                ContentId = "QrImage" 
+            };
+            msg.AddAttachment(attachment);
+
+           
             await _sendGridClient.SendEmailAsync(msg);
-            return (tokenInvitacion, qrImage);
+
+            return (qrTokenPase, qrImage);
         }
+
 
         private async Task<Socio> RegistrarSocioInvitacion(GenerarInvitacionDTO dto, string tokenActivacion, Domain.Entities.Invitacion invitacion)
         {
@@ -108,7 +152,10 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 Peso = 0,
                 CuotaPagadaHasta = invitacion.CuotaPagadaHasta,
                 TokenRecuperacion = tokenActivacion,
-                TokenExpira = DateTime.Now.AddHours(24)
+                TokenExpira = DateTime.Now.AddHours(24),
+                Nivel="Principiante",
+                QrToken = Guid.NewGuid().ToString("N"),
+                GimnasioId = invitacion.GimnasioId,
             };
 
             await _usuarioRepositorio.AgregarAsync(socio);

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
+﻿using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.DTOs.RutinaDTOs;
-using FitRank_API.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
 
 namespace FitRank_API.Presentacion.Controllers;
 
@@ -17,7 +17,12 @@ public class RutinaController : ControllerBase
     private readonly ActualizarRutinaCasoDeUso _actualizarRutinaCasoDeUso;
     private readonly EliminarRutinaCasoDeUso _eliminarRutinaCasoDeUso;
     private readonly ObtenerTodasLasRutinasCasoDeUso _obtenerTodasLasRutinasCasoDeUso;
-   
+
+    private readonly GenerarRutinaIACasoDeUso _generarRutinaIACasoDeUso;
+    private readonly ConfirmarRutinaIACasoDeUso _confirmarRutinaIACasoDeUso;
+    private readonly ObtenerRutinaCompletaCasoDeUso _obtenerRutinaCompletaCasoDeUso;
+
+
 
 
     public RutinaController(
@@ -25,22 +30,44 @@ public class RutinaController : ControllerBase
         ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
         ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
         ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
-        EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso)
+        EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
+        GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso,
+        ConfirmarRutinaIACasoDeUso confirmarRutinaIACasoDeUso,
+        ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso)
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
-        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _actualizarRutinaCasoDeUso = actualizarRutinaCasoDeUso;
+        
+        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
+        _generarRutinaIACasoDeUso = generarRutinaIACasoDeUso;
+        _confirmarRutinaIACasoDeUso = confirmarRutinaIACasoDeUso;
+        _obtenerRutinaCompletaCasoDeUso = obtenerRutinaCompletaCasoDeUso;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> ObtenerTodo()
+   
+  
+  
+
+    //post
+    [HttpPost]
+    public async Task<IActionResult> Agregar([FromBody] AgregarRutinaDTO rutinaDTO)
     {
+        if (rutinaDTO == null)
+        {
+            return BadRequest("El objeto rutina no puede ser nulo.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
-            var rutinas = await _obtenerTodasLasRutinasCasoDeUso.Ejecutar();
-            return Ok(rutinas);
+            var rutinaCreada = await _agregarRutinaCasoDeUso.Ejecutar(rutinaDTO);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = rutinaCreada.Id }, rutinaCreada);
         }
         catch (Exception ex)
         {
@@ -69,32 +96,8 @@ public class RutinaController : ControllerBase
         }
     }
 
-  
 
-    //post
-    [HttpPost]
-    public async Task<IActionResult> Agregar([FromBody] AgregarRutinaDTO rutinaDTO)
-    {
-        if (rutinaDTO == null)
-        {
-            return BadRequest("El objeto rutina no puede ser nulo.");
-        }
 
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        try
-        {
-            var rutinaCreada = await _agregarRutinaCasoDeUso.Ejecutar(rutinaDTO);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = rutinaCreada.Id }, rutinaCreada);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarRutinaDTO rutinaDTO)
@@ -132,6 +135,21 @@ public class RutinaController : ControllerBase
 
     }
 
+    [HttpGet]
+    public async Task<IActionResult> ObtenerTodo()
+    {
+        try
+        {
+            var rutinas = await _obtenerTodasLasRutinasCasoDeUso.Ejecutar();
+            return Ok(rutinas);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+
     [HttpDelete]
     [Route("{id:long}")]
     public async Task<IActionResult> Eliminar(long id)
@@ -152,4 +170,56 @@ public class RutinaController : ControllerBase
         }
     }
 
+    [HttpGet("socio/{socioId}/detalle")]
+    public async Task<IActionResult> ObtenerRutinaCompletaPorSocio(long socioId)
+    {
+        var resultado = await _obtenerRutinaCompletaCasoDeUso.Ejecutar(socioId);
+
+        if (resultado == null || !resultado.Any())
+            return NotFound("No se encontraron rutinas para este socio.");
+
+        return Ok(resultado);
+    }
+
+    [HttpPost("generar")]
+    //[Authorize(Roles = "Socio")]
+    public async Task<IActionResult> Generar(long idSocio,[FromBody] RutinaRequestDTO input)
+    {
+
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
+
+        var resultado = await _generarRutinaIACasoDeUso.EjecutarAsync(input);
+
+        if (resultado.RequiereDerivacion)
+            return StatusCode(409, new { ok = false, explain = resultado.Mensaje, decisions = resultado.Decisiones });
+
+        ConfirmarRutinaDTO confirmarBody = new ConfirmarRutinaDTO(idSocio, idSocio, resultado.Rutina);
+
+        var rutina = await _confirmarRutinaIACasoDeUso.EjecutarAsync(confirmarBody);
+        
+
+        return Ok(new
+        {
+            ok = true,
+            decisions = resultado.Decisiones,
+            rutina = resultado.Rutina,
+            id = rutina.RutinaId
+        });
+    }
+
+    /*
+    [HttpPost("confirmar")]
+    public async Task<IActionResult> Confirmar([FromBody] ConfirmarRutinaDTO body)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
+
+        var resultado = await _confirmarRutinaIACasoDeUso.EjecutarAsync(body);
+
+        if (!resultado.Ok)
+            return BadRequest(resultado.Mensaje);
+
+        return Ok(new { ok = true, id = resultado.RutinaId });
+    }*/
 }
