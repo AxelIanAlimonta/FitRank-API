@@ -123,6 +123,11 @@ namespace FitRank_API.Infrastructure.Repositories
         {
             await _context.SaveChangesAsync();
         }
-    }
 
+        public async Task ActualizarAsync(SolicitudRutinaProfesor solicitud)
+        {
+            _context.SolicitudesRutinaProfesor.Update(solicitud);
+            await _context.SaveChangesAsync();
+        }
+    }
 }

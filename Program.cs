@@ -305,6 +305,7 @@ builder.Services.AddScoped<CrearSolicitudRutinaProfesorCasoDeUso>();
 builder.Services.AddScoped<TomarSolicitudCasoDeUso>();
 builder.Services.AddScoped<FinalizarSolicitudCasoDeUso>();
 builder.Services.AddScoped<RechazarSolicitudCasoDeUso>();
+builder.Services.AddScoped<TerminarSolicitudCasoDeUso>();
 
 
 builder.Services.AddCors(options =>
