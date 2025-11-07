@@ -14,7 +14,7 @@ namespace FitRank_API.Application.DTOs.Invitacion
         public string Telefono { get; set; } = string.Empty;
         [Required]
         public string MetodoPago { get; set; } = "Efectivo";
-        public decimal Monto { get; set; } = 50000m;
+        public decimal? Monto { get; set; } = 50000m;
         public string Periodo { get; set; } = "Monthly";
     }
 }

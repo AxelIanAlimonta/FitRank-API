@@ -1,7 +1,7 @@
 ﻿namespace FitRank_API.Infrastructure.Persistence;
 
 using FitRank_API.Domain.Entities;
-using FitRank_API.Presentacion.Controllers;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -54,6 +54,9 @@ public class FitRankDbContext : DbContext
     public DbSet<SolicitudRutinaProfesor> SolicitudesRutinaProfesor { get; set; }
 
     public DbSet<Actividad> Actividades { get; set; }
+
+    public DbSet<Ingreso> Ingresos { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

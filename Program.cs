@@ -46,6 +46,11 @@ using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Asistencia;
 using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
+using MercadoPago.Config;
+using FitRank_API.Application.CasosDeUso.Ingreso;
+
+using FitRank_API.Application.CasosDeUso.MercadoPago;
+
 
 
 
@@ -198,6 +203,10 @@ builder.Services.AddScoped<EliminarInvitacionCasoDeUso>();
 builder.Services.AddScoped<ObtenerInvitacionesCasoDeUso>();
 builder.Services.AddScoped<AgregarInvitacionCasoDeUso>();
 
+
+builder.Services.AddScoped<CrearPreferenciaMercadoPagoCasoDeUso>();
+builder.Services.AddScoped<ProcesarPagoMercadoPagoCasoDeUso>();
+
 builder.Services.AddScoped<QrHelper>();
 
 
@@ -305,6 +314,29 @@ builder.Services.AddScoped<CrearSolicitudRutinaProfesorCasoDeUso>();
 builder.Services.AddScoped<TomarSolicitudCasoDeUso>();
 builder.Services.AddScoped<FinalizarSolicitudCasoDeUso>();
 builder.Services.AddScoped<RechazarSolicitudCasoDeUso>();
+
+
+builder.Services.AddScoped<IIngresoRepositorio, IngresoRepositorio>();
+builder.Services.AddScoped<AgregarIngresoCasoDeUso>();
+builder.Services.AddScoped<EliminarIngresoCasoDeUso>();
+builder.Services.AddScoped<ObtenerIngresosPorGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerIngresoPorIdCasoDeUso>();
+builder.Services.AddScoped<ObtenerIngresosCasoDeUso>();
+
+
+
+/*builder = WebApplication.CreateBuilder(args);
+
+
+var accessToken = Environment.GetEnvironmentVariable("MERCADOPAGO_ACCESS_TOKEN");
+
+if (string.IsNullOrEmpty(accessToken))
+{
+    accessToken = builder.Configuration["MercadoPago:AccessToken"];
+}
+
+
+MercadoPagoConfig.AccessToken = accessToken;*/
 
 
 builder.Services.AddCors(options =>

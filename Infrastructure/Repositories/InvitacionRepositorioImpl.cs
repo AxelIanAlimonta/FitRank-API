@@ -80,7 +80,13 @@ namespace FitRank_API.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-
+        public async Task<Invitacion?> ObtenerPorEmailAsync(string email)
+        {
+            return await _context.Invitaciones
+                .Include(i => i.Gimnasio)
+                .Include(i => i.Usuario)
+                .FirstOrDefaultAsync(i => i.Email == email);
+        }
 
     }
 }

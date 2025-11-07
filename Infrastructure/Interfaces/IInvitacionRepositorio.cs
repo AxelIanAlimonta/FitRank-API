@@ -12,7 +12,8 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<Invitacion> ObtenerPorIdYEstadoAsync(long invitacionId, string v);
 
         Task<List<Invitacion>> ObtenerTodasAsync(int gimnasioId);
-        
+
+        Task<Invitacion?> ObtenerPorEmailAsync(string email);
 
     }
 }
