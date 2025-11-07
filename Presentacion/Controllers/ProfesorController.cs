@@ -14,6 +14,7 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ActualizarProfesorCasoDeUso _actualizarProfesorCasoDeUso;
         private readonly EliminarProfesorCasoDeUso _eliminarProfesorCasoDeUso;
         private readonly ObtenerTodosLosProfesoresCasoDeUso _obtenerTodosLosProfesoresCasoDeUso;
+        private readonly ObtenerTodosPorGimnasioCasoDeUso _obtenerTodosPorGimnasioCasoDeUso;
 
         public ProfesorController(
             AgregarProfesorCasoDeUso agregarProfesorCasoDeUso,
@@ -51,10 +52,7 @@ namespace FitRank_API.Presentacion.Controllers
         public async Task<IActionResult> AgregarAsync([FromBody] AgregarProfesorDTO profesorDTO)
         {
             var nuevoProfesor = await _agregarProfesorCasoDeUso.Ejecutar(profesorDTO);
-
-
-            // Tuve que hacer esto porque me tiraba error al usar CreatedAtAction
-            return CreatedAtAction(nameof(ObtenerPorId), "Profesor", new { id = nuevoProfesor.Id }, nuevoProfesor);
+            return Ok(nuevoProfesor);
         }
 
 
@@ -82,7 +80,7 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpGet("gimnasio/{gimnasioId}")]
         public async Task<IActionResult> ObtenerPorGimnasio(long gimnasioId)
         {
-            var profesores = await _obtenerTodosLosProfesoresCasoDeUso.ObtenerPorGimnasio(gimnasioId);
+            var profesores = await _obtenerTodosPorGimnasioCasoDeUso.Ejecutar(gimnasioId);
             return Ok(profesores);
         }
 

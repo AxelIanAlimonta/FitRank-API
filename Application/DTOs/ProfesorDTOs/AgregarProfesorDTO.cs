@@ -12,6 +12,8 @@
         public string Matricula { get; set; } = string.Empty;
         public double Sueldo { get; set; }
 
+        public string Password { get; set; } = string.Empty;
+
         // Opcionales
         public long? GimnasioId { get; set; }
     }
