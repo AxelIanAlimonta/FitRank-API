@@ -24,9 +24,9 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         private readonly ISendGridClient _sendGridClient;
         private readonly QrHelper _qrHelper;
         private readonly IGimnasioRepositorio _gimnasioRepositorio;
+
         private readonly CrearPreferenciaMercadoPagoCasoDeUso _crearPreferenciaCasoDeUso;
         private readonly AgregarIngresoCasoDeUso _agregarIngresoCasoDeUso;
-
 
         public AgregarInvitacionCasoDeUso(
             IInvitacionRepositorio invitacionRepositorio,
@@ -34,7 +34,9 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             IConfiguration config,
             ISendGridClient sendGridClient,
             QrHelper qrHelper,
-            IGimnasioRepositorio gimnasioRepositorio, CrearPreferenciaMercadoPagoCasoDeUso crearPreferenciaMercadoPagoCasoDeUso, AgregarIngresoCasoDeUso agregarIngresoCasoDeUso)
+            IGimnasioRepositorio gimnasioRepositorio,
+            CrearPreferenciaMercadoPagoCasoDeUso crearPreferenciaCasoDeUso,
+            AgregarIngresoCasoDeUso agregarIngresoCasoDeUso)
         {
             _invitacionRepositorio = invitacionRepositorio;
             _usuarioRepositorio = usuarioRepositorio;
@@ -42,7 +44,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _sendGridClient = sendGridClient;
             _qrHelper = qrHelper;
             _gimnasioRepositorio = gimnasioRepositorio;
-            _crearPreferenciaCasoDeUso = crearPreferenciaMercadoPagoCasoDeUso;
+            _crearPreferenciaCasoDeUso = crearPreferenciaCasoDeUso;
             _agregarIngresoCasoDeUso = agregarIngresoCasoDeUso;
         }
 
@@ -191,10 +193,13 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 Rol = "Socio",
                 Estado = "Activo",
                 EsActivado = false,
+               
+                Altura = 0,
+                Peso = 0,
                 CuotaPagadaHasta = invitacion.CuotaPagadaHasta,
                 TokenRecuperacion = tokenActivacion,
                 TokenExpira = DateTime.Now.AddHours(24),
-                Nivel="Principiante",
+                Nivel="Principiante" ,
                 QrToken = Guid.NewGuid().ToString("N"),
                 GimnasioId = invitacion.GimnasioId,
             };

@@ -83,13 +83,14 @@ public class SocioRepositorioImpl : ISocioRepositorio
 
     public async Task<IEnumerable<Socio>> ObtenerTodosConEntrenamientoAsync()
     {
-        return await _context.Socios
+        return await _context.Usuarios
+            .OfType<Socio>() // 👈 trae todos los usuarios que son Socios
             .Include(s => s.Entrenamientos)
-            .ThenInclude(e => e.Actividades)
-            .ThenInclude(a => a.Serie)
-            .ThenInclude(s => s.EjercicioAsignado)
-            .ThenInclude(ea => ea.Ejercicio)
-            .ThenInclude(e => e.GrupoMuscular)
+                .ThenInclude(e => e.Actividades)
+                    .ThenInclude(a => a.Serie)
+                        .ThenInclude(s => s.EjercicioAsignado)
+                            .ThenInclude(ea => ea.Ejercicio)
+                                .ThenInclude(e => e.GrupoMuscular)
             .ToListAsync();
     }
 }

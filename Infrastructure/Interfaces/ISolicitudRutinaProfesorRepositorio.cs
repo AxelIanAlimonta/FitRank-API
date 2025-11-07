@@ -9,7 +9,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<List<SolicitudRutinaProfesorDTO>> ObtenerPendientesAsync();
         Task<List<SolicitudRutinaProfesorDTO>> ObtenerPorProfesorAsync(long profesorId);
         Task<List<SolicitudRutinaProfesorDTO>> ObtenerPorSocioAsync(long socioId);
-
+        Task ActualizarAsync(SolicitudRutinaProfesor solicitud);
         Task GuardarCambiosAsync();
     }
 }

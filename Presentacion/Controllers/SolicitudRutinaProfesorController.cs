@@ -1,6 +1,7 @@
 ﻿using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
 using FitRank_API.Application.DTOs.SolicitudDTO;
 using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -17,18 +18,23 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly FinalizarSolicitudCasoDeUso _finalizarSolicitud;
         private readonly RechazarSolicitudCasoDeUso _rechazarSolicitud;
 
+        private readonly TerminarSolicitudCasoDeUso _terminarSolicitud;
+
+
         public SolicitudRutinaProfesorController(
             CrearSolicitudRutinaProfesorCasoDeUso crearCasoDeUso,
             ISolicitudRutinaProfesorRepositorio repositorio,
             TomarSolicitudCasoDeUso tomarSolicitud,
             FinalizarSolicitudCasoDeUso finalizarSolicitud,
-            RechazarSolicitudCasoDeUso rechazarSolicitud)
+            RechazarSolicitudCasoDeUso rechazarSolicitud,
+            TerminarSolicitudCasoDeUso terminarSolicitud)
         {
             _crearCasoDeUso = crearCasoDeUso;
             _repositorio = repositorio;
             _tomarSolicitud = tomarSolicitud;
             _finalizarSolicitud = finalizarSolicitud;
             _rechazarSolicitud = rechazarSolicitud;
+            _terminarSolicitud = terminarSolicitud;
         }
 
 
@@ -44,6 +50,13 @@ namespace FitRank_API.Presentacion.Controllers
 
             var solicitudId = await _crearCasoDeUso.EjecutarAsync(dto, socioId);
             return Ok(new { SolicitudId = solicitudId });
+        }
+
+        [HttpPut("{id}/terminar")]
+        public async Task<IActionResult> TerminarSolicitud(long id)
+        {
+            await _terminarSolicitud.EjecutarAsync(id);
+            return Ok(new { mensaje = "Solicitud finalizada correctamente." });
         }
 
         [HttpGet("pendientes")]

@@ -1,20 +1,25 @@
-﻿using FitRank_API.Infrastructure.Interfaces;
+﻿using FitRank_API.Application.DTOs.PuntajeDTOs;
+using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
 {
     public class ObtenerRankingSociosCasoDeUso
     {
         private readonly ISocioRepositorio _socioRepositorio;
-    
+
 
         public ObtenerRankingSociosCasoDeUso(ISocioRepositorio socioRepositorio)
         {
             _socioRepositorio = socioRepositorio;
         }
 
-        public async Task<List<(long SocioId, string NombreCompleto, double PuntajeTotal)>> Ejecutar()
+        public async Task<List<SocioRankingDto>> Ejecutar()
         {
             var socios = await _socioRepositorio.ObtenerTodosConEntrenamientoAsync();
+            foreach (var s in socios)
+            {
+                Console.WriteLine($"{s.Id} - {s.Nombre} {s.Apellido}");
+            }
             var ranking = socios.Select(s =>
             {
                 var actividades = s.Entrenamientos?
@@ -23,7 +28,12 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
 
                 double puntajeTotal = actividades.Sum(a => a.Punto ?? 0);
 
-                return (SocioId: s.Id, NombreCompleto: $"{s.Nombre} {s.Apellido}", PuntajeTotal: puntajeTotal);
+                return new SocioRankingDto
+                {
+                    SocioId = s.Id,
+                    NombreCompleto = $"{s.Nombre} {s.Apellido}",
+                    PuntajeTotal = puntajeTotal
+                };
             })
             .OrderByDescending(s => s.PuntajeTotal)
             .ToList();
