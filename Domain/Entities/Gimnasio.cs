@@ -17,5 +17,7 @@
         public ICollection<Socio>? Socios { get; set; }
         public ICollection<Invitacion>? Invitaciones { get; set; }
         public ICollection<Asistencia>? Asistencias { get; set; }
+        public ICollection<Profesor>? Profesores { get; set; } = new List<Profesor>();
+
     }
 }

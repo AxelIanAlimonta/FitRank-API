@@ -77,5 +77,16 @@ namespace FitRank_API.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        public async Task<List<Profesor>> ObtenerPorGimnasioAsync(long gimnasioId)
+        {
+            return await _context.Profesores
+     .Include(p => p.Gimnasio)
+     .Where(p => p.GimnasioId == gimnasioId)
+     .ToListAsync();
+        }
+
     }
 }
+

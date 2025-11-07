@@ -8,9 +8,12 @@ namespace FitRank_API.Application.Mappings
     {
         public ProfesorProfile()
         {
-            CreateMap<Profesor, ProfesorDTO>().ReverseMap();
+           
             CreateMap<AgregarProfesorDTO, Profesor>();
             CreateMap<ActualizarProfesorDTO, Profesor>();
+            CreateMap<Profesor, ProfesorDTO>()
+           .ForMember(dest => dest.GimnasioNombre,
+               opt => opt.MapFrom(src => src.Gimnasio != null ? src.Gimnasio.Nombre : null));
         }
     }
 }

@@ -79,5 +79,12 @@ namespace FitRank_API.Presentacion.Controllers
             }
             return NoContent();
         }
+        [HttpGet("gimnasio/{gimnasioId}")]
+        public async Task<IActionResult> ObtenerPorGimnasio(long gimnasioId)
+        {
+            var profesores = await _obtenerTodosLosProfesoresCasoDeUso.ObtenerPorGimnasio(gimnasioId);
+            return Ok(profesores);
+        }
+
     }
-    }
+}
