@@ -156,7 +156,15 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
             .ToListAsync();
     }
 
+    public async Task<List<Rutina>> ObtenerTodasLasRutinasPorProfesorIdAsync(long profesorUsuarioId)
+    {
+        return await _context.Rutinas
+            .Include(r => r.Socio)
+            .Include(r => r.Usuario)
+            .Where(r => r.UsuarioId == profesorUsuarioId && r.Usuario.Rol == "Profesor")
+            .OrderByDescending(r => r.FechaCreacion)
+            .ToListAsync();
+
+    }
 
 }
-
-

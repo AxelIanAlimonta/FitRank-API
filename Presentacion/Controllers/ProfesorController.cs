@@ -1,4 +1,5 @@
 ﻿using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
+using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.DTOs.ProfesorDTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,19 +16,21 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly EliminarProfesorCasoDeUso _eliminarProfesorCasoDeUso;
         private readonly ObtenerTodosLosProfesoresCasoDeUso _obtenerTodosLosProfesoresCasoDeUso;
         private readonly ObtenerTodosPorGimnasioCasoDeUso _obtenerTodosPorGimnasioCasoDeUso;
+        private readonly ObtenerTodasLasRutinasPorProfesorCasoDeUso _obtenerTodasLasRutinasPorProfesorCasoDeUso;
 
         public ProfesorController(
             AgregarProfesorCasoDeUso agregarProfesorCasoDeUso,
             ObtenerProfesorPorIdCasoDeUso obtenerProfesorPorIdCasoDeUso,
             ActualizarProfesorCasoDeUso actualizarProfesorCasoDeUso,
             ObtenerTodosLosProfesoresCasoDeUso obtenerTodosLosProfesoresCasoDeUso,
-            EliminarProfesorCasoDeUso eliminarProfesorCasoDeUso)
+            EliminarProfesorCasoDeUso eliminarProfesorCasoDeUso, ObtenerTodasLasRutinasPorProfesorCasoDeUso obtenerTodasLasRutinasPorProfesorCasoDeUso)
         {
             _agregarProfesorCasoDeUso = agregarProfesorCasoDeUso;
             _obtenerProfesorPorIdCasoDeUso = obtenerProfesorPorIdCasoDeUso;
             _obtenerTodosLosProfesoresCasoDeUso = obtenerTodosLosProfesoresCasoDeUso;
             _actualizarProfesorCasoDeUso = actualizarProfesorCasoDeUso;
             _eliminarProfesorCasoDeUso = eliminarProfesorCasoDeUso;
+            _obtenerTodasLasRutinasPorProfesorCasoDeUso = obtenerTodasLasRutinasPorProfesorCasoDeUso;
         }
 
         [HttpGet]
@@ -57,13 +60,17 @@ namespace FitRank_API.Presentacion.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActualizarAsync([FromBody] ActualizarProfesorDTO profesorDTO)
+        public async Task<IActionResult> ActualizarAsync(long id, [FromBody] ActualizarProfesorDTO profesorDTO)
         {
-            var profesorActualizado = await _actualizarProfesorCasoDeUso.Ejecutar(profesorDTO);
+            // Validación: el id de la URL debe coincidir con el del cuerpo
+            if (id != profesorDTO.Id)
+                return BadRequest("El ID de la URL no coincide con el del cuerpo.");
+
+            var profesorActualizado = await _actualizarProfesorCasoDeUso.Ejecutar(id, profesorDTO);
+
             if (profesorActualizado == null)
-            {
                 return NotFound();
-            }
+
             return Ok(profesorActualizado);
         }
 
@@ -82,6 +89,20 @@ namespace FitRank_API.Presentacion.Controllers
         {
             var profesores = await _obtenerTodosPorGimnasioCasoDeUso.Ejecutar(gimnasioId);
             return Ok(profesores);
+        }
+
+        [HttpGet("profesor/{usuarioId}")]
+        public async Task<IActionResult> ObtenerRutinasPorProfesor(long usuarioId)
+        {
+            var rutinas = await _obtenerTodasLasRutinasPorProfesorCasoDeUso.Ejecutar(usuarioId);
+
+            if (rutinas == null || !rutinas.Any())
+                return NotFound(new { mensaje = "No se encontraron rutinas para este profesor." });
+
+           
+          
+
+            return Ok(rutinas);
         }
 
     }

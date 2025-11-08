@@ -227,6 +227,7 @@ builder.Services.AddScoped<ObtenerProfesorPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarProfesorCasoDeUso>();
 builder.Services.AddScoped<EliminarProfesorCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodosLosProfesoresCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodasLasRutinasPorProfesorCasoDeUso>();
 
 builder.Services.AddScoped<IDiaDeLaSemanaRepositorio, DiaDeLaSemanaRepositorioImpl>();
 builder.Services.AddScoped<AgregarDiaDeLaSemanaCasoDeUso>();

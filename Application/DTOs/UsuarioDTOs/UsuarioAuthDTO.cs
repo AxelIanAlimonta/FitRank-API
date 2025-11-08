@@ -11,5 +11,7 @@
         public DateTime? CuotaPagadaHasta { get; set; }
         public bool TieneCuotaPagada { get; set; }
         public string? QrToken { get; set; }
+
+        public long? GimnasioId { get; set; }
     }
 }

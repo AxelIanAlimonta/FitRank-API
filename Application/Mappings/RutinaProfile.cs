@@ -18,6 +18,11 @@ namespace FitRank_API.Application.Mappings
                 .ForMember(dest => dest.UsuarioId, opt => opt.MapFrom(src => src.UsuarioId));
             CreateMap<Rutina, ActualizarRutinaDTO>().ReverseMap();
 
+            CreateMap<Rutina, RutinaProfesorDTO>()
+          .ForMember(dest => dest.SocioNombre, opt => opt.MapFrom(src =>
+              src.Socio != null ? src.Socio.Nombre + " " + src.Socio.Apellido : null))
+          .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => src.TipoCreacion));
+
 
         }
     }

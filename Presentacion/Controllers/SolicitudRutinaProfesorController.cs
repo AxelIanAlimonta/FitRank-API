@@ -60,7 +60,7 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         [HttpGet("pendientes")]
-        //[Authorize(Roles = "Profesor")]
+        [Authorize(Roles = "Profesor")]
         public async Task<ActionResult<List<SolicitudRutinaProfesorDTO>>> ObtenerPendientes()
         {
             var solicitudes = await _repositorio.ObtenerPendientesAsync();
@@ -98,5 +98,7 @@ namespace FitRank_API.Presentacion.Controllers
             var ok = await _rechazarSolicitud.EjecutarAsync(dto.SolicitudId, profesorId, dto.MensajeProfesor);
             return ok ? Ok() : BadRequest("No se pudo rechazar la solicitud.");
         }
+
+
     }
     }

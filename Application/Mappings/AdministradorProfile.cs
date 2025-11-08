@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.AdministradorDTOs;
+using FitRank_API.Application.DTOs.UsuarioDTOs;
 using FitRank_API.Domain.Entities;
 
 namespace FitRank_API.Application.Mappings
@@ -7,6 +8,8 @@ namespace FitRank_API.Application.Mappings
     public class AdminProfile : Profile
     {
         public AdminProfile()
+
+
         {
             CreateMap<Administrador, ObtenerAdministradorDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -38,6 +41,12 @@ namespace FitRank_API.Application.Mappings
                 .ForMember(dest => dest.Rol, opt => opt.Ignore())
                 .ForMember(dest => dest.EsActivado, opt => opt.Ignore())
                 .ForMember(dest => dest.Gimnasio, opt => opt.Ignore());
+
+
+            CreateMap<Administrador, UsuarioAuthDTO>()
+    .IncludeBase<Usuario, UsuarioAuthDTO>() // hereda mapeo base
+    .ForMember(dest => dest.GimnasioId, opt => opt.MapFrom(src => src.GimnasioId));
         }
+
     }
 }
