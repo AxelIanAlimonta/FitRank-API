@@ -7,5 +7,7 @@
         public string TokenInvitacion { get; set; } = string.Empty;
         public string Mensaje { get; set; } = string.Empty;
         public long InvitacionId { get; set; }
+        public string? LinkPago { get; set; } 
+
     }
 }

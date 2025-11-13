@@ -16,11 +16,20 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<ProfesorDTO?> Ejecutar(ActualizarProfesorDTO profesorDTO)
+        public async Task<ProfesorDTO?> Ejecutar(long id, ActualizarProfesorDTO dto)
         {
-            var profesorEntidad = _mapper.Map<Profesor>(profesorDTO);
-            var profesorActualizado = await _profesorRepositorio.ActualizarAsync(profesorEntidad);
-            return profesorActualizado == null ? null : _mapper.Map<ProfesorDTO>(profesorActualizado);
+           
+            var profesor = await _profesorRepositorio.ObtenerPorIdAsync(id);
+            if (profesor == null)
+                return null;
+
+            _mapper.Map(dto, profesor);
+
+           
+            var profesorActualizado = await _profesorRepositorio.ActualizarAsync(profesor);
+
+            
+            return _mapper.Map<ProfesorDTO>(profesorActualizado);
         }
     }
 }

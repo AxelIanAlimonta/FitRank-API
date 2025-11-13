@@ -1,4 +1,7 @@
 ﻿
+using FitRank_API.Application.CasosDeUso.Ingreso;
+using FitRank_API.Application.CasosDeUso.MercadoPago;
+using FitRank_API.Application.DTOs.IngresoDTOs;
 using global::FitRank_API.Application.CasosDeUso.Invitacion;
 using global::FitRank_API.Application.DTOs.Invitacion;
 using global::FitRank_API.Domain.Entities;
@@ -22,13 +25,18 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         private readonly QrHelper _qrHelper;
         private readonly IGimnasioRepositorio _gimnasioRepositorio;
 
+        private readonly CrearPreferenciaMercadoPagoCasoDeUso _crearPreferenciaCasoDeUso;
+        private readonly AgregarIngresoCasoDeUso _agregarIngresoCasoDeUso;
+
         public AgregarInvitacionCasoDeUso(
-                  IInvitacionRepositorio invitacionRepositorio,
-                  IUsuarioRepositorio usuarioRepositorio,
-                  IConfiguration config,
-                  ISendGridClient sendGridClient,
-                  QrHelper qrHelper,
-                  IGimnasioRepositorio gimnasioRepositorio)
+            IInvitacionRepositorio invitacionRepositorio,
+            IUsuarioRepositorio usuarioRepositorio,
+            IConfiguration config,
+            ISendGridClient sendGridClient,
+            QrHelper qrHelper,
+            IGimnasioRepositorio gimnasioRepositorio,
+            CrearPreferenciaMercadoPagoCasoDeUso crearPreferenciaCasoDeUso,
+            AgregarIngresoCasoDeUso agregarIngresoCasoDeUso)
         {
             _invitacionRepositorio = invitacionRepositorio;
             _usuarioRepositorio = usuarioRepositorio;
@@ -36,6 +44,8 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _sendGridClient = sendGridClient;
             _qrHelper = qrHelper;
             _gimnasioRepositorio = gimnasioRepositorio;
+            _crearPreferenciaCasoDeUso = crearPreferenciaCasoDeUso;
+            _agregarIngresoCasoDeUso = agregarIngresoCasoDeUso;
         }
 
         public async Task<InvitacionResponseDTO> Ejecutar(GenerarInvitacionDTO dto, int adminId)
@@ -49,10 +59,46 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
             invitacion.UsuarioId = (int?)socio.Id;
             await _invitacionRepositorio.ActualizarAsync(invitacion);
+            if (dto.MetodoPago == "Efectivo")
+            {
+                await _agregarIngresoCasoDeUso.Ejecutar(new AgregarIngresoDTO
+                {
+                    GimnasioId = invitacion.GimnasioId,
+                    UsuarioId = socio.Id,
+                    Monto = dto.Monto ?? 0,
+                    MetodoPago = "Efectivo",
+                    Observaciones = "Pago en efectivo registrado al generar invitación"
+                });
+                (string tokenInvitacion, string qrImage) = await ProcesarInvitacionQrAsync(dto, tokenActivacion, invitacion);
 
-            (string tokenInvitacion, string qrImage) = await ProcesarInvitacionQrAsync(dto, tokenActivacion, invitacion);
+                return GenerarInvitacionRespuesta(dto, invitacion, tokenInvitacion, qrImage);
+            }
+            else if (dto.MetodoPago == "MercadoPago")
+            {
+                // 4️⃣ Si es Mercado Pago → generar link de pago y devolverlo
+                var preferenceUrl = await _crearPreferenciaCasoDeUso.Ejecutar(
+                 monto: dto.Monto ?? (decimal)0,
 
-            return GenerarInvitacionRespuesta(dto, invitacion, tokenInvitacion, qrImage);
+
+                    emailSocio: dto.Email,
+                    invitacionId: invitacion.Id);
+
+                // 5️⃣ Devolver el link de pago al frontend (sin enviar QR aún)
+                return new InvitacionResponseDTO
+                {
+                    Success = true,
+                    InvitacionId = (int)invitacion.Id,
+                    Mensaje = $"Invitación creada. Esperando pago vía Mercado Pago.",
+                    TokenInvitacion = null,
+                    QrImage = null,
+                    LinkPago = preferenceUrl 
+                };
+            }
+            else
+            {
+                throw new Exception("Método de pago no soportado.");
+            }
+        
         }
 
         private static InvitacionResponseDTO GenerarInvitacionRespuesta(GenerarInvitacionDTO dto, Domain.Entities.Invitacion invitacion, string tokenInvitacion, string qrImage)
@@ -67,7 +113,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             };
         }
 
-        private async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(
+        public async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(
      GenerarInvitacionDTO dto,
      string tokenActivacion,
      Domain.Entities.Invitacion invitacion)
@@ -147,13 +193,13 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 Rol = "Socio",
                 Estado = "Activo",
                 EsActivado = false,
-                Nivel = "Beginner",
+               
                 Altura = 0,
                 Peso = 0,
                 CuotaPagadaHasta = invitacion.CuotaPagadaHasta,
                 TokenRecuperacion = tokenActivacion,
                 TokenExpira = DateTime.Now.AddHours(24),
-                Nivel="Principiante",
+                Nivel="Principiante" ,
                 QrToken = Guid.NewGuid().ToString("N"),
                 GimnasioId = invitacion.GimnasioId,
             };

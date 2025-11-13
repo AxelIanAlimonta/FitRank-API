@@ -41,62 +41,67 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("login")]
-        public async Task<ActionResult<AuthResponseDTO>> Login([FromBody] LoginDTO dto)
+    public async Task<ActionResult<AuthResponseDTO>> Login([FromBody] LoginDTO dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        // 🔹 Autenticar usuario desde el caso de uso
+        var result = await _loginCasoDeUso.Ejecutar(dto);
+        if (result == null)
+            return Unauthorized(new { Mensaje = "Email o password inválido" });
+
+        // 🔹 Recuperar el usuario autenticado
+        var usuario = result.User; // suponiendo que devuelve UsuarioAuthDTO o similar
+
+        // 🔹 Generar token JWT
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()), // ✅ agregado
+    new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
+    new Claim(ClaimTypes.Role, usuario.Rol),
+    new Claim("UserId", usuario.Id.ToString())
+};
+
+
+        // 🔹 Si el usuario es Administrador, incluir el GimnasioId como claim extra
+        if (usuario.Rol == "Admin" && usuario.GimnasioId.HasValue)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-           
-            if (dto.Email == "fitrank2025@gmail.com" && dto.Password == "Admin1234!")
-            {
-                
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-
-                var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, dto.Email),
-                     new Claim(ClaimTypes.Role, "Admin") 
-  };
-
-                var token = new JwtSecurityToken(
-                    issuer: "FitRankAPI",
-                    audience: "FitRankApp",
-                    claims: claims,
-                    expires: DateTime.Now.AddHours(5),
-                    signingCredentials: creds
-                );
-
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-                var adminUser = new UsuarioAuthDTO
-                {
-                    Id = 1,
-                    Nombre = "Admin",
-                    Apellidos = "Dev",
-                    Email = "fitrank2025@gmail.com",
-                    NombreUsuario = "admin",
-                    Rol = "Admin",
-                    TieneCuotaPagada = true
-                };
-
-                return Ok(new AuthResponseDTO
-                {
-                    Token = tokenString,
-                    User = adminUser
-                });
-            }
-
-            var result = await _loginCasoDeUso.Ejecutar(dto);
-            if (result == null)
-                return Unauthorized(new { Mensaje = "Email o password inválido" });
-
-            return Ok(result);
+            claims.Add(new Claim("GimnasioId", usuario.GimnasioId.Value.ToString()));
         }
 
+        var token = new JwtSecurityToken(
+            issuer: "FitRankAPI",
+            audience: "FitRankApp",
+            claims: claims,
+            expires: DateTime.Now.AddHours(5),
+            signingCredentials: creds
+        );
 
-        [HttpPost("register")]
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        // 🔹 Devolver respuesta estándar con el gimnasio incluido
+        return Ok(new AuthResponseDTO
+        {
+            Token = tokenString,
+            User = new UsuarioAuthDTO
+            {
+                Id = usuario.Id,
+                Nombre = usuario.Nombre,
+                Apellidos = usuario.Apellidos,
+                Email = usuario.Email,
+                NombreUsuario = usuario.NombreUsuario,
+                Rol = usuario.Rol,
+                GimnasioId = usuario.GimnasioId, // 💥 este es el campo nuevo
+                TieneCuotaPagada = usuario.TieneCuotaPagada
+            }
+        });
+    }
+
+    [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDTO>> Register([FromBody] RegisterDTO dto)
         {
             if (!ModelState.IsValid)

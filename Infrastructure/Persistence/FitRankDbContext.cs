@@ -1,7 +1,7 @@
 ﻿namespace FitRank_API.Infrastructure.Persistence;
 
 using FitRank_API.Domain.Entities;
-using FitRank_API.Presentacion.Controllers;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -54,6 +54,10 @@ public class FitRankDbContext : DbContext
     public DbSet<SolicitudRutinaProfesor> SolicitudesRutinaProfesor { get; set; }
 
     public DbSet<Actividad> Actividades { get; set; }
+
+    public DbSet<Ingreso> Ingresos { get; set; }
+
+    public DbSet<Valoracion> Valoraciones { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -109,6 +113,12 @@ public class FitRankDbContext : DbContext
             .WithMany(g => g.Asistencias)
             .HasForeignKey(a => a.GimnasioId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Gimnasio>()
+     .HasMany(g => g.Profesores)
+     .WithOne(p => p.Gimnasio)
+     .HasForeignKey(p => p.GimnasioId)
+     .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Invitacion>()
     .HasOne(i => i.Gimnasio)
@@ -188,7 +198,23 @@ public class FitRankDbContext : DbContext
 
 
         });
+        modelBuilder.Entity<Valoracion>()
+      .HasOne(v => v.Emisor)
+      .WithMany(u => u.ValoracionesEnviadas)
+      .HasForeignKey(v => v.EmisorId)
+      .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<Valoracion>()
+            .HasOne(v => v.Receptor)
+            .WithMany(u => u.ValoracionesRecibidas)
+            .HasForeignKey(v => v.ReceptorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Valoracion>()
+            .HasOne(v => v.Rutina)
+            .WithMany(r => r.Valoraciones)
+            .HasForeignKey(v => v.RutinaId)
+            .OnDelete(DeleteBehavior.SetNull);
 
     }
 

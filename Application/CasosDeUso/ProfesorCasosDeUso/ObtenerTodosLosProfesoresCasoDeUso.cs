@@ -20,5 +20,18 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
             var profesores = await _profesorRepositorio.ObtenerTodosAsync();
             return _mapper.Map<List<ProfesorDTO>>(profesores);
         }
+
+        public async Task<List<ProfesorDTO>> ObtenerPorGimnasio(long gimnasioId)
+        {
+            var profesores = await _profesorRepositorio.ObtenerPorGimnasioAsync(gimnasioId);
+            return profesores.Select(p => new ProfesorDTO
+            {
+                Id = p.Id,
+                Nombre = p.Nombre,
+                Email = p.Email,
+                
+            }).ToList();
+        }
+
     }
 }

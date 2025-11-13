@@ -35,5 +35,9 @@
 
         public ICollection<Rutina> RutinasAsignadas { get; set; }
 
+        public ICollection<Valoracion> ValoracionesEnviadas { get; set; } = new List<Valoracion>();
+        public ICollection<Valoracion> ValoracionesRecibidas { get; set; } = new List<Valoracion>();
+
+
     }
 }

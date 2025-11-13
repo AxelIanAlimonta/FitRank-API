@@ -39,6 +39,7 @@ namespace FitRank_API.Domain.Entities
         public JsonDocument? InputSnapshotJson { get; set; }
         public JsonDocument? RulesExplainJson { get; set; }
         public ICollection<Sesion>? Sesiones { get; set; }
-       
+
+        public ICollection<Valoracion>? Valoraciones { get; set; } = new List<Valoracion>();
     }
 }

@@ -13,6 +13,9 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             IUsuarioRepositorio usuarioRepositorio)
         {
             _asistenciaRepositorio = asistenciaRepositorio;
+
+
+
             _usuarioRepositorio = usuarioRepositorio;
         }
 
