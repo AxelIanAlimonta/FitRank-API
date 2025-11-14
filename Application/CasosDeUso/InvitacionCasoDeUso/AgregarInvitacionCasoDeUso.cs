@@ -75,24 +75,26 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             }
             else if (dto.MetodoPago == "MercadoPago")
             {
-                // 4️⃣ Si es Mercado Pago → generar link de pago y devolverlo
-                var preferenceUrl = await _crearPreferenciaCasoDeUso.Ejecutar(
-                 monto: dto.Monto ?? (decimal)0,
+                (string linkPago, string qrImagePago) = await _crearPreferenciaCasoDeUso.Ejecutar(
+    dto.Monto ?? 0,
+    dto.Email,
+    invitacion.Id
 
 
-                    emailSocio: dto.Email,
-                    invitacionId: invitacion.Id);
+);
+
 
                 // 5️⃣ Devolver el link de pago al frontend (sin enviar QR aún)
                 return new InvitacionResponseDTO
                 {
                     Success = true,
                     InvitacionId = (int)invitacion.Id,
-                    Mensaje = $"Invitación creada. Esperando pago vía Mercado Pago.",
+                    Mensaje = "Invitación creada. Esperando pago vía Mercado Pago.",
                     TokenInvitacion = null,
-                    QrImage = null,
-                    LinkPago = preferenceUrl 
+                    QrImage = qrImagePago, // QR dinámico de Mercado Pago
+                    LinkPago = linkPago    // Link para pagar online
                 };
+
             }
             else
             {

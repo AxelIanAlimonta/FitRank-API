@@ -50,6 +50,10 @@ using MercadoPago.Config;
 using FitRank_API.Application.CasosDeUso.Ingreso;
 
 using FitRank_API.Application.CasosDeUso.MercadoPago;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using FitRank_API.Application.CasosDeUso.NotificacionCasoDeUso;
+using FitRank_API.Application.Hubs;
 
 
 
@@ -205,7 +209,7 @@ builder.Services.AddScoped<AgregarInvitacionCasoDeUso>();
 
 
 builder.Services.AddScoped<CrearPreferenciaMercadoPagoCasoDeUso>();
-builder.Services.AddScoped<ProcesarPagoMercadoPagoCasoDeUso>();
+builder.Services.AddScoped<ProcesarWebhookPagoCasoDeUso>();
 
 builder.Services.AddScoped<QrHelper>();
 
@@ -228,6 +232,7 @@ builder.Services.AddScoped<ActualizarProfesorCasoDeUso>();
 builder.Services.AddScoped<EliminarProfesorCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodosLosProfesoresCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodasLasRutinasPorProfesorCasoDeUso>();
+builder.Services.AddScoped<ObtenerEstadisticasProfesoresCasoDeUso>();
 
 builder.Services.AddScoped<IDiaDeLaSemanaRepositorio, DiaDeLaSemanaRepositorioImpl>();
 builder.Services.AddScoped<AgregarDiaDeLaSemanaCasoDeUso>();
@@ -273,7 +278,10 @@ builder.Services.AddScoped<AgregarNotificacionCasoDeUso>();
 builder.Services.AddScoped<ObtenerNotificacionPorUsuarioCasoDeUso>();
 builder.Services.AddScoped<RetenerSocioCasoDeUso>();
 builder.Services.AddScoped<MarcarNotificacionLeidaCasoDeUso>();
-
+builder.Services.AddScoped<EnviarNotificacionMasivaCasoDeUso>();
+builder.Services.AddScoped<ObtenerHistorialNotificacionesCasoDeUso>();
+builder.Services.AddScoped<ObtenerUsuariosParaNotificacionCasoDeUso>();
+builder.Services.AddScoped<EnviarNotificacionIndividualCasoDeUso>();
 
 builder.Services.AddScoped<ISerieRepositorio, SerieRepositorioImpl>();
 builder.Services.AddScoped<ActualizarSerieCasoDeUso>();
@@ -328,18 +336,12 @@ builder.Services.AddScoped<ObtenerIngresosCasoDeUso>();
 
 
 
-/*builder = WebApplication.CreateBuilder(args);
 
 
-var accessToken = Environment.GetEnvironmentVariable("MERCADOPAGO_ACCESS_TOKEN");
 
-if (string.IsNullOrEmpty(accessToken))
-{
-    accessToken = builder.Configuration["MercadoPago:AccessToken"];
-}
+MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
 
-
-MercadoPagoConfig.AccessToken = accessToken;*/
+builder.Services.AddSignalR();
 
 
 builder.Services.AddCors(options =>
@@ -349,22 +351,15 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:4200") // Angular dev server
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .WithMethods("GET", "POST")
+                  .AllowCredentials()
+                   .SetIsOriginAllowed(_ => true);
         });
 });
 
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngularDev",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:4200") // el origen de tu Angular
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
-
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "tu_secreto_super_seguro_32_chars_minimo");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -376,9 +371,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
             ValidateIssuer = false,
             ValidateAudience = false,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+            NameClaimType = ClaimTypes.NameIdentifier,
+            RoleClaimType = ClaimTypes.Role
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                // SignalR manda el token por querystring
+                var accessToken = context.Request.Query["access_token"];
+
+                // Verificamos si el request es del hub
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/hubs/notificaciones"))
+                {
+                    context.Token = accessToken; // Seteamos el token manualmente
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
+   
+
+
+
+
+
 
 builder.Services.AddAuthorization(options =>
 {
@@ -444,15 +466,16 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-app.UseCors("AllowAngularDev");
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("AllowAngularDev");
 app.UseHttpsRedirection();
+app.UseCors("AllowAngularDev");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 
+app.MapControllers();
+app.MapHub<NotificacionesHub>("/hubs/notificaciones");
 app.Run();

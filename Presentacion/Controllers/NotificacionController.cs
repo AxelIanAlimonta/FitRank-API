@@ -1,8 +1,12 @@
 ﻿using System.Security.Claims;
+using FitRank_API.Application.CasosDeUso.NotificacionCasoDeUso;
 using FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso;
 using FitRank_API.Application.DTOs.NotificacionDTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using FitRank_API.Application.Hubs;
+
 
 namespace FitRank_API.Presentacion.Controllers
 {
@@ -15,18 +19,69 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ObtenerNotificacionPorUsuarioCasoDeUso _obtenerCaso;
         private readonly RetenerSocioCasoDeUso _retenerSocioCasoDeUso;
         private readonly MarcarNotificacionLeidaCasoDeUso _marcarNotificacionLeidaCasoDeUso;
+        private readonly EnviarNotificacionMasivaCasoDeUso _enviarMasiva;
+        private readonly ObtenerHistorialNotificacionesCasoDeUso _obtenerHistorialNoti;
+        private readonly ObtenerUsuariosParaNotificacionCasoDeUso _obtenerUsuariosParaNotificacion;
+        private readonly EnviarNotificacionIndividualCasoDeUso _enviarIndividual;
+        private readonly IHubContext<NotificacionesHub> _notiHub;
+
 
         public NotificacionController(
             AgregarNotificacionCasoDeUso agregarCaso,
             ObtenerNotificacionPorUsuarioCasoDeUso obtenerCaso,
             RetenerSocioCasoDeUso retenerSocioCasoDeUso,
-            MarcarNotificacionLeidaCasoDeUso marcarNotificacionLeidaCasoDeUso)
+            MarcarNotificacionLeidaCasoDeUso marcarNotificacionLeidaCasoDeUso,
+            EnviarNotificacionMasivaCasoDeUso enviarMasiva,
+            ObtenerHistorialNotificacionesCasoDeUso obtenerHistorialNoti,
+            ObtenerUsuariosParaNotificacionCasoDeUso obtenerUsuariosParaNotificacion,
+            EnviarNotificacionIndividualCasoDeUso enviarIndividual,
+            IHubContext<NotificacionesHub> notiHub
+        )
         {
             _agregarCaso = agregarCaso;
             _obtenerCaso = obtenerCaso;
             _retenerSocioCasoDeUso = retenerSocioCasoDeUso;
             _marcarNotificacionLeidaCasoDeUso = marcarNotificacionLeidaCasoDeUso;
+            _enviarMasiva = enviarMasiva;
+            _obtenerHistorialNoti = obtenerHistorialNoti;
+            _obtenerUsuariosParaNotificacion = obtenerUsuariosParaNotificacion;
+            _enviarIndividual = enviarIndividual;
+            _notiHub = notiHub;
         }
+
+        [HttpPost("enviar")]
+        [Authorize(Roles = "Admin,Profesor")]
+        public async Task<IActionResult> EnviarIndividual([FromBody] EnviarIndividualDTO dto)
+        {
+            if (dto == null || dto.UsuarioReceptorId <= 0)
+                return BadRequest(new { exito = false, mensaje = "Datos inválidos." });
+
+            long emisorId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var notificacion = await _enviarIndividual.Ejecutar(
+                emisorId,
+                dto.UsuarioReceptorId,
+                dto.Titulo,
+                dto.Mensaje
+            );
+
+            await _notiHub.Clients
+                .Group($"user-{dto.UsuarioReceptorId}")
+                .SendAsync("NotificacionRecibida", new
+                {
+                    id = notificacion.Id,
+                    titulo = notificacion.Titulo,
+                    mensaje = notificacion.Mensaje,
+                    fechaCreacion = notificacion.FechaEnvio
+                });
+            return Ok(new
+            {
+                exito = true,
+                mensaje = "📩 Notificación enviada correctamente.",
+                notificacion
+            });
+        }
+
 
         // 🔹 Crear una notificación manual (por ejemplo, mensaje directo)
         [HttpPost]
@@ -100,5 +155,42 @@ namespace FitRank_API.Presentacion.Controllers
                 mensaje = "✅ Notificación marcada como leída correctamente."
             });
         }
+
+        [HttpPost("masiva")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EnviarMasiva([FromBody] EnviarMasivaDTO dto)
+        {
+            long emisorId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            int cantidad = await _enviarMasiva.Ejecutar(emisorId, dto.Titulo, dto.Mensaje);
+
+            return Ok(new
+            {
+                exito = true,
+                mensaje = "Notificaciones enviadas correctamente",
+                cantidad
+            });
+        }
+
+        [HttpGet("historial")]
+        public async Task<IActionResult> ObtenerHistorial()
+        {
+            long userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var data = await _obtenerHistorialNoti.Ejecutar(userId);
+            return Ok(data);
+        }
+
+
+
+        [HttpGet("usuarios")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ObtenerUsuarios()
+        {
+            var lista = await _obtenerUsuariosParaNotificacion.Ejecutar();
+            return Ok(lista);
+        }
+
+
     }
 }

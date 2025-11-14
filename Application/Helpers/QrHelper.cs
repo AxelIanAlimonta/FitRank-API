@@ -53,10 +53,10 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
             return $"data:image/png;base64,{base64}";
         }
-            
-    
 
-    public string GenerarQrDePaseJWT(Socio socio, long gimnasioId)
+
+
+        public string GenerarQrDePaseJWT(Socio socio, long gimnasioId)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["QrSecret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -77,6 +77,22 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+
+        public string GenerarQrDeMercadoPago(string linkPago)
+        {
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(linkPago, QRCodeGenerator.ECCLevel.Q);
+            using var qrCode = new QRCode(qrCodeData);
+            using var qrBitmap = qrCode.GetGraphic(20);
+
+            using var ms = new MemoryStream();
+            qrBitmap.Save(ms, ImageFormat.Png);
+
+            var base64 = Convert.ToBase64String(ms.ToArray());
+            return $"data:image/png;base64,{base64}";
         }
 
     }

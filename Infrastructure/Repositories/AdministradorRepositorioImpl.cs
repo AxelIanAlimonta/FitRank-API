@@ -50,7 +50,20 @@ namespace FitRank_API.Infrastructure.Repositories
                 .FirstOrDefaultAsync(g => g.AdministradorId == administradorId);
         }
 
+
+
+        public async Task ActualizarAsync(Administrador admin)
+        {
+            _context.Administradores.Update(admin);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Administrador>> ObtenerTodosPorGimnasio(long gimnasioId)
+        {
+            return await _context.Administradores
+                .Where(a => a.GimnasioId == gimnasioId)
+                .ToListAsync();
+        }
+
     }
-
-
 }

@@ -10,5 +10,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<Profesor?> ActualizarAsync(Profesor profesor);
         Task<bool> EliminarAsync(long id);
         Task<List<Profesor>> ObtenerPorGimnasioAsync(long gimnasioId);
+
+
     }
 }

@@ -84,7 +84,7 @@ public class SocioRepositorioImpl : ISocioRepositorio
     public async Task<IEnumerable<Socio>> ObtenerTodosConEntrenamientoAsync()
     {
         return await _context.Usuarios
-            .OfType<Socio>() // 👈 trae todos los usuarios que son Socios
+            .OfType<Socio>() 
             .Include(s => s.Entrenamientos)
                 .ThenInclude(e => e.Actividades)
                     .ThenInclude(a => a.Serie)
@@ -93,4 +93,12 @@ public class SocioRepositorioImpl : ISocioRepositorio
                                 .ThenInclude(e => e.GrupoMuscular)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<Socio>> ObtenerTodosPorGimnasio(long gimnasioId)
+    {
+        return await _context.Socios
+            .Where(s => s.GimnasioId == gimnasioId)
+            .ToListAsync();
+    }
+
 }

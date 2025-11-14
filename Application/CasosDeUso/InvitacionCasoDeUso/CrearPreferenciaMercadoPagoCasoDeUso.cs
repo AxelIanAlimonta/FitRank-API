@@ -1,51 +1,79 @@
-﻿using MercadoPago.Client.Preference;
-using MercadoPago.Resource.Preference;
+﻿using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text;
+using FitRank_API.Application.CasosDeUso.Invitacion;
 
 namespace FitRank_API.Application.CasosDeUso.MercadoPago
 {
-
     public class CrearPreferenciaMercadoPagoCasoDeUso
     {
         private readonly IConfiguration _config;
+        private readonly QrHelper _qrHelper;
+        private readonly HttpClient _http;
 
-
-        public CrearPreferenciaMercadoPagoCasoDeUso(IConfiguration config)
+        public CrearPreferenciaMercadoPagoCasoDeUso(IConfiguration config, QrHelper qrHelper)
         {
             _config = config;
+            _qrHelper = qrHelper;
+            _http = new HttpClient();
         }
-        public async Task<string> Ejecutar(decimal monto, string emailSocio, long invitacionId)
+
+        public async Task<(string linkPago, string qrImage)> Ejecutar(decimal monto, string email, long invitacionId)
         {
-            var request = new PreferenceRequest
+            var payload = new
             {
-                Items = new List<PreferenceItemRequest>
+                items = new[]
                 {
-                    new PreferenceItemRequest
-                    {
-                        Title = "Pase FitRank",
-                        Quantity = 1,
-                        UnitPrice = monto
+                    new {
+                        title = "Pase FitRank",
+                        quantity = 1,
+                        unit_price = monto
                     }
                 },
-                Payer = new PreferencePayerRequest
+                payer = new
                 {
-                    Email = emailSocio
+                    email = email
                 },
-                BackUrls = new PreferenceBackUrlsRequest
+                external_reference = invitacionId.ToString(),
+                back_urls = new
                 {
-                    Success = _config["MercadoPago:SuccessUrl"],
-                    Failure = _config["MercadoPago:FailureUrl"],
-                    Pending = _config["MercadoPago:PendingUrl"]
+                    success = _config["MercadoPago:SuccessUrl"],
+                    failure = _config["MercadoPago:FailureUrl"],
+                    pending = _config["MercadoPago:PendingUrl"]
                 },
-                AutoReturn = "approved",
-               /* NotificationUrl = "https://fitrank-api.onrender.com/api/mercadopago/webhook"*/
-                NotificationUrl = _config["MercadoPago:NotificationUrl"]
-
+                auto_return = "approved",
+                notification_url = _config["MercadoPago:NotificationUrl"]
             };
 
-            var client = new PreferenceClient();
-            Preference preference = await client.CreateAsync(request);
+            string json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            return preference.InitPoint; // 🔹 URL del pago
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _config["MercadoPago:AccessToken"]);
+
+            var response = await _http.PostAsync(
+                "https://api.mercadopago.com/checkout/preferences",
+                content
+            );
+
+            var responseStr = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error MP: {responseStr}");
+
+            var preference = JsonSerializer.Deserialize<PreferenceResponse>(responseStr);
+
+            string linkPago = preference.init_point;
+
+            string qr = await _qrHelper.GenerarQrImage(linkPago);
+
+            return (linkPago, qr);
         }
+    }
+
+    public class PreferenceResponse
+    {
+        public string init_point { get; set; }
     }
 }

@@ -8,5 +8,9 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task EliminarAsync(Administrador admin);
         Task <Administrador>ObtenerPorIdAsync(long id);
         Task<IEnumerable<Administrador>> ObtenerTodosAsync();
+
+        Task ActualizarAsync(Administrador admin);
+
+        Task<IEnumerable<Administrador>> ObtenerTodosPorGimnasio(long gimnasioId);
     }
 }

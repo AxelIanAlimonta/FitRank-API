@@ -5,6 +5,11 @@
 
 #appseting.json
 appsettings.json
+# Ignore appsettings for development
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+appsettings.*.dev.json
 
 
 # User-specific files

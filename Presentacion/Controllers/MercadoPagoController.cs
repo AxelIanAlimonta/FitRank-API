@@ -9,46 +9,44 @@ namespace FitRank_API.Presentacion.Controllers
     public class MercadoPagoController : ControllerBase
     {
         private readonly CrearPreferenciaMercadoPagoCasoDeUso _crearPreferenciaCaso;
-        private readonly ProcesarPagoMercadoPagoCasoDeUso _procesarPagoCaso;
+        private readonly ProcesarWebhookPagoCasoDeUso _procesarWebhookCasoDeUso;
+
 
         public MercadoPagoController(
             CrearPreferenciaMercadoPagoCasoDeUso crearPreferenciaCaso,
-            ProcesarPagoMercadoPagoCasoDeUso procesarPagoCaso)
+            ProcesarWebhookPagoCasoDeUso procesarWebhookCasoDeUso
+            )
         {
             _crearPreferenciaCaso = crearPreferenciaCaso;
-            _procesarPagoCaso = procesarPagoCaso;
+            _procesarWebhookCasoDeUso = procesarWebhookCasoDeUso;
         }
-
- 
-        // Crea la preferencia de pago y devuelve la URL del checkout
         [HttpPost("crear-preferencia")]
         public async Task<IActionResult> CrearPreferencia([FromQuery] long invitacionId, [FromQuery] decimal monto, [FromQuery] string email)
         {
             try
             {
-                var url = await _crearPreferenciaCaso.Ejecutar(monto, email, invitacionId);
-                return Ok(new { url });
+                var resultado = await _crearPreferenciaCaso.Ejecutar(monto, email, invitacionId);
+
+                return Ok(new
+                {
+                    url = resultado.linkPago,     
+                    qrImage = resultado.qrImage,
+                    mensaje = "Preferencia creada correctamente"
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { mensaje = "Error al crear la preferencia", detalle = ex.Message });
+                return BadRequest(new { mensaje = "Error al crear preferencia", detalle = ex.Message });
             }
         }
 
-        // Mercado Pago llama a esta ruta cuando el pago cambia de estado
+
         [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook([FromBody] JObject body)
+        public async Task<IActionResult> Webhook([FromBody] dynamic body)
         {
-            try
-            {
-                await _procesarPagoCaso.Ejecutar(body);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Webhook Error] {ex.Message}");
-                return Ok(); 
-            }
+            await _procesarWebhookCasoDeUso.Ejecutar(body);
+            return Ok(); 
         }
     }
-}
+    }
+
