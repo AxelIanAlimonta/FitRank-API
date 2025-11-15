@@ -67,10 +67,9 @@ public class AuthController : ControllerBase
 };
 
 
-        // 🔹 Si el usuario es Administrador, incluir el GimnasioId como claim extra
-        if (usuario.Rol == "Admin" && usuario.GimnasioId.HasValue)
+        if (usuario.GimnasioId.HasValue)
         {
-            claims.Add(new Claim("GimnasioId", usuario.GimnasioId.Value.ToString()));
+            claims.Add(new Claim(ClaimTypes.GroupSid, usuario.GimnasioId.Value.ToString()));
         }
 
         var token = new JwtSecurityToken(

@@ -4,9 +4,12 @@ using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Microsoft.AspNetCore.SignalR;
+using FitRank_API.Application.Hubs; 
 
 
 namespace FitRank_API.Application.CasosDeUso.Asistencia
@@ -17,18 +20,22 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
         private readonly IAsistenciaRepositorio _asistenciaRepositorio;
         private readonly IGimnasioRepositorio _gimnasioRepositorio;
         private readonly IConfiguration _config;
+        private readonly IHubContext<NotificacionesHub> _hub;
 
         public ValidarAsistenciaQrCasoDeUso(
             IUsuarioRepositorio usuarioRepositorio,
             IAsistenciaRepositorio asistenciaRepositorio,
             IGimnasioRepositorio gimnasioRepositorio,
-            IConfiguration config)
+            IConfiguration config,
+            IHubContext<NotificacionesHub> hub)
         {
             _usuarioRepositorio = usuarioRepositorio;
             _asistenciaRepositorio = asistenciaRepositorio;
             _gimnasioRepositorio = gimnasioRepositorio;
             _config = config;
+            _hub = hub;
         }
+
 
         public async Task<QrValidationResponseDTO> Ejecutar(QrValidationDTO dto, int? adminId)
         {
@@ -86,6 +93,16 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                     };
 
                     await _asistenciaRepositorio.AgregarAsync(nueva);
+                    await _hub.Clients.Group($"gimnasio-{qrGymId}")
+    .SendAsync("OcupacionActualizada", new
+    {
+        tipo = "entrada",
+        usuarioId = user.Id,
+        nombre = $"{user.Nombre} {user.Apellido}",
+        foto = user.FotoDePerfil,  // solo si lo tenés
+        fecha = DateTime.Now
+    });
+
 
                     return new QrValidationResponseDTO
                     {
@@ -101,6 +118,7 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                             Email = user.Email,
                             Rol = user.Rol
                         }
+
                     };
                 }
                 else if (asistenciaHoy.Presente && asistenciaHoy.HoraSalida == null)
@@ -108,6 +126,15 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                     asistenciaHoy.Presente = false;
                     asistenciaHoy.HoraSalida = DateTime.Now;
                     await _asistenciaRepositorio.ActualizarAsync(asistenciaHoy);
+                    await _hub.Clients.Group($"gimnasio-{qrGymId}")
+    .SendAsync("OcupacionActualizada", new
+    {
+        tipo = "salida",
+        usuarioId = user.Id,
+        nombre = $"{user.Nombre} {user.Apellido}",
+        foto = user.FotoDePerfil,
+        fecha = DateTime.Now
+    });
 
                     return new QrValidationResponseDTO
                     {

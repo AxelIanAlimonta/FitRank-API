@@ -17,13 +17,14 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ObtenerTodosLosProfesoresCasoDeUso _obtenerTodosLosProfesoresCasoDeUso;
         private readonly ObtenerTodosPorGimnasioCasoDeUso _obtenerTodosPorGimnasioCasoDeUso;
         private readonly ObtenerTodasLasRutinasPorProfesorCasoDeUso _obtenerTodasLasRutinasPorProfesorCasoDeUso;
+        private readonly ObtenerEstadisticasProfesoresCasoDeUso _obtenerEstadisticasProfesoresCasoDeUso;
 
         public ProfesorController(
             AgregarProfesorCasoDeUso agregarProfesorCasoDeUso,
             ObtenerProfesorPorIdCasoDeUso obtenerProfesorPorIdCasoDeUso,
             ActualizarProfesorCasoDeUso actualizarProfesorCasoDeUso,
             ObtenerTodosLosProfesoresCasoDeUso obtenerTodosLosProfesoresCasoDeUso,
-            EliminarProfesorCasoDeUso eliminarProfesorCasoDeUso, ObtenerTodasLasRutinasPorProfesorCasoDeUso obtenerTodasLasRutinasPorProfesorCasoDeUso)
+            EliminarProfesorCasoDeUso eliminarProfesorCasoDeUso, ObtenerTodasLasRutinasPorProfesorCasoDeUso obtenerTodasLasRutinasPorProfesorCasoDeUso, ObtenerEstadisticasProfesoresCasoDeUso obtenerEstadisticasProfesoresCasoDeUso)
         {
             _agregarProfesorCasoDeUso = agregarProfesorCasoDeUso;
             _obtenerProfesorPorIdCasoDeUso = obtenerProfesorPorIdCasoDeUso;
@@ -31,6 +32,7 @@ namespace FitRank_API.Presentacion.Controllers
             _actualizarProfesorCasoDeUso = actualizarProfesorCasoDeUso;
             _eliminarProfesorCasoDeUso = eliminarProfesorCasoDeUso;
             _obtenerTodasLasRutinasPorProfesorCasoDeUso = obtenerTodasLasRutinasPorProfesorCasoDeUso;
+            _obtenerEstadisticasProfesoresCasoDeUso = obtenerEstadisticasProfesoresCasoDeUso;
         }
 
         [HttpGet]
@@ -99,11 +101,21 @@ namespace FitRank_API.Presentacion.Controllers
             if (rutinas == null || !rutinas.Any())
                 return NotFound(new { mensaje = "No se encontraron rutinas para este profesor." });
 
-           
-          
+
+
 
             return Ok(rutinas);
         }
 
+        [HttpGet("estadisticas")]
+        public async Task<IActionResult> ObtenerEstadisticas()
+        {
+            var resultado = await _obtenerEstadisticasProfesoresCasoDeUso.Ejecutar();
+
+            if (resultado == null)
+                return NotFound(new { mensaje = "No hay datos de estadísticas de profesores." });
+
+            return Ok(resultado);
+        }
     }
 }

@@ -12,4 +12,6 @@ public interface ISocioRepositorio
     Task<Socio?> ObtenerSocioConMedidasAsync(long socioId);
     Task<Socio?> ObtenerSocioConEntrenamientosAsync(long socioId);
     Task<IEnumerable<Socio>> ObtenerTodosConEntrenamientoAsync();
+
+    Task<IEnumerable<Socio>> ObtenerTodosPorGimnasio(long gimnasioId);
 }

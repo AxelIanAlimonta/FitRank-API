@@ -41,6 +41,12 @@ public  AgregarGimnasioCasoDeUso(IGimnasioRepositorio gimnasioRepositorio,
         // 3️⃣ Guardar
         var gimnasioCreado = await _gimnasioRepositorio.AgregarGimnasio(gimnasioEntidad);
 
+        if (admin != null)
+        {
+            admin.GimnasioId = gimnasioCreado.Id;
+            await _adminRepositorio.ActualizarAsync(admin);
+        }
+
         // 4️⃣ Devolver DTO de salida
         return _mapper.Map<ObtenerGimnasioDTO>(gimnasioCreado);
     }
