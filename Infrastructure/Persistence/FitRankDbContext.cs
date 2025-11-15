@@ -25,9 +25,6 @@ public class FitRankDbContext : DbContext
     public DbSet<Rutina> Rutinas { get; set; }
     public DbSet<Sesion> Sesiones { get; set; }
     public DbSet<EjercicioAsignado> EjerciciosAsignados { get; set; }
-
- 
-
     public DbSet<Puntaje> Puntajes { get; set; }
  
     public DbSet<Asistencia> Asistencias { get; set; }
@@ -58,6 +55,7 @@ public class FitRankDbContext : DbContext
     public DbSet<Ingreso> Ingresos { get; set; }
 
     public DbSet<Valoracion> Valoraciones { get; set; }
+    public DbSet<Amistad> Amistades { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,7 +83,6 @@ public class FitRankDbContext : DbContext
                 }
             }
         }
-
     }
 
     private static void ConfigureEntityRelationships(ModelBuilder modelBuilder)

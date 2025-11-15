@@ -1,59 +1,59 @@
 ﻿using FitRank.API.Application.Rutinas.Abstractions;
 using FitRank.API.Infrastructure.RulesEngineImpl;
 using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
+using FitRank_API.Application.CasosDeUso.AmistadCasosDeUso;
+using FitRank_API.Application.CasosDeUso.Asistencia;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;
 using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.FotoCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GimnasioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
+using FitRank_API.Application.CasosDeUso.Ingreso;
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
 using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.LogroCasosDeUso;
 using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.MedidaCorporalCasosDeUso;
+using FitRank_API.Application.CasosDeUso.MercadoPago;
+using FitRank_API.Application.CasosDeUso.NotificacionCasoDeUso;
 using FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso;
 using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
+using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
+using FitRank_API.Application.Hubs;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.Services;
+using FitRank_API.Application.UseCases;
 using FitRank_API.Application.UseCases.Actividad;
 using FitRank_API.Application.UseCases.Entrenamiento;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Infrastructure.Repositories;
 using FitRank_API.Infrastructure.Repositorios;
+using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SendGrid;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
-using FitRank_API.Application.UseCases;
-using FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso;
-using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
-using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
-using FitRank_API.Application.CasosDeUso.Asistencia;
-using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
-using MercadoPago.Config;
-using FitRank_API.Application.CasosDeUso.Ingreso;
-
-using FitRank_API.Application.CasosDeUso.MercadoPago;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using FitRank_API.Application.CasosDeUso.NotificacionCasoDeUso;
-using FitRank_API.Application.Hubs;
 
 
 
@@ -334,7 +334,12 @@ builder.Services.AddScoped<ObtenerIngresosPorGimnasioCasoDeUso>();
 builder.Services.AddScoped<ObtenerIngresoPorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerIngresosCasoDeUso>();
 
-
+builder.Services.AddScoped<IAmistadRepositorio, AmistadRepositorioImpl>();
+builder.Services.AddScoped<EnviarSolicitudAmistadCasoDeUso>();
+builder.Services.AddScoped<ObtenerAmigosCasoDeUso>();
+builder.Services.AddScoped<ObtenerSolicitudesPendientesCasoDeUso>();
+builder.Services.AddScoped<AceptarSolicitudAmistadCasoDeUso>();
+builder.Services.AddScoped<EliminarAmigoCasoDeUso>();
 
 
 
