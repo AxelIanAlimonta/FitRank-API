@@ -1,4 +1,5 @@
-﻿using FitRank_API.Application.DTOs;
+﻿using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
+using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.EntrenamientoDTOs;
 using FitRank_API.Application.UseCases.Entrenamiento;
 using Microsoft.AspNetCore.Mvc;
@@ -14,19 +15,23 @@ namespace FitRank_API.Controllers
         private readonly ObtenerEntrenamientoPorIdCasoDeUso _obtenerPorId;
         private readonly ActualizarEntrenamientoCasoDeUso _actualizar;
         private readonly EliminarEntrenamientoCasoDeUso _eliminar;
+        private readonly ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso _obtenerHostialEntrenamientosCasoDeUso;
 
         public EntrenamientoController(
             AgregarEntrenamientoCasoDeUso crear,
             ObtenerEntrenamientosCasoDeUso obtenerTodos,
             ObtenerEntrenamientoPorIdCasoDeUso obtenerPorId,
             ActualizarEntrenamientoCasoDeUso actualizar,
-            EliminarEntrenamientoCasoDeUso eliminar)
+            EliminarEntrenamientoCasoDeUso eliminar,
+            ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso obtenerHistorialEntrenamientoDeUnUsuarioCasoDeUso
+            )
         {
             _crear = crear;
             _obtenerTodos = obtenerTodos;
             _obtenerPorId = obtenerPorId;
             _actualizar = actualizar;
             _eliminar = eliminar;
+            _obtenerHostialEntrenamientosCasoDeUso = obtenerHistorialEntrenamientoDeUnUsuarioCasoDeUso;
         }
 
         [HttpGet]
@@ -105,5 +110,13 @@ namespace FitRank_API.Controllers
                 return StatusCode(500, "Error interno del servidor.");
             }
         }
+
+        [HttpGet("socio/{socioId}/historial")]
+        public async Task<ActionResult<List<EntrenamientoHistorialDTO>>> ObtenerHistorial(long socioId)
+        {
+            var result = await _obtenerHostialEntrenamientosCasoDeUso.EjecutarAsync(socioId);
+            return Ok(result);
+        }
+
     }
 }

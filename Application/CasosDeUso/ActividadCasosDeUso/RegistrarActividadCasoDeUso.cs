@@ -88,7 +88,7 @@ namespace FitRank_API.Application.UseCases
             {
                 EntrenamientoId = entrenamiento.Id,
                 SerieId = dto.SerieId,
-                EjercicioAsignadoId = ejercicio.Id,
+                EjercicioAsignadoId = ejercicioAsignado.Id,
                 Peso = dto.Peso,
                 Repeticiones = dto.Repeticiones,
                 Duracion = dto.Duracion, // si lo tenés
