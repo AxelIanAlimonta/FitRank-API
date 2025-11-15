@@ -310,6 +310,7 @@ builder.Services.AddScoped<ActualizarEntrenamientoCasoDeUso>();
 builder.Services.AddScoped<ObtenerEntrenamientosCasoDeUso>();
 builder.Services.AddScoped<ObtenerEntrenamientoPorIdCasoDeUso>();
 builder.Services.AddScoped<RegistrarEntrenamientoCasoDeUso>();
+builder.Services.AddScoped<ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso>();
 
 builder.Services.AddScoped<IRulesEvaluator, RulesEvaluator>();
 builder.Services.AddScoped<IRoutineRulesRunner, RoutineRulesRunner>();

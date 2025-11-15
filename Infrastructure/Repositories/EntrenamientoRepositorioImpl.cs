@@ -90,5 +90,22 @@ namespace FitRank_API.Infrastructure.Repositories
             return true;
 
         }
+
+
+        public async Task<List<Entrenamiento>> ObtenerHistorialCompletoPorSocioAsync(long socioId)
+        {
+            return await _context.Entrenamientos
+                .Include(e => e.Actividades)
+                    .ThenInclude(a => a.EjercicioAsignado)
+                        .ThenInclude(ea => ea.Ejercicio)
+                            .ThenInclude(ex => ex.EjerciciosAsignados)
+                                .ThenInclude(eas => eas.Series)
+                .Include(e => e.Actividades)
+                    .ThenInclude(a => a.EjercicioAsignado)
+                        .ThenInclude(ea => ea.Sesion)
+                .Where(e => e.SocioId == socioId)
+                .OrderByDescending(e => e.Fecha)
+                .ToListAsync();
+        }
     }
 }

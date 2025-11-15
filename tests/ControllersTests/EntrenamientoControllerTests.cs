@@ -11,6 +11,7 @@ using FitRank_API.Controllers;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Application.UseCases.Entrenamiento;
 using FitRank_API.Application.DTOs.EntrenamientoDTOs;
+using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
 
 namespace FitRank_API.tests.ControllersTests;
 
@@ -23,6 +24,7 @@ public class EntrenamientoControllerTests
     private readonly Mock<EliminarEntrenamientoCasoDeUso> _mockEliminar;
     private readonly Mock<ObtenerEntrenamientoPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerEntrenamientosCasoDeUso> _mockObtenerTodos;
+    private readonly Mock<ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso> _mockObtenerHistorial;
 
     public EntrenamientoControllerTests()
     {
@@ -34,13 +36,15 @@ public class EntrenamientoControllerTests
         _mockEliminar = new Mock<EliminarEntrenamientoCasoDeUso>(mockRepositorio.Object);
         _mockObtenerPorId = new Mock<ObtenerEntrenamientoPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerEntrenamientosCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockObtenerHistorial = new Mock<ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
 
         _controller = new EntrenamientoController(
             _mockAgregar.Object,
             _mockObtenerTodos.Object,
             _mockObtenerPorId.Object,
             _mockActualizar.Object,
-            _mockEliminar.Object
+            _mockEliminar.Object,
+            _mockObtenerHistorial.Object
         );
     }
 
