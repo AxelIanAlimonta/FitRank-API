@@ -167,4 +167,40 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
 
     }
 
+    public async Task<List<Rutina>> ObtenerFavoritasPorSocioAsync(long socioId)
+    {
+        return await _context.Rutinas
+            .Where(r => r.SocioId == socioId && r.Favorita)
+            .Include(r => r.Sesiones!)
+                .ThenInclude(s => s.EjerciciosAsignados!)
+                    .ThenInclude(ea => ea.Series!)
+            .Include(r => r.Sesiones!)
+                .ThenInclude(s => s.EjerciciosAsignados!)
+                    .ThenInclude(ea => ea.Ejercicio!)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<bool> MarcarFavoritaAsync(long rutinaId, bool favorita)
+    {
+        var rutina = await _context.Rutinas.FindAsync(rutinaId);
+        if (rutina == null)
+        {
+            return false;
+        }
+        rutina.Favorita = favorita;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> CambiarEstadoRutinaAsync(long rutinaId, bool activa)
+    {
+        var rutina = await _context.Rutinas.FindAsync(rutinaId);
+        if (rutina == null)
+            return false;
+
+        rutina.Activa = activa;
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

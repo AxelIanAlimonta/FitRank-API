@@ -89,6 +89,7 @@ builder.Services.AddScoped<AgregarSocioCasoDeUso>();
 builder.Services.AddScoped<ObtenerSocioPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarSocioCasoDeUso>();
 builder.Services.AddScoped<EliminarSocioCasoDeUso>();
+builder.Services.AddScoped<CambiarParticipacionRankingCasoDeUso>();
 
 builder.Services.AddScoped<IGrupoMuscularRepositorio, GrupoMuscularRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodosLosGruposMuscularesCasoDeUso>();
@@ -135,6 +136,9 @@ builder.Services.AddScoped<AgregarRutinaCasoDeUso>();
 builder.Services.AddScoped<ActualizarRutinaCasoDeUso>();
 builder.Services.AddScoped<EliminarRutinaCasoDeUso>();
 builder.Services.AddScoped<ObtenerRutinaCompletaCasoDeUso>();
+builder.Services.AddScoped<CambiarEstadoRutinaCasoDeUso>();
+builder.Services.AddScoped<MarcarDesmarcarRutinaFavoritaCasoDeUso>();
+builder.Services.AddScoped<ObtenerRutinasFavoritasCasoDeUso>();
 
 
 builder.Services.AddScoped<ISesionRepositorio, SesionRepositorioImpl>();
@@ -164,6 +168,9 @@ builder.Services.AddScoped<CalcularEstadisticaCorporalSocioCasoDeUso>();
 builder.Services.AddScoped<ObtenerPuntajePorGrupoMuscularSocioCasoDeUso>();
 builder.Services.AddScoped<ObtenerPuntajeTotalSocioCasoDeUso>();
 builder.Services.AddScoped<ObtenerRankingSociosCasoDeUso>();
+builder.Services.AddScoped<ObtenerRankingPorFechaCasoDeUso>();
+builder.Services.AddScoped<ObtenerRankingPorGrupoMuscularCasoDeUso>();
+
 
 
 builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();

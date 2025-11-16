@@ -9,6 +9,7 @@ public class Socio : Usuario
     public double Altura { get; set; }
     public double Peso { get; set; }
     public string Nivel { get; set; }
+    public bool ParticipaEnRanking { get; set; } = true;
 
     public double Puntaje { get; set; }
 

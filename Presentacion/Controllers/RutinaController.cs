@@ -21,6 +21,9 @@ public class RutinaController : ControllerBase
     private readonly GenerarRutinaIACasoDeUso _generarRutinaIACasoDeUso;
     private readonly ConfirmarRutinaIACasoDeUso _confirmarRutinaIACasoDeUso;
     private readonly ObtenerRutinaCompletaCasoDeUso _obtenerRutinaCompletaCasoDeUso;
+    private readonly ObtenerRutinasFavoritasCasoDeUso _obtenerFavoritasCasoDeUso;
+    private readonly MarcarDesmarcarRutinaFavoritaCasoDeUso _marcarDesmarcarRutinaFavoritaCasoDeUso;
+    private readonly CambiarEstadoRutinaCasoDeUso _cambiarEstadoRutinaCasoDeUso;
 
 
 
@@ -33,7 +36,10 @@ public class RutinaController : ControllerBase
         EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
         GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso,
         ConfirmarRutinaIACasoDeUso confirmarRutinaIACasoDeUso,
-        ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso)
+        ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso,
+        MarcarDesmarcarRutinaFavoritaCasoDeUso marcarDesmarcarRutinaFavoritaCasoDeUso,
+        CambiarEstadoRutinaCasoDeUso cambiarEstadoRutinaCasoDeUso,
+        ObtenerRutinasFavoritasCasoDeUso obtenerRutinasFavoritasCasoDeUso)
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
@@ -44,6 +50,9 @@ public class RutinaController : ControllerBase
         _generarRutinaIACasoDeUso = generarRutinaIACasoDeUso;
         _confirmarRutinaIACasoDeUso = confirmarRutinaIACasoDeUso;
         _obtenerRutinaCompletaCasoDeUso = obtenerRutinaCompletaCasoDeUso;
+        _obtenerFavoritasCasoDeUso = obtenerRutinasFavoritasCasoDeUso;
+        _marcarDesmarcarRutinaFavoritaCasoDeUso = marcarDesmarcarRutinaFavoritaCasoDeUso;
+        _cambiarEstadoRutinaCasoDeUso = cambiarEstadoRutinaCasoDeUso;
     }
 
    
@@ -206,6 +215,33 @@ public class RutinaController : ControllerBase
             rutina = resultado.Rutina,
             id = rutina.RutinaId
         });
+    }
+
+    [HttpPut("rutina/{rutinaId}/favorita")]
+    public async Task<IActionResult> CambiarFavorita(long rutinaId, [FromQuery] bool favorita)
+    {
+        var ok = await _marcarDesmarcarRutinaFavoritaCasoDeUso.Ejecutar(rutinaId, favorita);
+        if (!ok)
+            return NotFound("Rutina no encontrada");
+
+        return Ok(new { mensaje = "Rutina actualizada", favorita });
+    }
+
+    [HttpPut("rutina/{rutinaId}/estado")]
+    public async Task<IActionResult> CambiarEstado(long rutinaId, [FromQuery] bool activa)
+    {
+        var ok = await _cambiarEstadoRutinaCasoDeUso.Ejecutar(rutinaId, activa);
+        if (!ok)
+            return NotFound("Rutina no encontrada");
+
+        return Ok(new { mensaje = "Rutina actualizada", activa });
+    }
+
+    [HttpGet("rutina/favoritas/{socioId}")]
+    public async Task<IActionResult> GetFavoritas(long socioId)
+    {
+        var list = await _obtenerFavoritasCasoDeUso.Ejecutar(socioId);
+        return Ok(list);
     }
 
     /*

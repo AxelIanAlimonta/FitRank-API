@@ -7,6 +7,7 @@
         public string? TipoCreacion { get; set; }
         public string? Descripcion { get; set; }
         public bool? Activa { get; set; }
+        public bool? Favorita { get; set; }
         public long? SocioId { get; set; }
     }
 }

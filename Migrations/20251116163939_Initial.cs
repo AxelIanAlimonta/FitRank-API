@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -359,6 +359,7 @@ namespace FitRank_API.Migrations
                     Altura = table.Column<double>(type: "double precision", nullable: false),
                     Peso = table.Column<double>(type: "double precision", nullable: false),
                     Nivel = table.Column<string>(type: "text", nullable: false),
+                    ParticipaEnRanking = table.Column<bool>(type: "boolean", nullable: false),
                     Puntaje = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
@@ -444,17 +445,16 @@ namespace FitRank_API.Migrations
                 name: "Amistades",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SocioId1 = table.Column<int>(type: "integer", nullable: false),
-                    SocioId2 = table.Column<int>(type: "integer", nullable: false),
+                    SocioId1 = table.Column<long>(type: "bigint", nullable: false),
+                    SocioId2 = table.Column<long>(type: "bigint", nullable: false),
                     Estado = table.Column<int>(type: "integer", nullable: false),
-                    SolicitanteId = table.Column<int>(type: "integer", nullable: false),
+                    SolicitanteId = table.Column<long>(type: "bigint", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     FechaActualizacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Socio1Id = table.Column<long>(type: "bigint", nullable: false),
-                    Socio2Id = table.Column<long>(type: "bigint", nullable: false),
-                    SolicitanteId1 = table.Column<long>(type: "bigint", nullable: false)
+                    Socio2Id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -472,8 +472,8 @@ namespace FitRank_API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Amistades_Socios_SolicitanteId1",
-                        column: x => x.SolicitanteId1,
+                        name: "FK_Amistades_Socios_SolicitanteId",
+                        column: x => x.SolicitanteId,
                         principalTable: "Socios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -614,6 +614,7 @@ namespace FitRank_API.Migrations
                     FechaCreacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Descripcion = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     Activa = table.Column<bool>(type: "boolean", nullable: false),
+                    Favorita = table.Column<bool>(type: "boolean", nullable: false),
                     SocioId = table.Column<long>(type: "bigint", nullable: false),
                     UsuarioId = table.Column<long>(type: "bigint", nullable: false),
                     InputSnapshotJson = table.Column<JsonDocument>(type: "jsonb", nullable: true),
@@ -875,9 +876,9 @@ namespace FitRank_API.Migrations
                 column: "Socio2Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Amistades_SolicitanteId1",
+                name: "IX_Amistades_SolicitanteId",
                 table: "Amistades",
-                column: "SolicitanteId1");
+                column: "SolicitanteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Asistencias_GimnasioId",

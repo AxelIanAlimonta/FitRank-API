@@ -765,6 +765,9 @@ namespace FitRank_API.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<bool>("Favorita")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("timestamp with time zone");
 
@@ -1137,6 +1140,9 @@ namespace FitRank_API.Migrations
                     b.Property<string>("Nivel")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("ParticipaEnRanking")
+                        .HasColumnType("boolean");
 
                     b.Property<double>("Peso")
                         .HasColumnType("double precision");

@@ -26,8 +26,8 @@ namespace FitRank_API.Domain.Entities
         public string? Descripcion { get; set; } = string.Empty;
 
         public bool Activa { get; set; } = true;
+        public bool Favorita { get; set; } = false;
 
-       
         [ForeignKey("Socio")]
         public long SocioId { get; set; }
         public Socio? Socio { get; set; }

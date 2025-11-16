@@ -16,18 +16,22 @@ public class SocioController : ControllerBase
     private readonly AgregarSocioCasoDeUso _agregarSocioCasoDeUso;
     private readonly ActualizarSocioCasoDeUso _actualizarSocioCasoDeUso;
     private readonly EliminarSocioCasoDeUso _eliminarSocioCasoDeUso;
+    private readonly CambiarParticipacionRankingCasoDeUso _cambiarParticipacionRankingCasoDeUso;
+
 
     public SocioController(ObtenerSociosCasoDeUso obtenerSociosCasoDeUso,
         ObtenerSocioPorIdCasoDeUso obtenerSocioPorIdCasoDeUso,
         AgregarSocioCasoDeUso agregarSocioCasoDeUso,
         ActualizarSocioCasoDeUso actualizarSocioCasoDeUso,
-        EliminarSocioCasoDeUso eliminarSocioCasoDeUso)
+        EliminarSocioCasoDeUso eliminarSocioCasoDeUso,
+        CambiarParticipacionRankingCasoDeUso cambiarParticipacionRankingCasoDeUso)
     {
         _obtenerSociosCasoDeUso = obtenerSociosCasoDeUso;
         _obtenerSocioPorIdCasoDeUso = obtenerSocioPorIdCasoDeUso;
         _agregarSocioCasoDeUso = agregarSocioCasoDeUso;
         _actualizarSocioCasoDeUso = actualizarSocioCasoDeUso;
         _eliminarSocioCasoDeUso = eliminarSocioCasoDeUso;
+        _cambiarParticipacionRankingCasoDeUso = cambiarParticipacionRankingCasoDeUso;
     }
 
     [HttpGet]
@@ -81,6 +85,17 @@ public class SocioController : ControllerBase
             return NotFound();
         }
         return NoContent();
+    }
+
+    [HttpPut("socio/{socioId}/participacion-ranking")]
+    public async Task<IActionResult> CambiarParticipacionRanking(long socioId, [FromBody] CambiarParticipacionRankingDTO body)
+    {
+        var ok = await _cambiarParticipacionRankingCasoDeUso.Ejecutar(socioId, body.ParticipaEnRanking);
+
+        if (!ok)
+            return NotFound(new { mensaje = "Socio no encontrado" });
+
+        return Ok(new { mensaje = "Participación actualizada", participa = body.ParticipaEnRanking });
     }
 
 }

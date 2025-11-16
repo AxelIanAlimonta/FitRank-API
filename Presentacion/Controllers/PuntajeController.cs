@@ -13,13 +13,23 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ObtenerPuntajePorGrupoMuscularSocioCasoDeUso _obtenerPuntajePorGrupoMuscularSocioCasoDeUso;
         private readonly ObtenerRankingSociosCasoDeUso _obtenerRankingSociosCasoDeUso;
         private readonly ObtenerPuntajeTotalSocioCasoDeUso _obtenerPuntajeTotalSocioCasoDeUso;
-        public PuntajeController(CalcularEstadisticaCorporalSocioCasoDeUso calcularEstadisticaSocioCasoDeUso, CalcularEstadisticaCombinadaPuntajeSocioCasoDeUso calcularEstadisticaCombinadaPuntajeSocioCasoDeUso, ObtenerPuntajePorGrupoMuscularSocioCasoDeUso obtenerPuntajePorGrupoMuscularSocioCasoDeUso, ObtenerRankingSociosCasoDeUso obtenerRankingSociosCasoDeUso, ObtenerPuntajeTotalSocioCasoDeUso obtenerPuntajeTotalSocioCasoDeUso)
+        private readonly ObtenerRankingPorGrupoMuscularCasoDeUso _obtenerRankingPorGrupoMuscularCasoDeUso;
+        private readonly ObtenerRankingPorFechaCasoDeUso _obtenerRankingPorFechaCasoDeUso;
+        public PuntajeController(CalcularEstadisticaCorporalSocioCasoDeUso calcularEstadisticaSocioCasoDeUso, 
+            CalcularEstadisticaCombinadaPuntajeSocioCasoDeUso calcularEstadisticaCombinadaPuntajeSocioCasoDeUso, 
+            ObtenerPuntajePorGrupoMuscularSocioCasoDeUso obtenerPuntajePorGrupoMuscularSocioCasoDeUso, 
+            ObtenerRankingSociosCasoDeUso obtenerRankingSociosCasoDeUso, 
+            ObtenerPuntajeTotalSocioCasoDeUso obtenerPuntajeTotalSocioCasoDeUso,
+            ObtenerRankingPorFechaCasoDeUso obtenerRankingPorFechaCasoDeUso,
+            ObtenerRankingPorGrupoMuscularCasoDeUso obtenerRankingPorGrupoMuscularCasoDeUso)
         {
             _calcularEstadisticaSocioCasoDeUso = calcularEstadisticaSocioCasoDeUso;
             _calcularEstadisticaCombinadaPuntajeSocioCasoDeUso = calcularEstadisticaCombinadaPuntajeSocioCasoDeUso;
             _obtenerPuntajePorGrupoMuscularSocioCasoDeUso = obtenerPuntajePorGrupoMuscularSocioCasoDeUso;
             _obtenerRankingSociosCasoDeUso =  obtenerRankingSociosCasoDeUso;
             _obtenerPuntajeTotalSocioCasoDeUso = obtenerPuntajeTotalSocioCasoDeUso;
+            _obtenerRankingPorGrupoMuscularCasoDeUso = obtenerRankingPorGrupoMuscularCasoDeUso;
+            _obtenerRankingPorFechaCasoDeUso = obtenerRankingPorFechaCasoDeUso;
         }
 
 
@@ -48,11 +58,40 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         [HttpGet("ranking")]
-        public async Task<IActionResult> ObtenerRanking()
+        public async Task<IActionResult> ObtenerRanking(
+            [FromQuery]long gimnasioId, 
+            [FromQuery]int cantidad = 20)
         {
-            var resultado = await _obtenerRankingSociosCasoDeUso.Ejecutar();
+            var resultado = await _obtenerRankingSociosCasoDeUso.Ejecutar(gimnasioId, cantidad);
             return Ok(resultado);
         }
+
+        [HttpGet("ranking/grupoMuscular/{grupo}")]
+        public async Task<IActionResult> ObtenerRankingPorGrupoMuscular(
+            [FromRoute] string grupo,
+            [FromQuery] long gimnasioId,
+            [FromQuery] int cantidad = 20)
+        {
+            var resultado = await _obtenerRankingPorGrupoMuscularCasoDeUso.Ejecutar(gimnasioId, grupo, cantidad);
+            return Ok(resultado);
+        }
+
+        [HttpGet("ranking/fecha")]
+        public async Task<IActionResult> ObtenerRankingPorFecha(
+        [FromQuery] long gimnasioId,
+        [FromQuery] DateTime desde,
+        [FromQuery] DateTime hasta,
+        [FromQuery] int cantidad = 0)
+        {
+            var desdeDateOnly = DateOnly.FromDateTime(desde);
+            var hastaDateOnly = DateOnly.FromDateTime(hasta);
+
+            var resultado = await _obtenerRankingPorFechaCasoDeUso.Ejecutar(
+                gimnasioId, cantidad, desdeDateOnly, hastaDateOnly);
+
+            return Ok(resultado);
+        }
+
 
         [HttpGet("{socioId}/puntaje-total")]
         public async Task<IActionResult> ObtenerPuntajeTotal(long socioId)

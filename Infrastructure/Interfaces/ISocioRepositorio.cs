@@ -1,4 +1,5 @@
-﻿using FitRank_API.Domain.Entities;
+﻿using FitRank_API.Application.DTOs.PuntajeDTOs;
+using FitRank_API.Domain.Entities;
 
 namespace FitRank_API.Infrastructure.Interfaces;
 
@@ -14,4 +15,7 @@ public interface ISocioRepositorio
     Task<IEnumerable<Socio>> ObtenerTodosConEntrenamientoAsync();
 
     Task<IEnumerable<Socio>> ObtenerTodosPorGimnasio(long gimnasioId);
+    Task<bool> CambiarParticipacionRankingAsync(long socioId, bool participa);
+    Task<IEnumerable<Socio>> ObtenerSociosParaRankingAsync(long gimnasioId);
+    Task<List<SocioRankingDto>> ObtenerRankingGeneralAsync(long gimnasioId, int cantidad);
 }

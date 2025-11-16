@@ -14,8 +14,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    [Migration("20251115001031_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251116163939_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,11 +29,11 @@ namespace FitRank_API.Migrations
 
             modelBuilder.Entity("Amistad", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("Estado")
                         .HasColumnType("integer");
@@ -50,16 +50,13 @@ namespace FitRank_API.Migrations
                     b.Property<long>("Socio2Id")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("SocioId1")
-                        .HasColumnType("integer");
+                    b.Property<long>("SocioId1")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("SocioId2")
-                        .HasColumnType("integer");
+                    b.Property<long>("SocioId2")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("SolicitanteId")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("SolicitanteId1")
+                    b.Property<long>("SolicitanteId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -68,7 +65,7 @@ namespace FitRank_API.Migrations
 
                     b.HasIndex("Socio2Id");
 
-                    b.HasIndex("SolicitanteId1");
+                    b.HasIndex("SolicitanteId");
 
                     b.ToTable("Amistades");
                 });
@@ -771,6 +768,9 @@ namespace FitRank_API.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<bool>("Favorita")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("timestamp with time zone");
 
@@ -1144,6 +1144,9 @@ namespace FitRank_API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("ParticipaEnRanking")
+                        .HasColumnType("boolean");
+
                     b.Property<double>("Peso")
                         .HasColumnType("double precision");
 
@@ -1171,7 +1174,7 @@ namespace FitRank_API.Migrations
 
                     b.HasOne("FitRank_API.Domain.Entities.Socio", "Solicitante")
                         .WithMany()
-                        .HasForeignKey("SolicitanteId1")
+                        .HasForeignKey("SolicitanteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

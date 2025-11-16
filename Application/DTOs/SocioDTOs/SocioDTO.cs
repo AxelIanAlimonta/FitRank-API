@@ -25,8 +25,9 @@ namespace FitRank_API.Application.DTOs.SocioDTOs;
         public double Peso { get; set; }
         public string Nivel { get; set; } = string.Empty;
         public double Puntaje { get; set; }
+        public bool ParticipaEnRanking { get; set; }
 
-       
+
         public string? QrToken { get; set; } = string.Empty;
     }
 

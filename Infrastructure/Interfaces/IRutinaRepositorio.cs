@@ -14,6 +14,9 @@ public interface IRutinaRepositorio
     Task<bool> EliminarAsync(long id);
     Task<Rutina> ObtenerPorSocioIdAsync(long socioId);
     Task<List<Rutina>> ObtenerRutinasPorSocioAsync(long socioId);
+    Task<List<Rutina>> ObtenerFavoritasPorSocioAsync(long socioId);
+    Task<bool> MarcarFavoritaAsync(long rutinaId, bool favorita);
+    Task<bool> CambiarEstadoRutinaAsync(long rutinaId, bool activa);
 
     //RUTINA GENERADA POR IA
     Task<ResultadoConfirmarRutinaDTO> ValidarReferenciasAsync(ConfirmarRutinaDTO body);
