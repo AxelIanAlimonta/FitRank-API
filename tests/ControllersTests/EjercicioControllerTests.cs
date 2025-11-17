@@ -52,7 +52,7 @@ public class EjercicioControllerTests
     public async Task Agregar_RetornaCreatedAtActionResult()
     {
         // Arrange
-        var nuevoEjercicioDTO = new AgregarEjercicioDTO { Nombre = "Ejercicio de prueba" };
+        var nuevoEjercicioDTO = new AgregarEjercicioDTO { Nombre = "Ejercicio de prueba", ContraIndicaciones = new List<string>(), Tags = new List<string>() };
         var ejercicioDevuelto = new ObtenerEjercicioDTO { Id = 1, Nombre = "Ejercicio de prueba" };
         _mockAgregar.Setup(caso => caso.Ejecutar(It.IsAny<AgregarEjercicioDTO>()))
             .ReturnsAsync(ejercicioDevuelto);
