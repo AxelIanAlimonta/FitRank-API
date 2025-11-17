@@ -10,10 +10,10 @@ public class AgregarGimnasioCasoDeUso
     private readonly IGimnasioRepositorio _gimnasioRepositorio;
     private readonly IMapper _mapper;
     private readonly IAdministradorRepositorio _adminRepositorio;
-  
-public  AgregarGimnasioCasoDeUso(IGimnasioRepositorio gimnasioRepositorio,
-        IMapper mapper,
-        IAdministradorRepositorio adminRepositorio)
+
+    public AgregarGimnasioCasoDeUso(IGimnasioRepositorio gimnasioRepositorio,
+            IMapper mapper,
+            IAdministradorRepositorio adminRepositorio)
     {
         _gimnasioRepositorio = gimnasioRepositorio;
         _mapper = mapper;
@@ -22,7 +22,7 @@ public  AgregarGimnasioCasoDeUso(IGimnasioRepositorio gimnasioRepositorio,
 
 
 
-    public async Task<ObtenerGimnasioDTO> Ejecutar(AgregarGimnasioDTO dto)
+    public virtual async Task<ObtenerGimnasioDTO> Ejecutar(AgregarGimnasioDTO dto)
     {
         // 1️⃣ Validar si el admin existe (si viene)
         Administrador? admin = null;

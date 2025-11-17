@@ -26,7 +26,7 @@ public class FitRankDbContext : DbContext
     public DbSet<Sesion> Sesiones { get; set; }
     public DbSet<EjercicioAsignado> EjerciciosAsignados { get; set; }
     public DbSet<Puntaje> Puntajes { get; set; }
- 
+
     public DbSet<Asistencia> Asistencias { get; set; }
     public DbSet<Invitacion> Invitaciones { get; set; }
     public DbSet<Logro> Logros { get; set; }
@@ -60,6 +60,14 @@ public class FitRankDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        //adfas
+        if (Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            modelBuilder.Entity<Rutina>().Ignore(r => r.InputSnapshotJson);
+            modelBuilder.Entity<Rutina>().Ignore(r => r.RulesExplainJson);
+        }
+
         ConfigureEntityRelationships(modelBuilder);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -90,7 +98,7 @@ public class FitRankDbContext : DbContext
         modelBuilder.Entity<Usuario>().ToTable("Usuarios");
         modelBuilder.Entity<Socio>().ToTable("Socios");
         modelBuilder.Entity<Profesor>().ToTable("Profesores");
-    
+
         modelBuilder.Entity<Administrador>().ToTable("Administradores");
 
         modelBuilder.Entity<Socio>()
@@ -169,7 +177,7 @@ public class FitRankDbContext : DbContext
             entity.HasOne(n => n.UsuarioEmisor)
                   .WithMany(u => u.NotificacionesEnviadas)
                   .HasForeignKey(n => n.UsuarioEmisorId)
-                  .OnDelete(DeleteBehavior.Restrict); 
+                  .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(n => n.UsuarioReceptor)
                   .WithMany(u => u.NotificacionesRecibidas)
