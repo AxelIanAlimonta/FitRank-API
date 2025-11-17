@@ -23,14 +23,17 @@ public class GimnasioControllerTests
     private readonly Mock<EliminarGimnasioCasoDeUso> _mockEliminar;
     private readonly Mock<ObtenerGimnasioPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerGimnasiosCasoDeUso> _mockObtenerTodos;
+    private readonly Mock<IAdministradorRepositorio> _mockAdminRepositorio;
+
 
     public GimnasioControllerTests()
     {
         var mockRepositorio = new Mock<IGimnasioRepositorio>();
         var mockMapper = new Mock<IMapper>();
+        _mockAdminRepositorio = new Mock<IAdministradorRepositorio>();
 
         _mockActualizar = new Mock<ActualizarGimnasioCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        _mockAgregar = new Mock<AgregarGimnasioCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockAgregar = new Mock<AgregarGimnasioCasoDeUso>(mockRepositorio.Object, mockMapper.Object, _mockAdminRepositorio.Object);
         _mockEliminar = new Mock<EliminarGimnasioCasoDeUso>(mockRepositorio.Object);
         _mockObtenerPorId = new Mock<ObtenerGimnasioPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerGimnasiosCasoDeUso>(mockRepositorio.Object, mockMapper.Object);

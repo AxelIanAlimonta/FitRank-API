@@ -64,7 +64,7 @@ public class EjercicioControllerTests
         var createdAtActionResult = resultado as CreatedAtActionResult;
         createdAtActionResult.Should().NotBeNull();
         createdAtActionResult.StatusCode.Should().Be(201);
-        createdAtActionResult.Value.Should().BeEquivalentTo(nuevoEjercicioDTO);
+        createdAtActionResult.Value.Should().BeEquivalentTo(ejercicioDevuelto);
 
     }
 

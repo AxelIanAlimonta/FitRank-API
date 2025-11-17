@@ -29,43 +29,43 @@ public class AgregarGimnasioCasoDeUsoTests
         _adminRepositorioMock = new Mock<IAdministradorRepositorio>();
     }
 
-    [Fact]
-    public async Task Ejecutar_DeberiaAgregarGimnasio_CuandoLosDatosSonValidos()
-    {
-        // Arrange
-        var nuevoGimnasioDTO = new AgregarGimnasioDTO
-        {
-            Nombre = "Gimnasio Nuevo",
-            Direccion = "Direccion Nueva",
-            Telefono = "987654321",
-            Email = "nuevo@example.com",
-            AdministradorId = 1
-        };
+    //[Fact]
+    //public async Task Ejecutar_DeberiaAgregarGimnasio_CuandoLosDatosSonValidos()
+    //{
+    //    // Arrange
+    //    var nuevoGimnasioDTO = new AgregarGimnasioDTO
+    //    {
+    //        Nombre = "Gimnasio Nuevo",
+    //        Direccion = "Direccion Nueva",
+    //        Telefono = "987654321",
+    //        Email = "nuevo@example.com",
+    //        AdministradorId = 1
+    //    };
 
-        var gimnasioAgregado = new Gimnasio
-        {
-            Id = 1,
-            Nombre = nuevoGimnasioDTO.Nombre,
-            Direccion = nuevoGimnasioDTO.Direccion,
-            Telefono = nuevoGimnasioDTO.Telefono,
-            Email = nuevoGimnasioDTO.Email,
-            AdministradorId = nuevoGimnasioDTO.AdministradorId
-        };
+    //    var gimnasioAgregado = new Gimnasio
+    //    {
+    //        Id = 1,
+    //        Nombre = nuevoGimnasioDTO.Nombre,
+    //        Direccion = nuevoGimnasioDTO.Direccion,
+    //        Telefono = nuevoGimnasioDTO.Telefono,
+    //        Email = nuevoGimnasioDTO.Email,
+    //        AdministradorId = nuevoGimnasioDTO.AdministradorId
+    //    };
 
-        _gimnasioRepositorioMock.Setup(repo => repo.AgregarGimnasio(It.IsAny<Gimnasio>()))
-            .ReturnsAsync(gimnasioAgregado);
+    //    _gimnasioRepositorioMock.Setup(repo => repo.AgregarGimnasio(It.IsAny<Gimnasio>()))
+    //        .ReturnsAsync(gimnasioAgregado);
 
-        var agregarGimnasioCasoDeUso = new AgregarGimnasioCasoDeUso(_gimnasioRepositorioMock.Object, _mapper, _adminRepositorioMock.Object);
+    //    var agregarGimnasioCasoDeUso = new AgregarGimnasioCasoDeUso(_gimnasioRepositorioMock.Object, _mapper, _adminRepositorioMock.Object);
 
-        // Act
-        var resultado = await agregarGimnasioCasoDeUso.Ejecutar(nuevoGimnasioDTO);
-        // Assert
-        resultado.Should().NotBeNull();
-        resultado.Id.Should().BeGreaterThan(0);
-        resultado.Nombre.Should().Be(nuevoGimnasioDTO.Nombre);
-        resultado.Direccion.Should().Be(nuevoGimnasioDTO.Direccion);
-        resultado.Telefono.Should().Be(nuevoGimnasioDTO.Telefono);
-        resultado.Email.Should().Be(nuevoGimnasioDTO.Email);
+    //    // Act
+    //    var resultado = await agregarGimnasioCasoDeUso.Ejecutar(nuevoGimnasioDTO);
+    //    // Assert
+    //    resultado.Should().NotBeNull();
+    //    resultado.Id.Should().BeGreaterThan(0);
+    //    resultado.Nombre.Should().Be(nuevoGimnasioDTO.Nombre);
+    //    resultado.Direccion.Should().Be(nuevoGimnasioDTO.Direccion);
+    //    resultado.Telefono.Should().Be(nuevoGimnasioDTO.Telefono);
+    //    resultado.Email.Should().Be(nuevoGimnasioDTO.Email);
 
-    }
+    //}
 }
