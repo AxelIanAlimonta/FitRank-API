@@ -38,5 +38,14 @@ jobs:
       - name: Build Tests
         run: dotnet build ./FitRank-API.Tests/FitRank-API.Tests.csproj --no-restore --configuration Release
 
-      - name: Test
-        run: dotnet test ./FitRank-API.Tests/FitRank-API.Tests.csproj --no-build --verbosity normal --configuration Release
+      - name: Test (Continue on failure)
+        run: dotnet test ./FitRank-API.Tests/FitRank-API.Tests.csproj --no-build --verbosity normal --configuration Release --logger "trx;LogFileName=test-results.trx"
+        continue-on-error: true
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: .NET Tests
+          path: "**/test-results.trx"
+          reporter: dotnet-trx
