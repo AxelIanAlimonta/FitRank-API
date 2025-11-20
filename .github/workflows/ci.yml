@@ -1,6 +1,5 @@
 name: CI - Build & Test Backend
 
-
 on:
   push:
     branches:
@@ -15,24 +14,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      MERCADOPAGO_ACCESS_TOKEN: ${{ secrets.MERCADOPAGO_ACCESS_TOKEN }}
+
     steps:
-   
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      
       - name: Configurar .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
-      - name: Restaurar dependencias
-        run: dotnet restore ./FitRank-API.sln
+      - name: Restaurar dependencias - API
+        run: dotnet restore ./FitRank-API/FitRank-API.csproj
 
-      
-      - name: Build
-        run: dotnet build ./FitRank-API.sln --no-restore --configuration Release
+      - name: Restaurar dependencias - Tests
+        run: dotnet restore ./FitRank-API.Tests/FitRank-API.Tests.csproj
 
-      
+      - name: Build API
+        run: dotnet build ./FitRank-API/FitRank-API.csproj --no-restore --configuration Release
+
+      - name: Build Tests
+        run: dotnet build ./FitRank-API.Tests/FitRank-API.Tests.csproj --no-restore --configuration Release
+
       - name: Test
-        run: dotnet test ./FitRank-API.sln --no-build --verbosity normal
+        run: dotnet test ./FitRank-API.Tests/FitRank-API.Tests.csproj --no-build --verbosity normal --configuration Release

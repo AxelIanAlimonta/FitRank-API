@@ -1,0 +1,51 @@
+name: CI - Build & Test Backend
+
+on:
+  push:
+    branches:
+      - main
+      - 'dev-*'
+  pull_request:
+    branches:
+      - main
+      - 'dev-*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      MERCADOPAGO_ACCESS_TOKEN: ${{ secrets.MERCADOPAGO_ACCESS_TOKEN }}
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restaurar dependencias - API
+        run: dotnet restore ./FitRank-API/FitRank-API.csproj
+
+      - name: Restaurar dependencias - Tests
+        run: dotnet restore ./FitRank-API.Tests/FitRank-API.Tests.csproj
+
+      - name: Build API
+        run: dotnet build ./FitRank-API/FitRank-API.csproj --no-restore --configuration Release
+
+      - name: Build Tests
+        run: dotnet build ./FitRank-API.Tests/FitRank-API.Tests.csproj --no-restore --configuration Release
+
+      - name: Test (Continue on failure)
+        run: dotnet test ./FitRank-API.Tests/FitRank-API.Tests.csproj --no-build --verbosity normal --configuration Release --logger "trx;LogFileName=test-results.trx"
+        continue-on-error: true
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: .NET Tests
+          path: "**/test-results.trx"
+          reporter: dotnet-trx
