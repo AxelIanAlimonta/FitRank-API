@@ -97,15 +97,19 @@ namespace FitRank_API.Infrastructure.Repositories
             return await _context.Entrenamientos
                 .Include(e => e.Actividades)
                     .ThenInclude(a => a.EjercicioAsignado)
+                        .ThenInclude(ea => ea.Sesion)
+                            .ThenInclude(s => s.Rutina)
+
+                .Include(e => e.Actividades)
+                    .ThenInclude(a => a.EjercicioAsignado)
                         .ThenInclude(ea => ea.Ejercicio)
                             .ThenInclude(ex => ex.EjerciciosAsignados)
                                 .ThenInclude(eas => eas.Series)
-                .Include(e => e.Actividades)
-                    .ThenInclude(a => a.EjercicioAsignado)
-                        .ThenInclude(ea => ea.Sesion)
+
                 .Where(e => e.SocioId == socioId)
                 .OrderByDescending(e => e.Fecha)
                 .ToListAsync();
         }
+
     }
 }

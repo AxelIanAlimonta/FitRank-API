@@ -16,14 +16,24 @@ public class EntrenamientoProfile : Profile
 
         // Entrenamiento → EntrenamientoHistorialDTO
         CreateMap<Entrenamiento, EntrenamientoHistorialDTO>()
-                .ForMember(dest => dest.IdEntrenamiento, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.NombreSesion, opt => opt.MapFrom((src, dest) =>
-                {
-                    var act = src.Actividades.FirstOrDefault();
-                    return act?.EjercicioAsignado?.Sesion?.Nombre ?? "Sesión sin nombre";
-                }))
-                .ForMember(dest => dest.PuntosTotales,
-                    opt => opt.MapFrom(src => src.Actividades.Sum(a => a.Punto ?? 0)));
+            .ForMember(dest => dest.IdEntrenamiento, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.NombreSesion, opt => opt.MapFrom((src, dest) =>
+            {
+                var act = src.Actividades.FirstOrDefault();
+                return act?.EjercicioAsignado?.Sesion?.Nombre ?? "Sesión sin nombre";
+            }))
+            .ForMember(dest => dest.NombreRutina,
+    opt => opt.MapFrom(src =>
+        src.Actividades
+            .OrderBy(a => a.Id)
+            .Select(a => a.EjercicioAsignado.Sesion.Rutina.Nombre)
+            .FirstOrDefault() ?? "Sin rutina"
+    )
+)
+
+            .ForMember(dest => dest.PuntosTotales,
+                opt => opt.MapFrom(src => src.Actividades.Sum(a => a.Punto ?? 0)));
+
 
         // Actividad → ActividadHistorialDTO
         CreateMap<Actividad, ActividadHistorialDTO>()
