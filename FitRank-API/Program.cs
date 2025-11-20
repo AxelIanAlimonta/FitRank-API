@@ -80,8 +80,19 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configuración de base de datos - soporta formato URI de Render
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Si la connection string viene en formato URI (Render), convertirla
+if (connectionString?.StartsWith("postgres://") == true)
+{
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+
 builder.Services.AddDbContext<FitRankDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<ISocioRepositorio, SocioRepositorioImpl>();
 builder.Services.AddScoped<ObtenerSociosCasoDeUso>();
