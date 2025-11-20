@@ -33,6 +33,7 @@ using FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
+using FitRank_API.Application.Helpers;
 using FitRank_API.Application.Hubs;
 using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.Services;
@@ -479,6 +480,9 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT"
     });
+
+    // Configuración para soportar carga de archivos en Swagger
+    c.OperationFilter<FileUploadOperationFilter>();
 
     // Esto aplica el security a TODOS los endpoints
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
