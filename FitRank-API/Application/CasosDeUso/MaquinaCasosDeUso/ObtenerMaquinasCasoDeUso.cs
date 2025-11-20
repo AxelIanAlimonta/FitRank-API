@@ -1,0 +1,23 @@
+﻿using AutoMapper;
+using FitRank_API.Application.DTOs.MaquinaDTOs;
+using FitRank_API.Infrastructure.Interfaces;
+
+namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
+{
+    public class ObtenerMaquinasCasoDeUso
+    {
+        private readonly IMaquinaRepositorio _maquinaRepositorio;
+        private readonly IMapper _mapper;
+        public ObtenerMaquinasCasoDeUso(IMaquinaRepositorio maquinaRepositorio, IMapper mapper)
+        {
+            _maquinaRepositorio = maquinaRepositorio;
+            _mapper = mapper;
+        }
+
+        public virtual async Task<List<ObtenerMaquinaDTO>> Ejecutar()
+        {
+            var maquinas = await _maquinaRepositorio.ObtenerTodasLasMaquinas();
+            return _mapper.Map<List<ObtenerMaquinaDTO>>(maquinas);
+        }
+    }
+}

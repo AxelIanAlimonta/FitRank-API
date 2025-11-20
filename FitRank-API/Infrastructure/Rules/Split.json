@@ -1,0 +1,37 @@
+[
+  {
+    "WorkflowName": "Split",
+    "Rules": [
+      {
+        "RuleName": "Split_CuerpoCompleto_2a3Sesiones",
+        "SuccessEvent": "DIVISION_CUERPO_COMPLETO",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.SesionesPorSemana <= 3"
+      },
+      {
+        "RuleName": "Split_Superior_Inferior_4Sesiones",
+        "SuccessEvent": "DIVISION_SUPERIOR_INFERIOR",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.SesionesPorSemana == 4"
+      },
+      {
+        "RuleName": "Split_PPL_5oMas",
+        "SuccessEvent": "DIVISION_PPL",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.SesionesPorSemana >= 5"
+      },
+      {
+        "RuleName": "Sesion_Corta",
+        "SuccessEvent": "SESION_CORTA;DENSIDAD_ALTA",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.MinutosPorSesion < 45"
+      },
+      {
+        "RuleName": "Sesion_Larga",
+        "SuccessEvent": "SESION_LARGA;DENSIDAD_NORMAL",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "input.MinutosPorSesion >= 75"
+      }
+    ]
+  }
+]
