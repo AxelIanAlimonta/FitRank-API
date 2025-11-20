@@ -60,14 +60,7 @@ public class FitRankDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        //adfas
-        if (Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
-        {
-            modelBuilder.Entity<Rutina>().Ignore(r => r.InputSnapshotJson);
-            modelBuilder.Entity<Rutina>().Ignore(r => r.RulesExplainJson);
-        }
-
+        
         ConfigureEntityRelationships(modelBuilder);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())

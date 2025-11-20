@@ -24,15 +24,15 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             if (!validacion.Ok)
                 return ResultadoConfirmarRutinaDTO.Fallo(validacion.Mensaje);
 
-            // Convertir snapshots
-            JsonDocument? snapDoc = null;
-            JsonDocument? rulesDoc = null;
+            // Convertir snapshots a strings JSON
+            string? snapJson = null;
+            string? rulesJson = null;
             try
             {
                 if (body.Rutina.InputSnapshot is not null)
-                    snapDoc = JsonDocument.Parse(JsonSerializer.Serialize(body.Rutina.InputSnapshot));
+                    snapJson = JsonSerializer.Serialize(body.Rutina.InputSnapshot);
                 if (body.Rutina.RulesExplain is not null)
-                    rulesDoc = JsonDocument.Parse(JsonSerializer.Serialize(body.Rutina.RulesExplain));
+                    rulesJson = JsonSerializer.Serialize(body.Rutina.RulesExplain);
             }
             catch { }
 
@@ -46,8 +46,8 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
                 Activa = true,
                 SocioId = body.SocioId,
                 UsuarioId = body.UsuarioId,
-                InputSnapshotJson = snapDoc,
-                RulesExplainJson = rulesDoc,
+                InputSnapshotJson = snapJson,
+                RulesExplainJson = rulesJson,
                 Sesiones = new List<Sesion>()
             };
 
