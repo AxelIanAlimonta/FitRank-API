@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 #appseting.json
-appsettings.json
+# appsettings.json
 # Ignore appsettings for development
 appsettings.Development.json
 appsettings.Local.json
