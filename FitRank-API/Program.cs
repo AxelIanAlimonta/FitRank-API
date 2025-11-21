@@ -54,6 +54,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using Amazon.S3;
+using Amazon.Runtime;
 
 
 
@@ -333,6 +335,8 @@ builder.Services.AddScoped<ObtenerEntrenamientosCasoDeUso>();
 builder.Services.AddScoped<ObtenerEntrenamientoPorIdCasoDeUso>();
 builder.Services.AddScoped<RegistrarEntrenamientoCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso>();
+builder.Services.AddScoped<ObtenerHistorialEntrenamientosDeProfesorCasoDeUso>();
+
 
 builder.Services.AddScoped<IRulesEvaluator, RulesEvaluator>();
 builder.Services.AddScoped<IRoutineRulesRunner, RoutineRulesRunner>();
@@ -439,6 +443,33 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton<ISendGridClient>(provider =>
     new SendGridClient(builder.Configuration["SendGrid:ApiKey"] ?? "SG.tu_clave")
 );
+
+// Configuración de Cloudflare R2 (compatible con AWS S3)
+builder.Services.AddSingleton<IAmazonS3>(provider =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    var accessKey = config["CloudflareR2:AccessKey"];
+    var secretKey = config["CloudflareR2:SecretKey"];
+    var accountId = config["CloudflareR2:AccountId"];
+
+    if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey) || string.IsNullOrEmpty(accountId))
+    {
+        throw new InvalidOperationException("Cloudflare R2 credentials are not configured properly in appsettings.json");
+    }
+
+    var credentials = new BasicAWSCredentials(accessKey, secretKey);
+    var s3Config = new AmazonS3Config
+    {
+        ServiceURL = $"https://{accountId}.r2.cloudflarestorage.com",
+        ForcePathStyle = true
+    };
+
+    var client = new AmazonS3Client(credentials, s3Config);
+    return client;
+});
+
+// Registrar el servicio de imágenes
+builder.Services.AddScoped<IImagenService, ImagenService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

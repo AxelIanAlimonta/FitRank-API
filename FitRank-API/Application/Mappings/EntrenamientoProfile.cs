@@ -23,14 +23,14 @@ public class EntrenamientoProfile : Profile
                 return act?.EjercicioAsignado?.Sesion?.Nombre ?? "Sesión sin nombre";
             }))
             .ForMember(dest => dest.NombreRutina,
-    opt => opt.MapFrom(src =>
-        src.Actividades
-            .OrderBy(a => a.Id)
-            .Select(a => a.EjercicioAsignado.Sesion.Rutina.Nombre)
-            .FirstOrDefault() ?? "Sin rutina"
-    )
-)
-
+                opt => opt.MapFrom(src =>
+                    src.Actividades
+                        .OrderBy(a => a.Id)
+                        .Select(a => a.EjercicioAsignado.Sesion.Rutina.Nombre)
+                        .FirstOrDefault() ?? "Sin rutina"
+            ))
+            .ForMember(dest => dest.NombreSocio,
+                opt => opt.MapFrom(src => src.Socio.Nombre))
             .ForMember(dest => dest.PuntosTotales,
                 opt => opt.MapFrom(src => src.Actividades.Sum(a => a.Punto ?? 0)));
 
