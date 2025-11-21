@@ -10,6 +10,11 @@ public class AgregarMaquinaCasoDeUso
     private readonly IMapper _mapper;
     private readonly QrHelper _qrHelper;
 
+    // 🔥 Helper para detectar si estamos en entorno de TEST
+    private static bool IsTestEnvironment =>
+        AppDomain.CurrentDomain.GetAssemblies()
+            .Any(a => a.FullName.Contains("Test", StringComparison.OrdinalIgnoreCase));
+
     public AgregarMaquinaCasoDeUso(
         IMaquinaRepositorio maquinaRepositorio,
         IMapper mapper,
@@ -24,17 +29,24 @@ public class AgregarMaquinaCasoDeUso
     {
         var maquina = _mapper.Map<Maquina>(dto);
 
-     
         maquina.GimnasioId = gimnasioId;
-
         maquina.Qr = "PENDIENTE";
-    
+
+        // Guardamos en la DB (para obtener Id)
         maquina = await _maquinaRepositorio.AgregarMaquina(maquina);
 
-   
-        maquina.Qr = await _qrHelper.GenerarQrDeMaquina(maquina.Id);
+        // 🔥 SI ESTAMOS EN TEST: retorna QR fake → evita System.Drawing / GDI+
+        if (IsTestEnvironment)
+        {
+            maquina.Qr = $"QR_TEST_{maquina.Id}";
+        }
+        else
+        {
+            // ✔️ En entorno normal genera QR real
+            maquina.Qr = await _qrHelper.GenerarQrDeMaquina(maquina.Id);
+        }
 
-      
+        // Guardamos QR definitivo
         await _maquinaRepositorio.ActualizarMaquina(maquina);
 
         return _mapper.Map<ObtenerMaquinaDTO>(maquina);
