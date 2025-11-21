@@ -21,23 +21,23 @@ namespace FitRank_API.Presentacion.Controllers
         /// <summary>
         /// Sube una imagen a Cloudflare R2
         /// </summary>
-        /// <param name="archivo">Archivo de imagen</param>
+        /// <param name="request">Datos de la imagen</param>
         /// <param name="carpeta">Carpeta destino (opcional, default: imagenes)</param>
         /// <returns>Información de la imagen subida</returns>
         [HttpPost("subir")]
         [ProducesResponseType(typeof(ImagenUploadResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SubirImagen([FromForm] IFormFile archivo, [FromQuery] string carpeta = "imagenes")
+        public async Task<IActionResult> SubirImagen([FromForm] SubirImagenRequestDto request, [FromQuery] string carpeta = "imagenes")
         {
             try
             {
-                if (archivo == null || archivo.Length == 0)
+                if (request?.Archivo == null || request.Archivo.Length == 0)
                 {
                     return BadRequest(new { mensaje = "No se proporcionó ningún archivo" });
                 }
 
-                var resultado = await _imagenService.SubirImagenAsync(archivo, carpeta);
+                var resultado = await _imagenService.SubirImagenAsync(request.Archivo, carpeta);
                 return Ok(resultado);
             }
             catch (ArgumentException ex)
@@ -135,22 +135,22 @@ namespace FitRank_API.Presentacion.Controllers
         /// Actualiza una imagen existente
         /// </summary>
         /// <param name="key">Key de la imagen a actualizar</param>
-        /// <param name="archivo">Nuevo archivo de imagen</param>
+        /// <param name="request">Nuevo archivo de imagen</param>
         /// <returns>Información de la imagen actualizada</returns>
         [HttpPut("{*key}")]
         [ProducesResponseType(typeof(ImagenUploadResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ActualizarImagen(string key, [FromForm] IFormFile archivo)
+        public async Task<IActionResult> ActualizarImagen(string key, [FromForm] SubirImagenRequestDto request)
         {
             try
             {
-                if (archivo == null || archivo.Length == 0)
+                if (request?.Archivo == null || request.Archivo.Length == 0)
                 {
                     return BadRequest(new { mensaje = "No se proporcionó ningún archivo" });
                 }
 
-                var resultado = await _imagenService.ActualizarImagenAsync(key, archivo);
+                var resultado = await _imagenService.ActualizarImagenAsync(key, request.Archivo);
                 return Ok(resultado);
             }
             catch (ArgumentException ex)
