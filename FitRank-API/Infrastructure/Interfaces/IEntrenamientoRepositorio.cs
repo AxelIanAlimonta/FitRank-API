@@ -13,5 +13,7 @@ namespace FitRank_API.Infrastructure.Interfaces
                 Task<Socio?> ObtenerSocioPorIdAsync(long socioId);
                 Task<Entrenamiento?> ObtenerEntrenamientoActivoPorSocioIdAsync(long socioId);
                 Task<List<Entrenamiento>> ObtenerHistorialCompletoPorSocioAsync(long socioId);
+                Task<List<Entrenamiento>> ObtenerHistorialPorProfesorAsync(long profesorId, string? nombre);
+
     }
 }
