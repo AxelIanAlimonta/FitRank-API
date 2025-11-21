@@ -13,6 +13,8 @@ using FitRank_API.Application.DTOs.JornadaDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
 using FitRank_API.Application.DTOs.MaquinaDTOs;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace FitRank_API.tests.ControllersTests;
 
@@ -25,29 +27,33 @@ public class MaquinaControllerTests
     private readonly Mock<EliminarMaquinaCasoDeUso> _mockEliminar;
     private readonly Mock<ObtenerMaquinaPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerMaquinasCasoDeUso> _mockObtenerTodos;
+    private readonly Mock<ObtenerMaquinaDetalleCasoDeUso> _mockDetalle;
+
+    private const long GIMNASIO_ID = 99;
 
     public MaquinaControllerTests()
     {
-        var mockRepositorio = new Mock<IMaquinaRepositorio>();
+        var mockRepo = new Mock<IMaquinaRepositorio>();
         var mockMapper = new Mock<IMapper>();
 
-        _mockActualizar = new Mock<ActualizarMaquinaCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        _mockAgregar = new Mock<AgregarMaquinaCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        _mockEliminar = new Mock<EliminarMaquinaCasoDeUso>(mockRepositorio.Object);
-        _mockObtenerPorId = new Mock<ObtenerMaquinaPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        _mockObtenerTodos = new Mock<ObtenerMaquinasCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockObtenerTodos = new Mock<ObtenerMaquinasCasoDeUso>(mockRepo.Object, mockMapper.Object);
+        _mockAgregar = new Mock<AgregarMaquinaCasoDeUso>(mockRepo.Object, mockMapper.Object, null);
+        _mockActualizar = new Mock<ActualizarMaquinaCasoDeUso>(mockRepo.Object, mockMapper.Object);
+        _mockEliminar = new Mock<EliminarMaquinaCasoDeUso>(mockRepo.Object);
+        _mockObtenerPorId = new Mock<ObtenerMaquinaPorIdCasoDeUso>(mockRepo.Object, mockMapper.Object);
+        _mockDetalle = new Mock<ObtenerMaquinaDetalleCasoDeUso>(mockRepo.Object, mockMapper.Object);
 
         _controller = new MaquinaController(
             _mockObtenerTodos.Object,
             _mockAgregar.Object,
             _mockActualizar.Object,
             _mockEliminar.Object,
-            _mockObtenerPorId.Object
+            _mockObtenerPorId.Object,
+            _mockDetalle.Object
         );
 
     }
 
-    //Agregar_RetornaCreatedAtActionResult
     [Fact]
     public async Task Agregar_RetornaCreatedAtActionResult()
     {
@@ -57,31 +63,46 @@ public class MaquinaControllerTests
             GimnasioId = 1,
             Nombre = "Maquina de Prueba",
             UrlImagen = "http://imagen.com/maquina.jpg",
-            Qr = "QR12345"
         };
 
         var maquinaDtoCreada = new ObtenerMaquinaDTO
         {
             Id = 1,
-            GimnasioId = 1,
+            GimnasioId = GIMNASIO_ID,
             Nombre = "Maquina de Prueba",
             UrlImagen = "http://imagen.com/maquina.jpg",
             Qr = "QR12345"
         };
 
+        // Mock: Ejecutar(dto, gimnasioId)
         _mockAgregar
-            .Setup(m => m.Ejecutar(nuevaMaquinaDto))
+            .Setup(m => m.Ejecutar(nuevaMaquinaDto, GIMNASIO_ID))
             .ReturnsAsync(maquinaDtoCreada);
 
+        // Mockeamos usuario con claim "groupsid"
+        var claims = new[]
+        {
+        new Claim("groupsid", GIMNASIO_ID.ToString())
+    };
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(claims))
+            }
+        };
+
         // Act
-        var resultado = await _controller.Agregar(nuevaMaquinaDto);
+        var resultado = await _controller.Crear(nuevaMaquinaDto);
 
         // Assert
-        var createdAtActionResult = resultado as CreatedAtActionResult;
-        createdAtActionResult.Should().NotBeNull();
-        createdAtActionResult!.StatusCode.Should().Be(201);
-        createdAtActionResult.Value.Should().BeEquivalentTo(maquinaDtoCreada);
+        var createdResult = resultado as CreatedAtActionResult;
+        createdResult.Should().NotBeNull();
+        createdResult!.StatusCode.Should().Be(201);
+        createdResult.Value.Should().BeEquivalentTo(maquinaDtoCreada);
     }
+
 
     //Agregar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
@@ -93,15 +114,15 @@ public class MaquinaControllerTests
             GimnasioId = 1,
             Nombre = "Maquina de Prueba",
             UrlImagen = "http://imagen.com/maquina.jpg",
-            Qr = "QR12345"
+            
         };
 
         _mockAgregar
-            .Setup(m => m.Ejecutar(nuevaMaquinaDto))
+            .Setup(m => m.Ejecutar(nuevaMaquinaDto, GIMNASIO_ID))
             .ThrowsAsync(new Exception("Error de servidor."));
 
         // Act
-        var resultado = await _controller.Agregar(nuevaMaquinaDto);
+        var resultado = await _controller.Crear(nuevaMaquinaDto);
 
         // Assert
         var objectResult = resultado as ObjectResult;
@@ -115,7 +136,7 @@ public class MaquinaControllerTests
     public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
     {
         // Act
-        var resultado = await _controller.Agregar(null);
+        var resultado = await _controller.Crear(null);
 
         // Assert
         var badRequestResult = resultado as BadRequestObjectResult;

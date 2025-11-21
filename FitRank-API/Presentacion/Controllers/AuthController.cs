@@ -21,23 +21,26 @@ public class AuthController : ControllerBase
     private readonly ActivarCuentaCasoDeUso _activarCuentaCasoDeUso;
     private readonly AgregarUsuarioConInvitacionCasoDeUso _agregarUsuarioConInvitacionCasoDeUso;
     private readonly IConfiguration _config;
+    private readonly GenerarTokenCasoDeUso _generarTokenLogin;
 
+    
     public AuthController(
         LoginUsuarioCasoDeUso loginCasoDeUso,
         RegistrarUsuarioCasoDeUso registerCasoDeUso,
-       
         ValidarTokenActivacionCasoDeUso validarTokenActivacionCasoDeUso,
-        ActivarCuentaCasoDeUso activarCuentaCasoDeUso , AgregarUsuarioConInvitacionCasoDeUso agregarUsuarioConInvitacionCasoDeUso   , IConfiguration configuration )
+        ActivarCuentaCasoDeUso activarCuentaCasoDeUso,
+        AgregarUsuarioConInvitacionCasoDeUso agregarUsuarioConInvitacionCasoDeUso,
+        GenerarTokenCasoDeUso generarTokenLogin,
+        IConfiguration config)
     {
         _loginCasoDeUso = loginCasoDeUso;
         _registerCasoDeUso = registerCasoDeUso;
-      
         _validarTokenActivacionCasoDeUso = validarTokenActivacionCasoDeUso;
         _activarCuentaCasoDeUso = activarCuentaCasoDeUso;
         _agregarUsuarioConInvitacionCasoDeUso = agregarUsuarioConInvitacionCasoDeUso;
-        _config = configuration;
+        _generarTokenLogin = generarTokenLogin;
+        _config = config;
     }
-
 
 
     [HttpPost("login")]
@@ -46,60 +49,22 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // 🔹 Autenticar usuario desde el caso de uso
-        var result = await _loginCasoDeUso.Ejecutar(dto);
-        if (result == null)
+        var resultado = await _loginCasoDeUso.Ejecutar(dto);
+
+        if (resultado == null)
             return Unauthorized(new { Mensaje = "Email o password inválido" });
 
-        // 🔹 Recuperar el usuario autenticado
-        var usuario = result.User; // suponiendo que devuelve UsuarioAuthDTO o similar
+        var (entidad, usuarioDto) = resultado.Value;
 
-        // 🔹 Generar token JWT
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+       
+        var token = _generarTokenLogin.Ejecutar(entidad);
 
-        var claims = new List<Claim>
-{
-    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()), // ✅ agregado
-    new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
-    new Claim(ClaimTypes.Role, usuario.Rol),
-    new Claim("UserId", usuario.Id.ToString())
-};
-
-
-        if (usuario.GimnasioId.HasValue)
-        {
-            claims.Add(new Claim(ClaimTypes.GroupSid, usuario.GimnasioId.Value.ToString()));
-        }
-
-        var token = new JwtSecurityToken(
-            issuer: "FitRankAPI",
-            audience: "FitRankApp",
-            claims: claims,
-            expires: DateTime.Now.AddHours(5),
-            signingCredentials: creds
-        );
-
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-        // 🔹 Devolver respuesta estándar con el gimnasio incluido
         return Ok(new AuthResponseDTO
         {
-            Token = tokenString,
-            User = new UsuarioAuthDTO
-            {
-                Id = usuario.Id,
-                Nombre = usuario.Nombre,
-                Apellidos = usuario.Apellidos,
-                Email = usuario.Email,
-                NombreUsuario = usuario.NombreUsuario,
-                Rol = usuario.Rol,
-                GimnasioId = usuario.GimnasioId, // 💥 este es el campo nuevo
-                TieneCuotaPagada = usuario.TieneCuotaPagada
-            }
+            Token = token,
+            User = usuarioDto
         });
     }
-
     [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDTO>> Register([FromBody] RegisterDTO dto)
         {

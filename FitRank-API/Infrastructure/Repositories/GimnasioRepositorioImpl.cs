@@ -74,5 +74,47 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
             .FirstOrDefaultAsync(g => g.AdministradorId == adminId);
     }
 
+    public long? ObtenerGimnasioIdPorUsuario(long userId)
+    {
+      
+        var admin = _context.Administradores.FirstOrDefault(a => a.Id == userId);
+        if (admin != null)
+        {
+            var gimnasio = _context.Gimnasios.FirstOrDefault(g => g.AdministradorId == admin.Id);
+            if (gimnasio != null)
+                return gimnasio.Id;
+
+            return null; 
+        }
+
+       
+        var profesor = _context.Profesores.FirstOrDefault(p => p.Id == userId);
+        if (profesor != null)
+            return profesor.GimnasioId;
+
+      
+        var socio = _context.Socios.FirstOrDefault(s => s.Id == userId);
+        if (socio != null)
+            return socio.GimnasioId;
+
+       
+        return null;
+    }
+    public async Task<Gimnasio?> ActualizarPersonalizacion(long id, string colorPrincipal, string colorSecundario, string? logoUrl)
+    {
+        var gym = await _context.Gimnasios.FindAsync(id);
+        if (gym == null)
+            return null;
+
+       
+        gym.ColorPrincipal = colorPrincipal;
+        gym.ColorSecundario = colorSecundario;
+
+        if (!string.IsNullOrWhiteSpace(logoUrl))
+            gym.LogoUrl = logoUrl;
+
+        await _context.SaveChangesAsync();
+        return gym;
+    }
 
 }

@@ -40,13 +40,23 @@ namespace FitRank_API.Presentacion.Controllers
             }
         }
 
-
         [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook([FromBody] dynamic body)
+        public async Task<IActionResult> Webhook([FromBody] JObject body)
         {
-            await _procesarWebhookCasoDeUso.Ejecutar(body);
-            return Ok(); 
+            try
+            {
+                await _procesarWebhookCasoDeUso.Ejecutar(body);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR WEBHOOK: " + ex.Message);
+                return Ok(); 
+            }
         }
+
     }
-    }
+
+}
+    
 

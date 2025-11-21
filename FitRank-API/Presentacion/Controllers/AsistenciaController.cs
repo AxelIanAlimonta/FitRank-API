@@ -97,24 +97,27 @@ namespace FitRank_API.Presentacion.Controllers
 
 
         [HttpPost("validar-qr")]
-
+        [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> ValidarQr([FromBody] QrValidationDTO dto)
         {
-            // En producción, el adminId vendría del token JWT del usuario logueado (dueño del gym)
-            // Por ahora, en desarrollo, lo dejamos null o simulado para porbarlo con los profes.
+            
+            var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            int? adminId = null;
+            
+            if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int usuarioId))
+                return Unauthorized(new { Mensaje = "Usuario no válido" });
 
-            var result = await _validarAsistenciaQrCasoDeUso.Ejecutar(dto, adminId);
+          
+            var result = await _validarAsistenciaQrCasoDeUso.Ejecutar(dto, usuarioId);
 
             if (!result.Valido)
                 return BadRequest(result);
 
             return Ok(result);
         }
-    
 
-    [HttpGet("socios-inactivos/{dias?}")]
+
+        [HttpGet("socios-inactivos/{dias?}")]
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> ObtenerSociosInactivos(int dias = 5)
         {

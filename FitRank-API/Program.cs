@@ -122,6 +122,7 @@ builder.Services.AddScoped<ObtenerMaquinaPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarMaquinaCasoDeUso>();
 builder.Services.AddScoped<ActualizarMaquinaCasoDeUso>();
 builder.Services.AddScoped<EliminarMaquinaCasoDeUso>();
+builder.Services.AddScoped<ObtenerMaquinaDetalleCasoDeUso>();
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
@@ -212,9 +213,11 @@ builder.Services.AddScoped<GenerarTokenCasoDeUso>();
 builder.Services.AddScoped<ObtenerUsuarioPorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarUsuarioCasoDeUso>();
 builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
+builder.Services.AddScoped<GenerarTokenCasoDeUso>();
 
 
 builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorioImpl>();
+builder.Services.AddScoped<ActualizarPersonalizacionGimnasioCasoDeUso>();
 
 
 builder.Services.AddScoped<IInvitacionRepositorio, InvitacionRepositorioImpl>();
@@ -301,6 +304,7 @@ builder.Services.AddScoped<ObtenerHistorialNotificacionesCasoDeUso>();
 builder.Services.AddScoped<ObtenerUsuariosParaNotificacionCasoDeUso>();
 builder.Services.AddScoped<EnviarNotificacionIndividualCasoDeUso>();
 
+
 builder.Services.AddScoped<ISerieRepositorio, SerieRepositorioImpl>();
 builder.Services.AddScoped<ActualizarSerieCasoDeUso>();
 builder.Services.AddScoped<AgregarSerieCasoDeUso>();
@@ -373,12 +377,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularDev",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200") // Angular dev server
+            policy.WithOrigins("http://localhost:4200", "https://fitrank-frontend.vercel.app")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-                  .WithMethods("GET", "POST")
-                  .AllowCredentials()
-                   .SetIsOriginAllowed(_ => true);
+                 .AllowCredentials();
+                   
         });
 });
 

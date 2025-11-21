@@ -71,4 +71,12 @@ public class EjercicioRepositorioImpl : IEjercicioRepositorio
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<List<Ejercicio>> ObtenerPorMaquinaId(long maquinaId)
+    {
+        return await _context.Ejercicios
+            .Where(e => e.MaquinaId == maquinaId)
+            .Include(e => e.GrupoMuscular)
+            .ToListAsync();
+    }
 }

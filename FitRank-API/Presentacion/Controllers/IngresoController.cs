@@ -10,7 +10,7 @@ namespace FitRank_API.Presentacion.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")] // 🔒 Solo administradores
+    [Authorize(Roles = "Admin")] // 🔒 Solo administradores
     public class IngresoController : ControllerBase
     {
         private readonly AgregarIngresoCasoDeUso _agregarCaso;
@@ -52,19 +52,22 @@ namespace FitRank_API.Presentacion.Controllers
 
             return Ok(ingreso);
         }
-
-      
         [HttpGet("gimnasio")]
         public async Task<IActionResult> ObtenerIngresoPorGimnasio()
         {
-         
-            var adminId = long.Parse(User.FindFirstValue("id"));
+            var adminIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (adminIdString == null)
+                throw new Exception("No se encontró el UserId en el token.");
+
+            var adminId = long.Parse(adminIdString);
 
             var ingresos = await _obtenerPorGimnasioCaso.Ejecutar(adminId);
             return Ok(ingresos);
         }
 
-       
+
+
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AgregarIngresoDTO dto)
         {

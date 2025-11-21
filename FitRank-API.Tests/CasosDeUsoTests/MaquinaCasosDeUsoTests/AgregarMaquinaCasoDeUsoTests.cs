@@ -7,6 +7,7 @@ using FitRank_API.Domain.Entities;
 using FluentAssertions;
 using FitRank_API.Application.DTOs.MaquinaDTOs;
 using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
+using FitRank_API.Application.CasosDeUso.Invitacion;
 
 namespace CasosDeUsoTests.MaquinaCasosDeUsoTests;
 
@@ -14,6 +15,7 @@ public class AgregarMaquinaCasoDeUsoTests
 {
     private readonly IMapper _mapper;
     private readonly Mock<IMaquinaRepositorio> _maquinaRepositorioMock;
+    private readonly Mock<QrHelper> _qrHelperMock;
 
     public AgregarMaquinaCasoDeUsoTests()
     {
@@ -21,60 +23,66 @@ public class AgregarMaquinaCasoDeUsoTests
         {
             mc.AddProfile(new MaquinaProfile());
         });
+
         _mapper = mappingConfig.CreateMapper();
         _maquinaRepositorioMock = new Mock<IMaquinaRepositorio>();
+
+        // QrHelper necesita constructor → mock estricto
+        _qrHelperMock = new Mock<QrHelper>(MockBehavior.Strict);
     }
 
-    //agregar maquina exitoso
     [Fact]
     public async Task AgregarMaquina_CuandoLosDatosSonValidos_RetornaMaquinaDTO()
     {
         // Arrange
+        long gimnasioId = 1;
+
         var agregarMaquinaDTO = new AgregarMaquinaDTO
         {
-            GimnasioId = 1,
             Nombre = "Maquina Nueva",
-            UrlImagen = "http://imagen.nueva",
-            Qr = "QR456",
-        };
-
-        var maquinaAGregar = new Maquina
-        {
-            GimnasioId = agregarMaquinaDTO.GimnasioId,
-            Nombre = agregarMaquinaDTO.Nombre,
-            UrlImagen = agregarMaquinaDTO.UrlImagen,
-            Qr = agregarMaquinaDTO.Qr,
+            UrlImagen = "http://imagen.nueva"
         };
 
         var maquinaAgregada = new Maquina
         {
-            Id = 1,
-            GimnasioId = agregarMaquinaDTO.GimnasioId,
+            Id = 10,
+            GimnasioId = gimnasioId,
             Nombre = agregarMaquinaDTO.Nombre,
             UrlImagen = agregarMaquinaDTO.UrlImagen,
-            Qr = agregarMaquinaDTO.Qr,
+            Qr = "PENDIENTE"
         };
 
+        // Mock agregar
         _maquinaRepositorioMock
-            .Setup(repo => repo.AgregarMaquina(It.Is<Maquina>(m =>
-                m.GimnasioId == maquinaAGregar.GimnasioId &&
-                m.Nombre == maquinaAGregar.Nombre &&
-                m.UrlImagen == maquinaAGregar.UrlImagen &&
-                m.Qr == maquinaAGregar.Qr)))
+            .Setup(r => r.AgregarMaquina(It.IsAny<Maquina>()))
             .ReturnsAsync(maquinaAgregada);
 
-        var agregarMaquinaCasoDeUso = new AgregarMaquinaCasoDeUso(_maquinaRepositorioMock.Object, _mapper);
+        // Mock qr generado
+        _qrHelperMock
+            .Setup(q => q.GenerarQrDeMaquina(maquinaAgregada.Id))
+            .ReturnsAsync("QR-GENERADO-123");
+
+        // Mock actualizar
+        _maquinaRepositorioMock
+            .Setup(r => r.ActualizarMaquina(It.IsAny<Maquina>()))
+            .Returns((Task<Maquina>)Task.CompletedTask);
+
+        var casoDeUso = new AgregarMaquinaCasoDeUso(
+            _maquinaRepositorioMock.Object,
+            _mapper,
+            _qrHelperMock.Object
+        );
 
         // Act
-        var resultado = await agregarMaquinaCasoDeUso.Ejecutar(agregarMaquinaDTO);
+        var resultado = await casoDeUso.Ejecutar(agregarMaquinaDTO, gimnasioId);
 
         // Assert
         resultado.Should().NotBeNull();
-        resultado!.Id.Should().Be(maquinaAgregada.Id);
-        resultado.GimnasioId.Should().Be(maquinaAgregada.GimnasioId);
-        resultado.Nombre.Should().Be(maquinaAgregada.Nombre);
-        resultado.UrlImagen.Should().Be(maquinaAgregada.UrlImagen);
-        resultado.Qr.Should().Be(maquinaAgregada.Qr);
-    }
+        resultado.Id.Should().Be(maquinaAgregada.Id);
+        resultado.GimnasioId.Should().Be(gimnasioId);
+        resultado.Nombre.Should().Be(agregarMaquinaDTO.Nombre);
+        resultado.UrlImagen.Should().Be(agregarMaquinaDTO.UrlImagen);
+        resultado.Qr.Should().Be("QR-GENERADO-123");
 
+    }
 }

@@ -95,5 +95,24 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             return $"data:image/png;base64,{base64}";
         }
 
+        public async Task<string> GenerarQrDeMaquina(long maquinaId)
+        {
+
+            string url = $"{_config["BaseUrls:Frontend"]}/maquina/{maquinaId}";
+
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+            using var qrCode = new QRCode(qrCodeData);
+            using var qrBitmap = qrCode.GetGraphic(20);
+
+            using var ms = new MemoryStream();
+            qrBitmap.Save(ms, ImageFormat.Png);
+            string base64 = Convert.ToBase64String(ms.ToArray());
+
+            return $"data:image/png;base64,{base64}";
+        }
+
+
+
     }
 }

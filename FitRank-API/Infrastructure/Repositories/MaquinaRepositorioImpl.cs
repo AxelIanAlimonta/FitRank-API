@@ -59,5 +59,7 @@ namespace FitRank_API.Infrastructure.Repositories
         {
             return await _context.Maquinas.ToListAsync();
         }
+
+
     }
 }

@@ -1,7 +1,8 @@
 ﻿using FitRank_API.Application.CasosDeUso.GimnasioCasosDeUso;
 using FitRank_API.Application.DTOs.GimnasioDTOs;
-
+using FitRank_API.Application.Hubs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FitRank_API.Presentacion.Controllers
 {
@@ -9,23 +10,38 @@ namespace FitRank_API.Presentacion.Controllers
     [ApiController]
     public class GimnasioController : ControllerBase
     {
+        private readonly IHubContext<NotificacionesHub> _hub;
         private readonly ObtenerGimnasiosCasoDeUso _obtenerGimnasiosCasoDeUso;
         private readonly AgregarGimnasioCasoDeUso _agregarGimnasioCasoDeUso;
         private readonly ActualizarGimnasioCasoDeUso _actualizarGimnasioCasoDeUso;
         private readonly EliminarGimnasioCasoDeUso _eliminarGimnasioCasoDeUso;
         private readonly ObtenerGimnasioPorIdCasoDeUso _obtenerGimnasioPorIdCasoDeUso;
-        public GimnasioController(ObtenerGimnasiosCasoDeUso obtenerGimnasiosCasoDeUso,
+        private readonly ActualizarPersonalizacionGimnasioCasoDeUso _actualizarPersonalizacion;
+
+       public GimnasioController(
+            IHubContext<NotificacionesHub> hub,
+            ObtenerGimnasiosCasoDeUso obtenerGimnasiosCasoDeUso,
             AgregarGimnasioCasoDeUso agregarGimnasioCasoDeUso,
             ActualizarGimnasioCasoDeUso actualizarGimnasioCasoDeUso,
             EliminarGimnasioCasoDeUso eliminarGimnasioCasoDeUso,
-            ObtenerGimnasioPorIdCasoDeUso obtenerGimnasioPorIdCasoDeUso)
+            ObtenerGimnasioPorIdCasoDeUso obtenerGimnasioPorIdCasoDeUso,
+            ActualizarPersonalizacionGimnasioCasoDeUso actualizarPersonalizacion)
         {
+            _hub = hub;
             _obtenerGimnasiosCasoDeUso = obtenerGimnasiosCasoDeUso;
             _agregarGimnasioCasoDeUso = agregarGimnasioCasoDeUso;
             _actualizarGimnasioCasoDeUso = actualizarGimnasioCasoDeUso;
             _eliminarGimnasioCasoDeUso = eliminarGimnasioCasoDeUso;
             _obtenerGimnasioPorIdCasoDeUso = obtenerGimnasioPorIdCasoDeUso;
+            _actualizarPersonalizacion = actualizarPersonalizacion;
         }
+
+
+
+
+
+
+
 
         [HttpGet]
         public async Task<ActionResult> ObtenerTodos()
@@ -89,13 +105,28 @@ namespace FitRank_API.Presentacion.Controllers
             {
                 return BadRequest(ModelState);
             }
+
             try
             {
                 var gimnasioActualizado = await _actualizarGimnasioCasoDeUso.Ejecutar(actualizarGimnasioDTO);
+
                 if (gimnasioActualizado == null)
                 {
                     return NotFound("Gimnasio no encontrado.");
                 }
+
+             
+                await _hub.Clients
+                    .Group($"gimnasio-{gimnasioActualizado.Id}")
+                    .SendAsync("ThemeUpdated", new
+                    {
+                        colorPrincipal = gimnasioActualizado.ColorPrincipal,
+                        colorSecundario = gimnasioActualizado.ColorSecundario,
+                        logoUrl = gimnasioActualizado.LogoUrl
+                    });
+
+                Console.WriteLine("🎨 ThemeUpdated enviado por SignalR ✔");
+
                 return Ok(gimnasioActualizado);
             }
             catch (Exception ex)
@@ -121,5 +152,43 @@ namespace FitRank_API.Presentacion.Controllers
                 return StatusCode(500, "Error en el servidor.");
             }
         }
+        [HttpGet("mi-gimnasio")]
+        public async Task<ActionResult> ObtenerMiGimnasio()
+        {
+            var gimnasioId = long.Parse(User.FindFirst("groupsid")!.Value);
+            var gimnasio = await _obtenerGimnasioPorIdCasoDeUso.Ejecutar(gimnasioId);
+
+            if (gimnasio == null)
+                return NotFound();
+
+            return Ok(gimnasio);
+        }
+        [HttpPut("personalizacion")]
+        public async Task<IActionResult> ActualizarPersonalizacion(
+                   [FromBody] ActualizarPersonalizacionDTO dto)
+        {
+            if (dto == null)
+                return BadRequest(new { message = "El body no puede ser nulo." });
+
+            var result = await _actualizarPersonalizacion.Ejecutar(dto);
+
+            if (result == null)
+                return NotFound(new { message = "No se encontró el gimnasio." });
+
+            // 🔥 ENVIAR SIGNALR A TODO EL GIMNASIO
+            await _hub.Clients
+                .Group($"gimnasio-{result.Id}")
+                .SendAsync("ThemeUpdated", new
+                {
+                    colorPrincipal = result.ColorPrincipal,
+                    colorSecundario = result.ColorSecundario,
+                    logoUrl = result.LogoUrl
+                });
+
+            Console.WriteLine("🎨 ThemeUpdated enviado por SignalR ✔");
+
+            return Ok(result);
+        }
     }
+
 }

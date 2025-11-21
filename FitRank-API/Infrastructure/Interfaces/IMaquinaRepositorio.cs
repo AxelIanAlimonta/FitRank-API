@@ -10,5 +10,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<Maquina> AgregarMaquina(Maquina m);
         Task<Maquina?> ActualizarMaquina(Maquina m);
         Task<bool> EliminarMaquina(long id);
+
+
     }
 }

@@ -9,4 +9,7 @@ public interface IEjercicioRepositorio
     Task<Ejercicio> AgregarEjercicioAsync(Ejercicio ejercicio);
     Task<Ejercicio?> ActualizarEjercicioAsync(Ejercicio ejercicio);
     Task<bool> EliminarEjercicioAsync(long id);
+
+
+    Task<List<Ejercicio>> ObtenerPorMaquinaId(long maquinaId);
 }
