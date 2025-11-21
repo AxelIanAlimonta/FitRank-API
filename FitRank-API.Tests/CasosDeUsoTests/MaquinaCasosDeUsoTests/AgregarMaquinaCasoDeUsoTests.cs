@@ -1,88 +1,101 @@
-﻿using FitRank_API.Application.Mappings;
-using FitRank_API.Infrastructure.Interfaces;
-using Moq;
-using AutoMapper;
-using Xunit;
-using FitRank_API.Domain.Entities;
-using FluentAssertions;
-using FitRank_API.Application.DTOs.MaquinaDTOs;
-using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
+﻿using AutoMapper;
 using FitRank_API.Application.CasosDeUso.Invitacion;
+using FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
+using FitRank_API.Application.DTOs.MaquinaDTOs;
+using FitRank_API.Domain.Entities;
+using FitRank_API.Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Moq;
+using Xunit;
 
-namespace CasosDeUsoTests.MaquinaCasosDeUsoTests;
-
-public class AgregarMaquinaCasoDeUsoTests
+namespace CasosDeUsoTests.MaquinaCasosDeUsoTests
 {
-    private readonly IMapper _mapper;
-    private readonly Mock<IMaquinaRepositorio> _maquinaRepositorioMock;
-    private readonly Mock<QrHelper> _qrHelperMock;
-
-    public AgregarMaquinaCasoDeUsoTests()
+    public class AgregarMaquinaCasoDeUsoTests
     {
-        var mappingConfig = new MapperConfiguration(mc =>
+        private readonly IMapper _mapper;
+        private readonly Mock<IMaquinaRepositorio> _maquinaRepositorioMock;
+        private readonly QrHelper _qrHelperReal;
+
+        public AgregarMaquinaCasoDeUsoTests()
         {
-            mc.AddProfile(new MaquinaProfile());
-        });
+            // CONFIG FAKE PARA QRHELPER
+            var configFake = new Dictionary<string, string>
+            {
+                { "BaseUrls:Frontend", "http://fake-frontend.com" },
+                { "QrSecret", "12345678901234567890123456789012" },
+                { "Jwt:Issuer", "FakeIssuer" },
+                { "Jwt:Audience", "FakeAudience" },
+                { "Jwt:Key", "ClaveJwtParaTests12345678901234567890" }
+            };
 
-        _mapper = mappingConfig.CreateMapper();
-        _maquinaRepositorioMock = new Mock<IMaquinaRepositorio>();
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(configFake)
+                .Build();
 
-        // QrHelper necesita constructor → mock estricto
-        _qrHelperMock = new Mock<QrHelper>(MockBehavior.Strict);
-    }
+            _qrHelperReal = new QrHelper(configuration);
 
-    [Fact]
-    public async Task AgregarMaquina_CuandoLosDatosSonValidos_RetornaMaquinaDTO()
-    {
-        // Arrange
-        long gimnasioId = 1;
+            // CONFIG AUTOMAPPER REAL
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<AgregarMaquinaDTO, Maquina>();
+                cfg.CreateMap<Maquina, ObtenerMaquinaDTO>();
+            });
 
-        var agregarMaquinaDTO = new AgregarMaquinaDTO
+            _mapper = mapperConfig.CreateMapper();
+
+            _maquinaRepositorioMock = new Mock<IMaquinaRepositorio>();
+        }
+
+        [Fact]
+        public async Task AgregarMaquina_CuandoLosDatosSonValidos_RetornaMaquinaDTO()
         {
-            Nombre = "Maquina Nueva",
-            UrlImagen = "http://imagen.nueva"
-        };
+            // Arrange
+            long gimnasioId = 1;
 
-        var maquinaAgregada = new Maquina
-        {
-            Id = 10,
-            GimnasioId = gimnasioId,
-            Nombre = agregarMaquinaDTO.Nombre,
-            UrlImagen = agregarMaquinaDTO.UrlImagen,
-            Qr = "PENDIENTE"
-        };
+            var agregarMaquinaDTO = new AgregarMaquinaDTO
+            {
+                Nombre = "Maquina Nueva",
+                UrlImagen = "http://imagen.nueva"
+            };
 
-        // Mock agregar
-        _maquinaRepositorioMock
-            .Setup(r => r.AgregarMaquina(It.IsAny<Maquina>()))
-            .ReturnsAsync(maquinaAgregada);
+            var maquinaAgregada = new Maquina
+            {
+                Id = 10,
+                GimnasioId = gimnasioId,
+                Nombre = agregarMaquinaDTO.Nombre,
+                UrlImagen = agregarMaquinaDTO.UrlImagen,
+                Qr = "PENDIENTE"
+            };
 
-        // Mock qr generado
-        _qrHelperMock
-            .Setup(q => q.GenerarQrDeMaquina(maquinaAgregada.Id))
-            .ReturnsAsync("QR-GENERADO-123");
+            // Mock agregar
+            _maquinaRepositorioMock
+                .Setup(r => r.AgregarMaquina(It.IsAny<Maquina>()))
+                .ReturnsAsync(maquinaAgregada);
 
-        // Mock actualizar
-        _maquinaRepositorioMock
-            .Setup(r => r.ActualizarMaquina(It.IsAny<Maquina>()))
-            .Returns((Task<Maquina>)Task.CompletedTask);
+            // Mock actualizar
+            _maquinaRepositorioMock
+       .Setup(r => r.AgregarMaquina(It.IsAny<Maquina>()))
+       .ReturnsAsync(maquinaAgregada);
 
-        var casoDeUso = new AgregarMaquinaCasoDeUso(
-            _maquinaRepositorioMock.Object,
-            _mapper,
-            _qrHelperMock.Object
-        );
 
-        // Act
-        var resultado = await casoDeUso.Ejecutar(agregarMaquinaDTO, gimnasioId);
+            var casoDeUso = new AgregarMaquinaCasoDeUso(
+                _maquinaRepositorioMock.Object,
+                _mapper,
+                _qrHelperReal
+            );
 
-        // Assert
-        resultado.Should().NotBeNull();
-        resultado.Id.Should().Be(maquinaAgregada.Id);
-        resultado.GimnasioId.Should().Be(gimnasioId);
-        resultado.Nombre.Should().Be(agregarMaquinaDTO.Nombre);
-        resultado.UrlImagen.Should().Be(agregarMaquinaDTO.UrlImagen);
-        resultado.Qr.Should().Be("QR-GENERADO-123");
+            // Act
+            var resultado = await casoDeUso.Ejecutar(agregarMaquinaDTO, gimnasioId);
 
+            // Assert
+            Assert.NotNull(resultado);
+            Assert.Equal(maquinaAgregada.Id, resultado.Id);
+            Assert.Equal(gimnasioId, resultado.GimnasioId);
+            Assert.Equal(agregarMaquinaDTO.Nombre, resultado.Nombre);
+            Assert.Equal(agregarMaquinaDTO.UrlImagen, resultado.UrlImagen);
+
+            // Como el QR generado es real, solo validamos que sea png base64
+            Assert.StartsWith("data:image/png;base64,", resultado.Qr);
+        }
     }
 }
