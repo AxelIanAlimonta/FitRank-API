@@ -459,7 +459,8 @@ builder.Services.AddSingleton<IAmazonS3>(provider =>
         ForcePathStyle = true
     };
 
-    return new AmazonS3Client(credentials, s3Config);
+    var client = new AmazonS3Client(credentials, s3Config);
+    return client;
 });
 
 // Registrar el servicio de imágenes

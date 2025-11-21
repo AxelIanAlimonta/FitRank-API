@@ -10,67 +10,94 @@ namespace FitRank_API.Application.Services
         private readonly IAmazonS3 _s3Client;
         private readonly string _bucketName;
         private readonly string _publicUrl;
+        private readonly ILogger<ImagenService> _logger;
 
-        public ImagenService(IAmazonS3 s3Client, IConfiguration configuration)
+        public ImagenService(IAmazonS3 s3Client, IConfiguration configuration, ILogger<ImagenService> logger)
         {
             _s3Client = s3Client;
+            _logger = logger;
             _bucketName = configuration["CloudflareR2:BucketName"] 
                 ?? throw new InvalidOperationException("BucketName no configurado");
             _publicUrl = configuration["CloudflareR2:PublicUrl"] 
                 ?? throw new InvalidOperationException("PublicUrl no configurado");
+            
+            _logger.LogInformation("ImagenService inicializado - Bucket: {Bucket}, PublicUrl: {Url}", _bucketName, _publicUrl);
         }
 
         public async Task<ImagenUploadResponseDto> SubirImagenAsync(IFormFile archivo, string carpeta = "imagenes")
         {
-            if (archivo == null || archivo.Length == 0)
+            try
             {
-                throw new ArgumentException("El archivo no puede estar vacío");
-            }
-
-            // Validar tipo de archivo
-            var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-            var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
-            
-            if (!extensionesPermitidas.Contains(extension))
-            {
-                throw new ArgumentException($"Tipo de archivo no permitido. Extensiones permitidas: {string.Join(", ", extensionesPermitidas)}");
-            }
-
-            // Generar nombre único
-            var nombreArchivo = $"{Guid.NewGuid()}{extension}";
-            var key = $"{carpeta}/{nombreArchivo}";
-
-            using var stream = archivo.OpenReadStream();
-            
-            var putRequest = new PutObjectRequest
-            {
-                BucketName = _bucketName,
-                Key = key,
-                InputStream = stream,
-                ContentType = archivo.ContentType,
-                Metadata =
+                _logger.LogInformation("Intentando subir imagen: {FileName}, Tamaño: {Size} bytes", archivo?.FileName, archivo?.Length);
+                
+                if (archivo == null || archivo.Length == 0)
                 {
-                    ["x-amz-meta-original-name"] = archivo.FileName,
-                    ["x-amz-meta-upload-date"] = DateTime.UtcNow.ToString("o")
+                    throw new ArgumentException("El archivo no puede estar vacío");
                 }
-            };
 
-            var response = await _s3Client.PutObjectAsync(putRequest);
+                // Validar tipo de archivo
+                var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+                
+                if (!extensionesPermitidas.Contains(extension))
+                {
+                    throw new ArgumentException($"Tipo de archivo no permitido. Extensiones permitidas: {string.Join(", ", extensionesPermitidas)}");
+                }
 
-            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-            {
-                throw new Exception($"Error al subir la imagen. StatusCode: {response.HttpStatusCode}");
+                // Generar nombre único
+                var nombreArchivo = $"{Guid.NewGuid()}{extension}";
+                var key = $"{carpeta}/{nombreArchivo}";
+
+                _logger.LogInformation("Subiendo a R2 - Bucket: {Bucket}, Key: {Key}", _bucketName, key);
+
+                using var memoryStream = new MemoryStream();
+                await archivo.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                
+                var putRequest = new PutObjectRequest
+                {
+                    BucketName = _bucketName,
+                    Key = key,
+                    InputStream = memoryStream,
+                    ContentType = archivo.ContentType,
+                    UseChunkEncoding = false,
+                    Metadata =
+                    {
+                        ["x-amz-meta-original-name"] = archivo.FileName,
+                        ["x-amz-meta-upload-date"] = DateTime.UtcNow.ToString("o")
+                    }
+                };
+
+                var response = await _s3Client.PutObjectAsync(putRequest);
+
+                _logger.LogInformation("Respuesta de R2: StatusCode={StatusCode}", response.HttpStatusCode);
+
+                if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    throw new Exception($"Error al subir la imagen. StatusCode: {response.HttpStatusCode}");
+                }
+
+                return new ImagenUploadResponseDto
+                {
+                    Key = key,
+                    Url = ObtenerUrlPublica(key),
+                    NombreArchivo = archivo.FileName,
+                    TamanoBytes = archivo.Length,
+                    ContentType = archivo.ContentType,
+                    FechaSubida = DateTime.UtcNow
+                };
             }
-
-            return new ImagenUploadResponseDto
+            catch (AmazonS3Exception ex)
             {
-                Key = key,
-                Url = ObtenerUrlPublica(key),
-                NombreArchivo = archivo.FileName,
-                TamanoBytes = archivo.Length,
-                ContentType = archivo.ContentType,
-                FechaSubida = DateTime.UtcNow
-            };
+                _logger.LogError(ex, "Error de AWS S3: StatusCode={StatusCode}, ErrorCode={ErrorCode}, Message={Message}", 
+                    ex.StatusCode, ex.ErrorCode, ex.Message);
+                throw new Exception($"Error al comunicarse con R2: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error general al subir imagen");
+                throw;
+            }
         }
 
         public async Task<ImagenResponseDto> ObtenerImagenAsync(string key)
