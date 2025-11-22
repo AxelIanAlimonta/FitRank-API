@@ -4,6 +4,7 @@ using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
+using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
 using FitRank_API.Application.DTOs.AdministradorDTOs;
 using FitRank_API.Application.DTOs.Asistencia;
@@ -30,14 +31,18 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly EliminarAdministradorCasoDeUso _eliminarAdministradorCasoDeUso;
         private readonly ValidarQrCasoDeUso _validarQrCasoDeUso;
         private readonly ObtenerAdministradorCasoDeUso obtenerAdministradorCasoDeUso;
- 
-        public AdminController(AgregarInvitacionCasoDeUso agregarInvitacionCasoDeUso,
+        private readonly BorrarSocioCompletoCasoDeUso _borrarSocioCompletoCasoDeUso;
+
+        public AdminController(
+            AgregarInvitacionCasoDeUso agregarInvitacionCasoDeUso,
             FallbackEfectivoCasoDeUso fallbackEfectivoCasoDeUso,
             EnviarEmailQrCasoDeUso enviarEmailQrCasoDeUso,
             AgregarAdministradorCasoDeUso agregarAdministradorCasoDeUso,
             EliminarAdministradorCasoDeUso eliminarAdministradorCasoDeUso,
             ValidarQrCasoDeUso validarQrCasoDeUso,
-            ObtenerAdministradorCasoDeUso obtenerAdministradorCasoDeUso)
+            ObtenerAdministradorCasoDeUso obtenerAdministradorCasoDeUso,
+            BorrarSocioCompletoCasoDeUso borrarSocioCompletoCasoDeUso
+            )
         {
             _agregarInvitacionCasoDeUso = agregarInvitacionCasoDeUso;
             _fallbackEfectivoCasoDeUso = fallbackEfectivoCasoDeUso;
@@ -46,7 +51,16 @@ namespace FitRank_API.Presentacion.Controllers
             _eliminarAdministradorCasoDeUso = eliminarAdministradorCasoDeUso;
             _validarQrCasoDeUso = validarQrCasoDeUso;
             this.obtenerAdministradorCasoDeUso = obtenerAdministradorCasoDeUso;
+            _borrarSocioCompletoCasoDeUso = borrarSocioCompletoCasoDeUso;
         }
+
+
+
+
+
+
+
+
 
 
         [HttpPost("generar-invitacion")]
@@ -149,6 +163,13 @@ namespace FitRank_API.Presentacion.Controllers
         {
             var result = await obtenerAdministradorCasoDeUso.Ejecutar();
             return Ok(result);
+        }
+
+        [HttpDelete("borrar-completo/{usuarioId}")]
+        public async Task<IActionResult> BorrarCompleto(long usuarioId)
+        {
+            var resultado = await _borrarSocioCompletoCasoDeUso.Ejecutar(usuarioId);
+            return Ok(resultado);
         }
 
     }

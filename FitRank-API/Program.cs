@@ -56,6 +56,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Amazon.S3;
 using Amazon.Runtime;
+using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
 
 
 
@@ -275,6 +276,7 @@ builder.Services.AddScoped<FallbackEfectivoCasoDeUso>();
 builder.Services.AddScoped<AgregarInvitacionCasoDeUso>();
 builder.Services.AddScoped<AgregarAdministradorCasoDeUso>();
 builder.Services.AddScoped<ObtenerAdministradorCasoDeUso>();
+builder.Services.AddScoped<BorrarSocioCompletoCasoDeUso>();
 
 builder.Services.AddScoped<IMedidaCorporalRepositorio, MedidaCorporalRepositorioImpl>();
 builder.Services.AddScoped<AgregarMedidaCorporalCasoDeUso>();

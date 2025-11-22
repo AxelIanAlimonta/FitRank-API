@@ -48,7 +48,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
             // ✔ PNG compatible con Linux — sin System.Drawing
             var pngQr = new PngByteQRCode(qrCodeData);
-            byte[] qrBytes = pngQr.GetGraphic(20);
+            byte[] qrBytes = pngQr.GetGraphic(60);
 
             string base64 = Convert.ToBase64String(qrBytes);
             return $"data:image/png;base64,{base64}";
@@ -87,7 +87,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
 
             var pngQr = new PngByteQRCode(qrCodeData);
-            byte[] qrBytes = pngQr.GetGraphic(20);
+            byte[] qrBytes = pngQr.GetGraphic(60);
 
             string base64 = Convert.ToBase64String(qrBytes);
             return $"data:image/png;base64,{base64}";
@@ -103,7 +103,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
             // ✔ PNG compatible Linux
             var pngQr = new PngByteQRCode(qrCodeData);
-            byte[] qrBytes = pngQr.GetGraphic(20);
+            byte[] qrBytes = pngQr.GetGraphic(60);
 
             string base64 = Convert.ToBase64String(qrBytes);
             return $"data:image/png;base64,{base64}";
