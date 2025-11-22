@@ -18,4 +18,6 @@ public interface ISocioRepositorio
     Task<bool> CambiarParticipacionRankingAsync(long socioId, bool participa);
     Task<IEnumerable<Socio>> ObtenerSociosParaRankingAsync(long gimnasioId);
     Task<List<SocioRankingDto>> ObtenerRankingGeneralAsync(long gimnasioId, int cantidad);
+
+    Task<Socio?> ObtenerSocioYUsuarioPorIdAsync(long socioId);
 }

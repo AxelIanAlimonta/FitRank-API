@@ -15,10 +15,10 @@ namespace FitRank_API.Application.DTOs.SocioDTOs;
         public string NombreUsuario { get; set; } = string.Empty;
         public string Sexo { get; set; } = string.Empty;
         public DateTime? CuotaPagadaHasta { get; set; }
-        public string? FotoUrl { get; set; } = string.Empty; 
+        public string? FotoUrl { get; set; } = string.Empty;
+    public DateTime FechaNacimiento { get; set; }
 
-        
-        public long? GimnasioId { get; set; }
+    public long? GimnasioId { get; set; }
         public string? GimnasioNombre { get; set; }
         public DateTime FechaRegistro { get; set; }
         public double Altura { get; set; }

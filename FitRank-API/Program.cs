@@ -105,6 +105,10 @@ builder.Services.AddScoped<ObtenerSocioPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarSocioCasoDeUso>();
 builder.Services.AddScoped<EliminarSocioCasoDeUso>();
 builder.Services.AddScoped<CambiarParticipacionRankingCasoDeUso>();
+builder.Services.AddScoped<ObtenerSocioConMedidasCasoDeUso>();
+builder.Services.AddScoped<EditarPerfilSocioCasoDeUso>();
+
+
 
 builder.Services.AddScoped<IGrupoMuscularRepositorio, GrupoMuscularRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodosLosGruposMuscularesCasoDeUso>();

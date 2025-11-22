@@ -96,8 +96,8 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpGet("historial")]
         public async Task<IActionResult> ObtenerPorSocio([FromQuery] long? socioId = null)
         {
-            var rol = User.FindFirst("rol")?.Value;
-            var usuarioId = long.Parse(User.FindFirst("id")!.Value);
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+            var usuarioId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             if (rol == "Socio")
                 socioId = usuarioId;

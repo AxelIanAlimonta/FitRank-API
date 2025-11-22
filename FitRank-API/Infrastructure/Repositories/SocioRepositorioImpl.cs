@@ -150,4 +150,12 @@ public class SocioRepositorioImpl : ISocioRepositorio
 
         return query;
     }
+
+    public async Task<Socio?> ObtenerSocioYUsuarioPorIdAsync(long socioId)
+    {
+        return await _context.Socios
+            .Include(s => s.Gimnasio)
+            .FirstOrDefaultAsync(s => s.Id == socioId);
+    }
+
 }
