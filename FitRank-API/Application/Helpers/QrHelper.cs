@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using QRCoder;
-using System.Drawing.Imaging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,6 +17,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _config = config;
         }
 
+       
         public string GenerarQrToken(FitRank_API.Domain.Entities.Invitacion invitacion)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -40,22 +40,21 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+     
         public async Task<string> GenerarQrImage(string data)
         {
-            using var qrGenerator = new QRCodeGenerator();
-            using var qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
-            using var qrCode = new QRCode(qrCodeData);
-            using var qrBitmap = qrCode.GetGraphic(20);
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
 
-            using var ms = new MemoryStream();
-            qrBitmap.Save(ms, ImageFormat.Png);
-            var base64 = Convert.ToBase64String(ms.ToArray());
+            // ✔ PNG compatible con Linux — sin System.Drawing
+            var pngQr = new PngByteQRCode(qrCodeData);
+            byte[] qrBytes = pngQr.GetGraphic(20);
 
+            string base64 = Convert.ToBase64String(qrBytes);
             return $"data:image/png;base64,{base64}";
         }
 
-
-
+    
         public string GenerarQrDePaseJWT(Socio socio, long gimnasioId)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["QrSecret"]));
@@ -63,10 +62,11 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
             var claims = new[]
             {
-        new Claim("userId", socio.Id.ToString()),
-        new Claim("gymId", gimnasioId.ToString()),
-        new Claim("validoHasta", socio.CuotaPagadaHasta?.ToString("O") ?? DateTime.UtcNow.AddDays(30).ToString("O"))
-    };
+                new Claim("userId", socio.Id.ToString()),
+                new Claim("gymId", gimnasioId.ToString()),
+                new Claim("validoHasta",
+                    socio.CuotaPagadaHasta?.ToString("O") ?? DateTime.UtcNow.AddDays(30).ToString("O"))
+            };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
@@ -79,40 +79,35 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
-
+      
         public string GenerarQrDeMercadoPago(string linkPago)
         {
-            using var qrGenerator = new QRCodeGenerator();
-            using var qrCodeData = qrGenerator.CreateQrCode(linkPago, QRCodeGenerator.ECCLevel.Q);
-            using var qrCode = new QRCode(qrCodeData);
-            using var qrBitmap = qrCode.GetGraphic(20);
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(linkPago, QRCodeGenerator.ECCLevel.Q);
 
-            using var ms = new MemoryStream();
-            qrBitmap.Save(ms, ImageFormat.Png);
 
-            var base64 = Convert.ToBase64String(ms.ToArray());
+            var pngQr = new PngByteQRCode(qrCodeData);
+            byte[] qrBytes = pngQr.GetGraphic(20);
+
+            string base64 = Convert.ToBase64String(qrBytes);
             return $"data:image/png;base64,{base64}";
         }
 
+    
         public async Task<string> GenerarQrDeMaquina(long maquinaId)
         {
-
             string url = $"{_config["BaseUrls:Frontend"]}/maquina/{maquinaId}";
 
-            using var qrGenerator = new QRCodeGenerator();
-            using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
-            using var qrCode = new QRCode(qrCodeData);
-            using var qrBitmap = qrCode.GetGraphic(20);
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
-            using var ms = new MemoryStream();
-            qrBitmap.Save(ms, ImageFormat.Png);
-            string base64 = Convert.ToBase64String(ms.ToArray());
+            // ✔ PNG compatible Linux
+            var pngQr = new PngByteQRCode(qrCodeData);
+            byte[] qrBytes = pngQr.GetGraphic(20);
 
+            string base64 = Convert.ToBase64String(qrBytes);
             return $"data:image/png;base64,{base64}";
         }
-
-
-
     }
 }
+
