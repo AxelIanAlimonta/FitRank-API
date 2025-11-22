@@ -54,6 +54,8 @@ public class ObtenerEjerciciosCasoDeUsoTests
         resultado.Should().NotBeNull();
         resultado!.Id.Should().Be(ejercicioId);
         resultado.Nombre.Should().Be("Nuevo Ejercicio");
+        resultado.NombreMaquina.Should().BeNull();
+        resultado.NombreGrupoMuscular.Should().BeNull();
     }
 
     [Fact]

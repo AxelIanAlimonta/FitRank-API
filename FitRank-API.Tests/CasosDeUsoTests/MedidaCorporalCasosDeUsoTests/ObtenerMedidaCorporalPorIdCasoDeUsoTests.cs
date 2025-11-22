@@ -60,6 +60,8 @@ public class ObtenerMedidaCorporalPorIdCasoDeUsoTests
         resultado.BrazoIzquierdoCm.Should().Be(medidaCorporalExistente.BrazoIzquierdoCm);
         resultado.CaderaCm.Should().Be(medidaCorporalExistente.CaderaCm);
         resultado.CinturaCm.Should().Be(medidaCorporalExistente.CinturaCm);
+        resultado.SocioId.Should().Be(medidaCorporalExistente.SocioId);
+        resultado.Fecha.Should().Be(medidaCorporalExistente.Fecha);
     }
 
     [Fact]

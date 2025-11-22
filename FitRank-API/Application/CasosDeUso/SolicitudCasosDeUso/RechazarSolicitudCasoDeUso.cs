@@ -22,7 +22,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
             solicitud.MensajeProfesor = mensaje;
             solicitud.FechaResolucion = DateTime.UtcNow;
 
-            await _repositorio.GuardarCambiosAsync();
+            await _repositorio.ActualizarAsync(solicitud);
             return true;
         }
     }

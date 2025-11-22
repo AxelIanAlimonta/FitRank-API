@@ -19,7 +19,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
 
             solicitud.Estado = EstadoSolicitud.TomadaPorProfesor;
             solicitud.ProfesorId = profesorId;
-            await _repositorio.GuardarCambiosAsync();
+            await _repositorio.ActualizarAsync(solicitud);
             return true;
         }
     }

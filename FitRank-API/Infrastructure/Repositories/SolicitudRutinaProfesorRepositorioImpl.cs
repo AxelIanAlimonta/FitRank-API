@@ -102,6 +102,7 @@ namespace FitRank_API.Infrastructure.Repositories
                 {
                     Id = s.Id,
                     SocioId = s.SocioId,
+                    NombreSocio = s.NombreSocio, // <-- Agrega esta línea
                     NombreProfesor = s.Profesor != null ? $"{s.Profesor.Nombre} {s.Profesor.Apellido}" : null,
                     Estado = s.Estado.ToString(),
                     FechaSolicitud = s.FechaSolicitud,
@@ -120,62 +121,54 @@ namespace FitRank_API.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task GuardarCambiosAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
-
         public async Task ActualizarAsync(SolicitudRutinaProfesor solicitud)
         {
-            _context.SolicitudesRutinaProfesor.Update(solicitud);
+            var existente = await _context.SolicitudesRutinaProfesor.FindAsync(solicitud.Id);
+            if (existente != null)
+            {
+                _context.Entry(existente).CurrentValues.SetValues(solicitud);
+            }
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(Profesor? topSolicitado, Profesor? topPendientes, Profesor? topCumplidor, (Profesor? profesor, double promedio)? topValorado)>
-    ObtenerEstadisticasProfesoresAsync()
+        //obtener pofesor mas solicitado
+        public async Task<Profesor?> ObtenerProfesorMasSolicitadoAsync()
         {
-            var solicitudes = await _context.SolicitudesRutinaProfesor
-                .Include(s => s.Profesor)
-                .Include(s => s.Rutina)
-                    .ThenInclude(r => r.Valoraciones)
-                .ToListAsync();
-
-            if (!solicitudes.Any())
-                return (null, null, null, null);
-
-            // 📨 Profesor más solicitado
-            var topSolicitadoId = solicitudes
+            return await _context.SolicitudesRutinaProfesor
                 .Where(s => s.ProfesorId.HasValue)
-                .GroupBy(s => s.ProfesorId)
+                .GroupBy(s => s.Profesor)
                 .OrderByDescending(g => g.Count())
                 .Select(g => g.Key)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+        }
 
-            var topSolicitado = solicitudes.FirstOrDefault(s => s.ProfesorId == topSolicitadoId)?.Profesor;
-
-            // ⏳ Profesor con más pendientes
-            var topPendienteId = solicitudes
+        //obtener profesor con mas pendientes
+        public async Task<Profesor?> ObtenerProfesorConMasPendientesAsync()
+        {
+            return await _context.SolicitudesRutinaProfesor
                 .Where(s => s.Estado == EstadoSolicitud.Pendiente && s.ProfesorId.HasValue)
-                .GroupBy(s => s.ProfesorId)
+                .GroupBy(s => s.Profesor)
                 .OrderByDescending(g => g.Count())
                 .Select(g => g.Key)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+        }
 
-            var topPendientes = solicitudes.FirstOrDefault(s => s.ProfesorId == topPendienteId)?.Profesor;
-
-            // ✅ Profesor más cumplidor (más solicitudes resueltas)
-            var topCumplidorId = solicitudes
-                .Where(s => (s.Estado == EstadoSolicitud.TomadaPorProfesor || s.Estado == EstadoSolicitud.Rechazada) && s.ProfesorId.HasValue)
-                .GroupBy(s => s.ProfesorId)
+        //obtener Profesor más cumplidor (más solicitudes resueltas)
+        public async Task<Profesor?> ObtenerProfesorMasCumplidorAsync()
+        {
+            return await _context.SolicitudesRutinaProfesor
+                .Where(s => s.Estado == EstadoSolicitud.TomadaPorProfesor && s.ProfesorId.HasValue)
+                .GroupBy(s => s.Profesor)
                 .OrderByDescending(g => g.Count())
                 .Select(g => g.Key)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+        }
 
-            var topCumplidor = solicitudes.FirstOrDefault(s => s.ProfesorId == topCumplidorId)?.Profesor;
-
-            // 🌟 Profesor con mejor promedio de valoraciones
-            var valoraciones = solicitudes
-                .Where(s => s.Rutina != null && s.Rutina.Valoraciones.Any())
+        //obtener Profesor con mejor promedio de valoraciones y el promedio
+        public async Task<(Profesor?, double?)?> ObtenerProfesorMejorPromedioValoracionesAsync()
+        {
+            var valoraciones = await _context.SolicitudesRutinaProfesor
+                .Where(s => s.Rutina != null && s.Rutina.Valoraciones.Any() && s.ProfesorId.HasValue)
                 .GroupBy(s => s.Profesor)
                 .Select(g => new
                 {
@@ -183,16 +176,12 @@ namespace FitRank_API.Infrastructure.Repositories
                     Promedio = g.Average(x => x.Rutina!.Valoraciones.Average(v => v.Puntaje))
                 })
                 .OrderByDescending(x => x.Promedio)
-                .FirstOrDefault();
-
-            return (
-                topSolicitado,
-                topPendientes,
-                topCumplidor,
-                valoraciones != null ? (valoraciones.Profesor, Math.Round(valoraciones.Promedio, 1)) : null
-            );
+                .FirstOrDefaultAsync();
+            if (valoraciones != null)
+            {
+                return (valoraciones.Profesor, Math.Round(valoraciones.Promedio, 1));
+            }
+            return (null, null);
         }
-
-
     }
 }
