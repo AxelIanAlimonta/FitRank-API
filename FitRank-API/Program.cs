@@ -49,7 +49,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SendGrid;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -57,6 +56,8 @@ using System.Text.Json.Serialization;
 using Amazon.S3;
 using Amazon.Runtime;
 using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.LogroGimnasioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso;
 
 
 
@@ -189,18 +190,21 @@ builder.Services.AddScoped<ObtenerRankingPorGrupoMuscularCasoDeUso>();
 
 
 builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();
+builder.Services.AddScoped<ILogroGimnasioRepositorio, LogroGimnasioRepositorio>();
+builder.Services.AddScoped<ILogroSocioRepositorio, LogroSocioRepositorio>();
 builder.Services.AddScoped<ObtenerLogrosCasoDeUso>();
 builder.Services.AddScoped<ObtenerLogroPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarLogroCasoDeUso>();
 builder.Services.AddScoped<EliminarLogroCasoDeUso>();
 builder.Services.AddScoped<ActualizarLogroCasoDeUso>();
+builder.Services.AddScoped<OtorgarLogroPorNombreClaveCasoDeUso>();
 
-builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();
-builder.Services.AddScoped<ObtenerGimnasiosCasoDeUso>();
-builder.Services.AddScoped<ObtenerGimnasioPorIdCasoDeUso>();
-builder.Services.AddScoped<AgregarGimnasioCasoDeUso>();
-builder.Services.AddScoped<EliminarGimnasioCasoDeUso>();
-builder.Services.AddScoped<ActualizarGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerLogrosGimnasioCasoDeUso>();
+builder.Services.AddScoped<ActualizarLogroGimnasioCasoDeUso>();
+
+builder.Services.AddScoped<ObtenerLogrosSocioCasoDeUso>();
+builder.Services.AddScoped<ObtenerLogrosDisponiblesPorSocioCasoDeUso>();
+
 
 builder.Services.AddScoped<IRankingRepositorio, RankingRepositorioImpl>();
 builder.Services.AddScoped<ObtenerRankingGeneralCasoDeUso>();
@@ -220,6 +224,12 @@ builder.Services.AddScoped<GenerarTokenCasoDeUso>();
 
 
 builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorioImpl>();
+builder.Services.AddScoped<ObtenerGimnasiosCasoDeUso>();
+builder.Services.AddScoped<ObtenerGimnasioPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarGimnasioCasoDeUso>();
+builder.Services.AddScoped<EliminarGimnasioCasoDeUso>();
+builder.Services.AddScoped<ActualizarGimnasioCasoDeUso>();
+
 builder.Services.AddScoped<ActualizarPersonalizacionGimnasioCasoDeUso>();
 
 

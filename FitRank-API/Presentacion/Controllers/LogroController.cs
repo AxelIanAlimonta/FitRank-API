@@ -14,17 +14,20 @@ public class LogroController : ControllerBase
     private readonly ActualizarLogroCasoDeUso _actualizarLogroCasoDeUso;
     private readonly EliminarLogroCasoDeUso _eliminarLogroCasoDeUso;
     private readonly ObtenerLogroPorIdCasoDeUso _obtenerLogroPorIdCasoDeUso;
+    private readonly OtorgarLogroPorNombreClaveCasoDeUso _otorgarLogroPorNombreClaveCasoDeUso;
     public LogroController(ObtenerLogrosCasoDeUso obtenerLogrosCasoDeUso,
         AgregarLogroCasoDeUso agregarLogroCasoDeUso,
         ActualizarLogroCasoDeUso actualizarLogroCasoDeUso,
         EliminarLogroCasoDeUso eliminarLogroCasoDeUso,
-        ObtenerLogroPorIdCasoDeUso obtenerLogroPorIdCasoDeUso)
+        ObtenerLogroPorIdCasoDeUso obtenerLogroPorIdCasoDeUso,
+        OtorgarLogroPorNombreClaveCasoDeUso otorgarLogroPorNombreClaveCasoDeUso)
     {
         _obtenerLogrosCasoDeUso = obtenerLogrosCasoDeUso;
         _agregarLogroCasoDeUso = agregarLogroCasoDeUso;
         _actualizarLogroCasoDeUso = actualizarLogroCasoDeUso;
         _eliminarLogroCasoDeUso = eliminarLogroCasoDeUso;
         _obtenerLogroPorIdCasoDeUso = obtenerLogroPorIdCasoDeUso;
+        _otorgarLogroPorNombreClaveCasoDeUso = otorgarLogroPorNombreClaveCasoDeUso;
     }
 
     [HttpGet]
@@ -37,7 +40,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, ex.ToString());
         }
     }
 
@@ -55,7 +58,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, ex.ToString());
         }
     }
 
@@ -77,7 +80,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, ex.ToString());
         }
     }
 
@@ -109,7 +112,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, ex.ToString());
 
         }
     }
@@ -128,7 +131,18 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, ex.ToString());
         }
+    }
+
+    //Para debug
+    [HttpPost("otorgar")]
+    public async Task<ActionResult<LogroOtorgadoDTO>> Otorgar([FromBody] OtorgarLogroPorNombreClaveDTO dto)
+    {
+        var resultado = await _otorgarLogroPorNombreClaveCasoDeUso.Ejecutar(dto);
+        if (!resultado.Otorgado)
+            return BadRequest(resultado);
+
+        return Ok(resultado);
     }
 }

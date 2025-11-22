@@ -9,4 +9,7 @@ public interface ILogroRepositorio
     Task<Logro> AgregarLogro(Logro logro);
     Task<Logro?> ActualizarLogro(Logro logro);
     Task<bool> EliminarLogro(long id);
+
+    Task<Logro?> ObtenerPorNombreClaveAsync(string nombreClave);
+    Task<bool> ExisteNombreClaveAsync(string nombreClave);
 }

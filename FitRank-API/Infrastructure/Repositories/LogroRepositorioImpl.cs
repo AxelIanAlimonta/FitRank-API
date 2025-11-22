@@ -51,8 +51,6 @@ public class LogroRepositorioImpl : ILogroRepositorio
         
     }
 
-
-
     public async Task<bool> EliminarLogro(long id)
     {
         var logro = await _context.Logros.FindAsync(id);
@@ -63,5 +61,18 @@ public class LogroRepositorioImpl : ILogroRepositorio
         _context.Logros.Remove(logro);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<Logro?> ObtenerPorNombreClaveAsync(string nombreClave)
+    {
+        return await _context.Logros
+            .AsNoTracking()
+            .FirstOrDefaultAsync(l => l.NombreClave == nombreClave);
+    }
+
+    public async Task<bool> ExisteNombreClaveAsync(string nombreClave)
+    {
+        return await _context.Logros
+            .AnyAsync(l => l.NombreClave == nombreClave);
     }
 }
