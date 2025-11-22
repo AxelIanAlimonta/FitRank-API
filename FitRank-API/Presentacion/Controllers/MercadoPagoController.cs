@@ -39,7 +39,6 @@ namespace FitRank_API.Presentacion.Controllers
                 return BadRequest(new { mensaje = "Error al crear preferencia", detalle = ex.Message });
             }
         }
-
         [HttpPost("webhook")]
         public async Task<IActionResult> Webhook()
         {
@@ -57,7 +56,14 @@ namespace FitRank_API.Presentacion.Controllers
                     id = Request.Form["id"];
                 }
 
-                // ✔ 2) Intentar leer JSON si form está vacío
+                // ✔ 2) Intentar leer QUERYSTRING (MUY IMPORTANTE)
+                if (string.IsNullOrEmpty(topic))
+                    topic = Request.Query["topic"];
+
+                if (string.IsNullOrEmpty(id))
+                    id = Request.Query["id"];
+
+                // ✔ 3) Intentar leer JSON si todo lo anterior vino vacío
                 if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(id))
                 {
                     using var reader = new StreamReader(Request.Body);
@@ -95,6 +101,7 @@ namespace FitRank_API.Presentacion.Controllers
                 return Ok();
             }
         }
+
 
 
 
