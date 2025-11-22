@@ -2,7 +2,6 @@
 {
     public class AgregarMedidaCorporalDTO
     {
-        public long Id { get; set; }
         public long SocioId { get; set; }
         public DateTime Fecha { get; set; } = DateTime.UtcNow;
 
