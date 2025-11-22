@@ -230,7 +230,8 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 MetodoPago = dto.MetodoPago ?? "Efectivo",
                 CreadaEn = DateTime.Now,
                 ExpiraEn = DateTime.Now.AddHours(24),
-                Estado = "Pagado",
+                Estado = dto.MetodoPago == "Efectivo" ? "Pagado" : "Pendiente",
+
                 CuotaPagadaHasta = dto.Periodo == "Yearly"
                     ? DateTime.Now.AddYears(1)
                     : DateTime.Now.AddMonths(1)

@@ -45,18 +45,43 @@ namespace FitRank_API.Presentacion.Controllers
         {
             try
             {
-                await _procesarWebhookCasoDeUso.Ejecutar(body);
+                Console.WriteLine("== WEBHOOK RECIBIDO ==");
+                Console.WriteLine(body.ToString());
+
+                string? tipo = (string?)body["type"];
+                string? action = (string?)body["action"];
+
+                string? id =
+                    (string?)body["data"]?["id"] ??
+                    (string?)body["data_id"] ??
+                    (string?)body["id"];
+
+                Console.WriteLine($"type={tipo}, action={action}, id={id}");
+
+                if (string.IsNullOrEmpty(id))
+                    return Ok();
+
+                
+                if (tipo?.StartsWith("payment") == true ||
+                    action?.StartsWith("payment") == true)
+                {
+                    await _procesarWebhookCasoDeUso.Ejecutar(body);
+                }
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR WEBHOOK: " + ex.Message);
-                return Ok(); 
+                Console.WriteLine("ERROR EN WEBHOOK: " + ex);
+                return Ok();
             }
         }
 
     }
 
+
 }
+
+
     
 
