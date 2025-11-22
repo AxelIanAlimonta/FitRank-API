@@ -528,12 +528,15 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAngularDev");
+
+app.UseRouting();  
+
+app.UseCors("AllowAngularDev"); 
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllers();
 app.MapHub<NotificacionesHub>("/hubs/notificaciones");
+
 app.Run();

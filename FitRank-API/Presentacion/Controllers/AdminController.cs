@@ -150,5 +150,6 @@ namespace FitRank_API.Presentacion.Controllers
             var result = await obtenerAdministradorCasoDeUso.Ejecutar();
             return Ok(result);
         }
+
     }
 }
