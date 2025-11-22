@@ -40,7 +40,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.ToString());
+            return StatusCode(500, "Ocurrió un error en el servidor.");
         }
     }
 
@@ -58,7 +58,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.ToString());
+            return StatusCode(500, "Ocurrió un error en el servidor.");
         }
     }
 
@@ -80,7 +80,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.ToString());
+            return StatusCode(500, "Ocurrió un error en el servidor.");
         }
     }
 
@@ -112,7 +112,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.ToString());
+            return StatusCode(500, "Ocurrió un error en el servidor.");
 
         }
     }
@@ -131,7 +131,7 @@ public class LogroController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.ToString());
+            return StatusCode(500, "Ocurrió un error en el servidor.");
         }
     }
 

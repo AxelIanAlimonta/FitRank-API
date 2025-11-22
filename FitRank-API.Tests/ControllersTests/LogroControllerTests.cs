@@ -31,6 +31,8 @@ public class LogroControllerTests
     public LogroControllerTests()
     {
         var mockRepositorio = new Mock<ILogroRepositorio>();
+        var mockLogroGimnasioRepo = new Mock<ILogroGimnasioRepositorio>();
+        var mockLogroSocioRepo = new Mock<ILogroSocioRepositorio>();
         var mockMapper = new Mock<IMapper>();
 
         _mockActualizar = new Mock<ActualizarLogroCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
@@ -38,7 +40,7 @@ public class LogroControllerTests
         _mockEliminar = new Mock<EliminarLogroCasoDeUso>(mockRepositorio.Object);
         _mockObtenerPorId = new Mock<ObtenerLogroPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerLogrosCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        _mockOtorgarLogroPorNombreClave = new Mock<OtorgarLogroPorNombreClaveCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockOtorgarLogroPorNombreClave = new Mock<OtorgarLogroPorNombreClaveCasoDeUso>(mockRepositorio.Object, mockLogroGimnasioRepo.Object, mockLogroSocioRepo.Object, mockMapper.Object);
 
         _controller = new LogroController(
             _mockObtenerTodos.Object,
