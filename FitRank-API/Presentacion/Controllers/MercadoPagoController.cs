@@ -41,41 +41,62 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook([FromBody] JObject body)
+        public async Task<IActionResult> Webhook()
         {
             try
             {
-                Console.WriteLine("== WEBHOOK RECIBIDO ==");
-                Console.WriteLine(body.ToString());
+                Console.WriteLine("====== WEBHOOK RECIBIDO ======");
 
-                string? tipo = (string?)body["type"];
-                string? action = (string?)body["action"];
+                string topic = "";
+                string id = "";
 
-                string? id =
-                    (string?)body["data"]?["id"] ??
-                    (string?)body["data_id"] ??
-                    (string?)body["id"];
-
-                Console.WriteLine($"type={tipo}, action={action}, id={id}");
-
-                if (string.IsNullOrEmpty(id))
-                    return Ok();
-
-                
-                if (tipo?.StartsWith("payment") == true ||
-                    action?.StartsWith("payment") == true)
+                // ✔ 1) Intentar leer FORM-DATA
+                if (Request.HasFormContentType)
                 {
-                    await _procesarWebhookCasoDeUso.Ejecutar(body);
+                    topic = Request.Form["topic"];
+                    id = Request.Form["id"];
+                }
+
+                // ✔ 2) Intentar leer JSON si form está vacío
+                if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(id))
+                {
+                    using var reader = new StreamReader(Request.Body);
+                    var bodyString = await reader.ReadToEndAsync();
+
+                    if (!string.IsNullOrWhiteSpace(bodyString))
+                    {
+                        dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(bodyString);
+
+                        topic = topic ?? json?.type ?? json?.topic;
+                        id = id ?? json?.data?.id?.ToString() ?? json?.id?.ToString();
+                    }
+                }
+
+                Console.WriteLine($"topic={topic}, id={id}");
+                Console.WriteLine("================================");
+
+                if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(id))
+                {
+                    Console.WriteLine("⚠ Webhook sin datos válidos");
+                    return Ok();
+                }
+
+                if (topic == "payment")
+                {
+                    long paymentId = long.Parse(id);
+                    await _procesarWebhookCasoDeUso.Ejecutar(paymentId);
                 }
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR EN WEBHOOK: " + ex);
+                Console.WriteLine("❌ ERROR EN WEBHOOK: " + ex.Message);
                 return Ok();
             }
         }
+
+
 
     }
 

@@ -31,35 +31,46 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
             _config = config;
         }
 
-        public async Task Ejecutar(dynamic body)
+        // ⚠️ Ahora recibe un long, NO el body
+        public async Task Ejecutar(long paymentId)
         {
             try
             {
-                // MP envía múltiples notificaciones. Esta es la que importa.
-                if ((string)body?.type != "payment")
-                    return;
-
-                long paymentId = long.Parse(body.data.id.ToString());
-
-                // SDK MP
                 MercadoPagoConfig.AccessToken = _config["MercadoPago:AccessToken"];
+
                 var client = new PaymentClient();
                 Payment payment = await client.GetAsync(paymentId);
 
-                if (payment.Status != "approved")
+                if (payment == null)
+                {
+                    Console.WriteLine("⚠ Pago no encontrado en MP.");
                     return;
+                }
 
-                // ⭐ InvitacionId que pusiste en ExternalReference cuando creaste la preferencia
+                if (payment.Status != "approved")
+                {
+                    Console.WriteLine("⚠ Pago recibido pero no aprobado.");
+                    return;
+                }
+
+                // 🎯 Recuperamos la invitación asociada
                 long invitacionId = long.Parse(payment.ExternalReference);
-
                 var invitacion = await _invitacionRepo.ObtenerPorIdAsync(invitacionId);
-                if (invitacion == null) return;
 
-                // Socio ya fue creado en AgregarInvitacionCasoDeUso
+                if (invitacion == null)
+                {
+                    Console.WriteLine($"❌ Invitación {invitacionId} no encontrada.");
+                    return;
+                }
+
                 var socio = await _usuarioRepo.ObtenerPorIdAsync(invitacion.UsuarioId ?? 0);
-                if (socio == null) return;
+                if (socio == null)
+                {
+                    Console.WriteLine("❌ Socio no encontrado.");
+                    return;
+                }
 
-                // Registrar ingreso
+                // 💰 Registrar ingreso
                 await _agregarIngresoCaso.Ejecutar(new AgregarIngresoDTO
                 {
                     GimnasioId = invitacion.GimnasioId,
@@ -69,7 +80,7 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
                     Observaciones = "Pago acreditado por Mercado Pago"
                 });
 
-                // ⭐⭐⭐ REUTILIZAMOS TU MÉTODO REAL PARA ENVIAR QR ⭐⭐⭐
+                // 📩 Reenviar QR y activación
                 await _agregarInvitacionCaso.ProcesarInvitacionQrAsync(
                     new GenerarInvitacionDTO
                     {
@@ -78,18 +89,20 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
                         Email = socio.Email,
                         Telefono = socio.Telefono
                     },
-                    socio.TokenRecuperacion,   // token ya generado cuando se creó el socio
+                    socio.TokenRecuperacion,
                     invitacion
                 );
 
-                // Actualizamos el estado
+                // ✔ Actualizar estado
                 invitacion.Estado = "Pagado";
+                invitacion.MpPaymentId = paymentId.ToString();
                 await _invitacionRepo.ActualizarAsync(invitacion);
+
+                Console.WriteLine("💚 PAGO PROCESADO OK");
             }
-            catch
+            catch (Exception ex)
             {
-                // MP EXIGE 200 OK SIEMPRE
-                return;
+                Console.WriteLine("❌ Error procesando pago MP: " + ex);
             }
         }
     }
