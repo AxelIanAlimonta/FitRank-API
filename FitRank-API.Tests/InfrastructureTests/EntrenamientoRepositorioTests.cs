@@ -88,7 +88,7 @@ public class EntrenamientoRepositorioTests
         await context.SaveChangesAsync();
 
         // Act
-        var entrenamientos = await repositorio.ObtenerPorSocioAsync(socio.Id);
+        var entrenamientos = await repositorio.ObtenerTodosAsync();
 
         // Assert con fluent assertions
         entrenamientos.Should().HaveCount(2);
@@ -263,4 +263,123 @@ public class EntrenamientoRepositorioTests
         // Assert con fluent assertions
         resultado.Should().BeFalse();
     }
+
+
+    //obtener socio por id deberia retornar socio correctamente
+    [Fact]
+    public async Task ObtenerSocioPorId_DebeRetornarSocioCorrectamente()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerSocioPorId_DebeRetornarSocioCorrectamente");
+        using var context = new FitRankDbContext(options);
+        var repositorio = new EntrenamientoRepositorioImpl(context);
+        var socio = await SeedData(context);
+        // Act
+        var socioObtenido = await repositorio.ObtenerSocioPorIdAsync(socio.Id);
+        // Assert con fluent assertions
+        socioObtenido.Should().NotBeNull();
+        socioObtenido!.Id.Should().Be(socio.Id);
+        socioObtenido.Nombre.Should().Be(socio.Nombre);
+        socioObtenido.Email.Should().Be(socio.Email);
+    }
+
+    //obtener entrenamiento activo por socio id deberia retornar entrenamiento correctamente
+    [Fact]
+    public async Task ObtenerEntrenamientoActivoPorSocioId_DebeRetornarEntrenamientoCorrectamente()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerEntrenamientoActivoPorSocioId_DebeRetornarEntrenamientoCorrectamente");
+        using var context = new FitRankDbContext(options);
+        var repositorio = new EntrenamientoRepositorioImpl(context);
+        var socio = await SeedData(context);
+        var entrenamiento = new Entrenamiento
+        {
+            SocioId = socio.Id,
+            Fecha = DateTime.UtcNow,
+            Duracion = TimeSpan.FromHours(1),
+        };
+        context.Entrenamientos.Add(entrenamiento);
+        await context.SaveChangesAsync();
+        // Act
+        var entrenamientoActivo = await repositorio.ObtenerEntrenamientoActivoPorSocioIdAsync(socio.Id);
+        // Assert con fluent assertions
+        entrenamientoActivo.Should().NotBeNull();
+        entrenamientoActivo!.Id.Should().Be(entrenamiento.Id);
+    }
+
+    //obtener historial completo de entrenamientos por socio id deberia retornar lista correctamente
+    [Fact]
+    public async Task ObtenerHistorialCompletoPorSocioId_DebeRetornarListaCorrectamente()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerHistorialCompletoPorSocioId_DebeRetornarListaCorrectamente");
+        using var context = new FitRankDbContext(options);
+        var repositorio = new EntrenamientoRepositorioImpl(context);
+        var socio = await SeedData(context);
+        var entrenamiento1 = new Entrenamiento
+        {
+            SocioId = socio.Id,
+            Fecha = DateTime.UtcNow,
+            Duracion = TimeSpan.FromHours(1),
+        };
+        var entrenamiento2 = new Entrenamiento
+        {
+            SocioId = socio.Id,
+            Fecha = DateTime.UtcNow.AddDays(-1),
+            Duracion = TimeSpan.FromHours(1),
+        };
+        context.Entrenamientos.AddRange(entrenamiento1, entrenamiento2);
+        await context.SaveChangesAsync();
+        // Act
+        var historial = await repositorio.ObtenerHistorialCompletoPorSocioAsync(socio.Id);
+        // Assert con fluent assertions
+        historial.Should().HaveCount(2);
+        historial.Should().Contain(e => e.Id == entrenamiento1.Id);
+        historial.Should().Contain(e => e.Id == entrenamiento2.Id);
+    }
+
+    //obtener historial por profesor
+    [Fact]
+    public async Task ObtenerHistorialPorProfesor_DebeRetornarListaCorrectamente()
+    {
+        // Arrange
+
+        var options = CreateInMemoryOptions("Ejemplo_AddsActividadCorrectamente");
+        using var context = new FitRankDbContext(options);
+        var repositorio = new EntrenamientoRepositorioImpl(context);
+        var socio = await SeedData(context);
+
+        var profesor = new Profesor { Nombre = "Prof", Apellido = "Test", Email = "prof@test.com", Matricula = "M1", Sueldo = 1000 };
+        context.Profesores.Add(profesor);
+        await context.SaveChangesAsync();
+
+        var rutina = new Rutina { Nombre = "R1", TipoCreacion = "Auto", UsuarioId = profesor.Id };
+        context.Rutinas.Add(rutina);
+        await context.SaveChangesAsync();
+
+        var sesion = new Sesion { Nombre = "S1", Rutina = rutina };
+        context.Sesiones.Add(sesion);
+        await context.SaveChangesAsync();
+
+        var ejercicioAsignado = new EjercicioAsignado { Sesion = sesion };
+        context.EjerciciosAsignados.Add(ejercicioAsignado);
+        await context.SaveChangesAsync();
+
+        var entrenamiento = new Entrenamiento { SocioId = socio.Id, Fecha = DateTime.UtcNow, Duracion = TimeSpan.FromHours(1) };
+        context.Entrenamientos.Add(entrenamiento);
+        await context.SaveChangesAsync();
+
+        var actividad = new Actividad { Entrenamiento = entrenamiento, EjercicioAsignado = ejercicioAsignado };
+        context.Actividades.Add(actividad);
+        await context.SaveChangesAsync();
+        // Act
+        var historial = await repositorio.ObtenerHistorialPorProfesorAsync(profesor.Id, socio.Nombre);
+        // Assert con fluent assertions
+        historial.Should().HaveCount(1);
+        historial.Should().Contain(e => e.Id == entrenamiento.Id);
+        historial.First().Actividades.Should().Contain(a => a.Id == actividad.Id);
+        historial.First().Actividades.First().EjercicioAsignadoId.Should().Be(ejercicioAsignado.Id);
+    }
+
+
 }
