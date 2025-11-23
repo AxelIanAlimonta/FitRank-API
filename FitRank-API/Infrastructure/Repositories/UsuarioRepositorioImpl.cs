@@ -29,7 +29,7 @@ namespace FitRank_API.Infrastructure.Repositorios
             => await _context.Usuarios.FirstOrDefaultAsync(u =>
                 u.TokenRecuperacion == token && u.TokenExpira > DateTime.UtcNow && !u.EsActivado);
 
-      
+
 
 
         public async Task<Usuario> AgregarAsync(Usuario usuario)
@@ -51,7 +51,7 @@ namespace FitRank_API.Infrastructure.Repositorios
         }
 
 
-        public async Task<Usuario> ActualizarAsync(Usuario usuario)
+        public async Task<Usuario?> ActualizarAsync(Usuario usuario)
         {
             // Trae la entidad existente (trackeada por EF)
             var existente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == usuario.Id);

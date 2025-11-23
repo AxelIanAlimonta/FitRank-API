@@ -48,7 +48,7 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
         existingGimnasio.Telefono = gimnasio.Telefono;
         existingGimnasio.Cuil = gimnasio.Cuil;
         existingGimnasio.AdministradorId = gimnasio.AdministradorId;
-        
+
 
         await _context.SaveChangesAsync();
         return existingGimnasio;
@@ -76,27 +76,26 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
 
     public long? ObtenerGimnasioIdPorUsuario(long userId)
     {
-      
+
         var admin = _context.Administradores.FirstOrDefault(a => a.Id == userId);
         if (admin != null)
         {
             var gimnasio = _context.Gimnasios.FirstOrDefault(g => g.AdministradorId == admin.Id);
             if (gimnasio != null)
                 return gimnasio.Id;
-
         }
 
-       
+
         var profesor = _context.Profesores.FirstOrDefault(p => p.Id == userId);
         if (profesor != null)
             return profesor.GimnasioId;
 
-      
+
         var socio = _context.Socios.FirstOrDefault(s => s.Id == userId);
         if (socio != null)
             return socio.GimnasioId;
 
-       
+
         return null;
     }
     public async Task<Gimnasio?> ActualizarPersonalizacion(long id, string colorPrincipal, string colorSecundario, string? logoUrl)
@@ -105,7 +104,7 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
         if (gym == null)
             return null;
 
-       
+
         gym.ColorPrincipal = colorPrincipal;
         gym.ColorSecundario = colorSecundario;
 
