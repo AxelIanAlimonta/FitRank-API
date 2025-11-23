@@ -267,4 +267,185 @@ public class AsistenciaRepositorioTests
         // FluentAssert
         asistenciaEliminada.Should().BeNull();
     }
+
+    //eliminar asistencia inexistente
+    [Fact]
+    public async Task EliminarAsistencia_Inexistente_DeberiaDevolverFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarAsistenciaInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var asistenciaRepositorioMock = new AsistenciaRepositorioImpl(context);
+        // Act
+        var resultado = await asistenciaRepositorioMock.EliminarAsync(999);
+        // FluentAssert
+        resultado.Should().BeFalse();
+    }
+
+
+    [Fact]
+    public async Task ObtenerPorUsuarioYFechaAsync_DeberiaRetornarAsistenciaCorrecta()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorUsuarioYFechaDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new AsistenciaRepositorioImpl(context);
+        var (usuario, gimnasio) = await SeedData(context);
+
+        var fecha = DateTime.UtcNow.Date;
+        var asistencia = new Asistencia
+        {
+            Fecha = fecha,
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = true,
+            Observaciones = "Obs"
+        };
+        context.Asistencias.Add(asistencia);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorUsuarioYFechaAsync(usuario.Id, fecha);
+
+        // Assert
+        resultado.Should().NotBeNull();
+        resultado!.UsuarioId.Should().Be(usuario.Id);
+        resultado.Fecha.Date.Should().Be(fecha);
+    }
+
+    [Fact]
+    public async Task ObtenerPorUsuarioAsync_DeberiaRetornarTodasLasAsistenciasDelUsuario()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorUsuarioDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new AsistenciaRepositorioImpl(context);
+        var (usuario, gimnasio) = await SeedData(context);
+
+        var asistencia1 = new Asistencia
+        {
+            Fecha = DateTime.UtcNow.AddDays(-1),
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = true,
+            Observaciones = "Obs"
+        };
+        var asistencia2 = new Asistencia
+        {
+            Fecha = DateTime.UtcNow,
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = false,
+            Observaciones = "Obs"
+        };
+        context.Asistencias.AddRange(asistencia1, asistencia2);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorUsuarioAsync(usuario.Id);
+
+        // Assert
+        resultado.Should().HaveCount(2);
+        resultado.All(a => a.UsuarioId == usuario.Id).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ObtenerPorGimnasioYRangoAsync_DeberiaFiltrarPorFechas()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorGimnasioYRangoDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new AsistenciaRepositorioImpl(context);
+        var (usuario, gimnasio) = await SeedData(context);
+
+        var asistencia1 = new Asistencia
+        {
+            Fecha = new DateTime(2024, 1, 1),
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = true,
+            Observaciones = "Obs1"
+        };
+        var asistencia2 = new Asistencia
+        {
+            Fecha = new DateTime(2024, 2, 1),
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = true,
+            Observaciones = "Obs2"
+        };
+        context.Asistencias.AddRange(asistencia1, asistencia2);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorGimnasioYRangoAsync(gimnasio.Id, new DateTime(2024, 1, 15), new DateTime(2024, 2, 15));
+
+        // Assert
+        resultado.Should().HaveCount(1);
+        resultado.First().Fecha.Should().Be(new DateTime(2024, 2, 1));
+    }
+
+    [Fact]
+    public async Task ObtenerTodasConUsuarioAsync_DeberiaIncluirUsuarioYGimnasio()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerTodasConUsuarioDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new AsistenciaRepositorioImpl(context);
+        var (usuario, gimnasio) = await SeedData(context);
+
+        var asistencia = new Asistencia
+        {
+            Fecha = DateTime.UtcNow,
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = true,
+            Observaciones = "Obs"
+        };
+        context.Asistencias.Add(asistencia);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerTodasConUsuarioAsync();
+
+        // Assert
+        resultado.Should().NotBeEmpty();
+        resultado.First().Usuario.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ObtenerUltimaAsistenciaPorUsuarioAsync_DeberiaRetornarLaMasReciente()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerUltimaAsistenciaPorUsuarioDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new AsistenciaRepositorioImpl(context);
+        var (usuario, gimnasio) = await SeedData(context);
+
+        var asistencia1 = new Asistencia
+        {
+            Fecha = DateTime.UtcNow.AddDays(-2),
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = true,
+            Observaciones = "Obs"
+        };
+        var asistencia2 = new Asistencia
+        {
+            Fecha = DateTime.UtcNow,
+            UsuarioId = usuario.Id,
+            GimnasioId = gimnasio.Id,
+            Presente = true,
+            Observaciones = "Obs"
+        };
+        context.Asistencias.AddRange(asistencia1, asistencia2);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerUltimaAsistenciaPorUsuarioAsync(usuario.Id);
+
+        // Assert
+        resultado.Should().NotBeNull();
+        resultado!.Fecha.Date.Should().Be(asistencia2.Fecha.Date);
+    }
 }
