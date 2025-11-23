@@ -218,4 +218,58 @@ public class EjercicioRepositorioTests
         var ejercicioEliminado = await context.Ejercicios.FindAsync(ejercicio.Id);
         ejercicioEliminado.Should().BeNull();
     }
+
+    //eliminar ejercicio no existente
+    [Fact]
+    public async Task EliminarEjercicio_NoExistente_DeberiaRetornarFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarEjercicioNoExistenteDb");
+        using var context = new FitRankDbContext(options);
+        var ejercicioRepositorio = new EjercicioRepositorioImpl(context);
+        // Act
+        var resultado = await ejercicioRepositorio.EliminarEjercicioAsync(999);
+        // Assert
+        resultado.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ObtenerPorMaquinaId_DeberiaRetornarEjerciciosDeLaMaquinaYConGrupoMuscular()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorMaquinaIdDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new EjercicioRepositorioImpl(context);
+
+        var maquina1 = new Maquina { GimnasioId = 1, Nombre = "nombre 1", Qr = "qr", UrlImagen = "url" };
+        var maquina2 = new Maquina { GimnasioId = 1, Nombre = "nombre 1", Qr = "qr", UrlImagen = "url" };
+        context.Maquinas.AddRange(maquina1, maquina2);
+        await context.SaveChangesAsync();
+
+        var grupo = new GrupoMuscular { Nombre = "Pecho" };
+        context.GruposMusculares.Add(grupo);
+        await context.SaveChangesAsync();
+
+        var ejercicio1 = new Ejercicio
+        {
+            GrupoMuscularId = grupo.Id,
+            MaquinaId = maquina1.Id
+        };
+        var ejercicio2 = new Ejercicio
+        {
+            GrupoMuscularId = grupo.Id,
+            MaquinaId = maquina2.Id
+        };
+        context.Ejercicios.AddRange(ejercicio1, ejercicio2);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorMaquinaId(maquina1.Id);
+
+        // Assert
+        resultado.Should().HaveCount(1);
+        resultado.First().MaquinaId.Should().Be(maquina1.Id);
+        resultado.First().GrupoMuscular.Should().NotBeNull();
+        resultado.First().GrupoMuscular!.Nombre.Should().Be("Pecho");
+    }
 }
