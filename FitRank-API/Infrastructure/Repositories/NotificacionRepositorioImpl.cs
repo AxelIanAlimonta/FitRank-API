@@ -41,36 +41,45 @@ namespace FitRank_API.Infrastructure.Repositories
         public async Task MarcarComoLeidaAsync(long id)
         {
             var notificacion = await _context.Notificaciones.FindAsync(id);
-            if (notificacion == null) return;
-
-            notificacion.Leido = true;
-            _context.Notificaciones.Update(notificacion);
-            await _context.SaveChangesAsync();
+            if (notificacion != null)
+            {
+                notificacion.Leido = true;
+                _context.Notificaciones.Update(notificacion);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DesactivarAsync(long id)
         {
             var notificacion = await _context.Notificaciones.FindAsync(id);
-            if (notificacion == null) return;
+            if (notificacion != null)
+            {
+                notificacion.Activa = false;
+                _context.Notificaciones.Update(notificacion);
+                await _context.SaveChangesAsync();
+            }
 
-            notificacion.Activa = false;
-            _context.Notificaciones.Update(notificacion);
-            await _context.SaveChangesAsync();
         }
 
 
 
 
-        public async Task ActualizarAsync(Notificacion notificacion)
+        public async Task<Notificacion?> ActualizarAsync(Notificacion notificacion)
         {
-            _context.Notificaciones.Update(notificacion);
+            var notificacionExistente = await _context.Notificaciones.FindAsync(notificacion.Id);
+            if (notificacionExistente == null)
+            {
+                return null;
+            }
+            _context.Entry(notificacionExistente).CurrentValues.SetValues(notificacion);
             await _context.SaveChangesAsync();
+            return notificacionExistente;
         }
 
 
         public async Task<long?> ObtenerGimnasioIdDeUsuario(long userId)
         {
-            
+
             var admin = await _context.Administradores
                 .FirstOrDefaultAsync(a => a.Id == userId);
             if (admin != null) return admin.GimnasioId;
@@ -106,8 +115,6 @@ namespace FitRank_API.Infrastructure.Repositories
         public async Task EnviarNotificacionGlobal(long adminId, string titulo, string mensaje)
         {
             var gymId = await ObtenerGimnasioIdDeUsuario(adminId);
-            if (gymId == null)
-                throw new Exception("El administrador no pertenece a ningún gimnasio.");
 
             var usuarios = await ObtenerUsuariosDelGimnasio(gymId.Value);
 
@@ -152,16 +159,6 @@ namespace FitRank_API.Infrastructure.Repositories
                 .Include(n => n.UsuarioReceptor)
                 .OrderByDescending(n => n.FechaEnvio)
                 .ToListAsync();
-        }
-
-        public Task<IEnumerable<Notificacion>> ObtenerNotificacionesDelGimnasio(long adminId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<long?> INotificacionRepositorio.ObtenerNotificacionesDelGimnasioadmin(long userId)
-        {
-            throw new NotImplementedException();
         }
     }
 }
