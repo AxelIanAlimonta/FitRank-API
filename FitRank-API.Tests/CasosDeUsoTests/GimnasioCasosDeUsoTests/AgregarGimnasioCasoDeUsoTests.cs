@@ -16,18 +16,18 @@ public class AgregarGimnasioCasoDeUsoTests
     private readonly Mock<IGimnasioRepositorio> _gimnasioRepositorioMock;
     private readonly Mock<IAdministradorRepositorio> _adminRepositorioMock;
 
-    public AgregarGimnasioCasoDeUsoTests()
-    {
-        var mappingConfig = new MapperConfiguration(
-            mc =>
-            {
-                mc.AddProfile(new GimnasioProfile());
-            }
-        );
-        _mapper = mappingConfig.CreateMapper();
-        _gimnasioRepositorioMock = new Mock<IGimnasioRepositorio>();
-        _adminRepositorioMock = new Mock<IAdministradorRepositorio>();
-    }
+    //public AgregarGimnasioCasoDeUsoTests()
+    //{
+    //    var mappingConfig = new MapperConfiguration(
+    //        mc =>
+    //        {
+    //            mc.AddProfile(new GimnasioProfile());
+    //        }
+    //    );
+    //    _mapper = mappingConfig.CreateMapper();
+    //    _gimnasioRepositorioMock = new Mock<IGimnasioRepositorio>();
+    //    _adminRepositorioMock = new Mock<IAdministradorRepositorio>();
+    //}
 
     //[Fact]
     //public async Task Ejecutar_DeberiaAgregarGimnasio_CuandoLosDatosSonValidos()

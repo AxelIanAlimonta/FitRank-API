@@ -29,7 +29,7 @@
     public class TopValoradaDTO
     {
         public string NombreProfesor { get; set; } = string.Empty;
-        public double PromedioValoracion { get; set; }
+        public double? PromedioValoracion { get; set; }
     }
 
 

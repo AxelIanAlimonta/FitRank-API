@@ -63,6 +63,26 @@ public class ActualizarDiaDeLaSemanaCasoDeUsoTests
         resultado.Nombre.Should().Be(actualizarDiaDTO.Nombre);
     }
 
+    //actualizar dia de la semana returna null cuando no se encuentra
+    [Fact]
+    public async Task ActualizarDiaDeLaSemana_DeberiaRetornarNull_CuandoElDiaNoSeEncuentra()
+    {
+        // Arrange
+        var actualizarDiaDTO = new ActualizarDiaDeLaSemanaDTO
+        {
+            Id = 1,
+            Nombre = "Lunes"
+        };
+        _diaDeLaSemanaRepositorioMock
+            .Setup(repo => repo.ActualizarDiaDeLaSemanaAsync(It.IsAny<DiaDeLaSemana>()))
+            .ReturnsAsync((DiaDeLaSemana?)null);
+        var actualizarDiaDeLaSemanaCasoDeUso = new ActualizarDiaDeLaSemanaCasoDeUso(_diaDeLaSemanaRepositorioMock.Object, _mapper);
+        // Act
+        var resultado = await actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(actualizarDiaDTO);
+        // Assert
+        resultado.Should().BeNull();
+    }
+
     //actualizar dia de la semana falla por dia no encontrado
     [Fact]
     public async Task ActualizarDiaDeLaSemana_DeberiaFallar_CuandoElDiaNoExiste()

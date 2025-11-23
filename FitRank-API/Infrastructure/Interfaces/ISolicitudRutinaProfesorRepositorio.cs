@@ -11,9 +11,10 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<List<SolicitudRutinaProfesorDTO>> ObtenerPorProfesorAsync(long profesorId);
         Task<List<SolicitudRutinaProfesorDTO>> ObtenerPorSocioAsync(long socioId);
         Task ActualizarAsync(SolicitudRutinaProfesor solicitud);
-        Task GuardarCambiosAsync();
-        Task<(Profesor? topSolicitado, Profesor? topPendientes, Profesor? topCumplidor, (Profesor? profesor, double promedio)? topValorado)>
-            ObtenerEstadisticasProfesoresAsync();
+        Task<Profesor?> ObtenerProfesorMasSolicitadoAsync();
+        Task<Profesor?> ObtenerProfesorConMasPendientesAsync();
+        Task<Profesor?> ObtenerProfesorMasCumplidorAsync();
+        Task<(Profesor?, double?)?> ObtenerProfesorMejorPromedioValoracionesAsync();
 
     }
 }
