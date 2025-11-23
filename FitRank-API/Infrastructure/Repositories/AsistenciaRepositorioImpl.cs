@@ -14,7 +14,6 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
         _context = context;
     }
 
-
     public async Task<Asistencia> AgregarAsync(Asistencia asistencia)
     {
         _context.Asistencias.Add(asistencia);
@@ -37,8 +36,6 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
             .ToListAsync();
     }
 
-
-
     public async Task<Asistencia?> ObtenerPorIdAsync(long id)
     {
         return await _context.Asistencias
@@ -58,7 +55,6 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
         return existingAsistencia;
     }
 
-
     public async Task<IEnumerable<Asistencia>> ObtenerTodasAsync()
     {
         return await _context.Asistencias
@@ -67,7 +63,6 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
             .OrderByDescending(a => a.Fecha)
             .ToListAsync();
     }
-
 
     public async Task<List<Asistencia>> ObtenerPorGimnasioYRangoAsync(long gimnasioId, DateTime? desde = null, DateTime? hasta = null)
     {
@@ -82,14 +77,6 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
 
         return await query.ToListAsync();
     }
-
-
-
-
-
-
-
-
 
     public async Task<bool> EliminarAsync(long Id)
     {
@@ -110,6 +97,7 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
             .OrderByDescending(a => a.Fecha)
             .ToListAsync();
     }
+
     public async Task<Asistencia?> ObtenerUltimaAsistenciaPorUsuarioAsync(long usuarioId)
     {
         return await _context.Asistencias

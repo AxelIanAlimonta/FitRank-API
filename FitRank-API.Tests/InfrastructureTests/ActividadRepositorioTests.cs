@@ -288,4 +288,145 @@ public class ActividadRepositorioTests
         // Assert
         resultado.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task ObtenerPorEntrenamientoAsync_DeberiaRetornarActividadesConSerieYEjercicioAsignado()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorEntrenamientoAsyncDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new ActividadRepositorioImpl(context);
+
+        // Crear dependencias
+        var socio = new Socio { Nombre = "Socio", Email = "socio@a.com", Nivel = "Medio" };
+        context.Socios.Add(socio);
+        await context.SaveChangesAsync();
+
+        var entrenamiento = new Entrenamiento { SocioId = socio.Id };
+        context.Entrenamientos.Add(entrenamiento);
+        await context.SaveChangesAsync();
+
+        var ejercicio = new Ejercicio { GrupoMuscularId = 1, Tipo = 0 };
+        context.Ejercicios.Add(ejercicio);
+        await context.SaveChangesAsync();
+
+        var ejercicioAsignado = new EjercicioAsignado { EjercicioId = ejercicio.Id, SesionId = 1, NumeroEjercicio = 1 };
+        context.EjerciciosAsignados.Add(ejercicioAsignado);
+        await context.SaveChangesAsync();
+
+        var serie = new Serie { EjercicioAsignadoId = ejercicioAsignado.Id, NumeroDeSerie = 1, Repeticiones = 10, Peso = 50 };
+        context.Series.Add(serie);
+        await context.SaveChangesAsync();
+
+        var actividad = new Actividad
+        {
+            Repeticiones = 10,
+            Peso = 50.0,
+            Punto = 8.5,
+            SerieId = serie.Id,
+            EjercicioAsignadoId = ejercicioAsignado.Id,
+            EntrenamientoId = entrenamiento.Id
+        };
+        context.Actividades.Add(actividad);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorEntrenamientoAsync(entrenamiento.Id);
+
+        // Assert
+        resultado.Should().HaveCount(1);
+        var act = resultado.First();
+        act.Serie.Should().NotBeNull();
+        act.EjercicioAsignado.Should().NotBeNull();
+        act.EntrenamientoId.Should().Be(entrenamiento.Id);
+    }
+
+    [Fact]
+    public async Task ObtenerSeriePorIdAsync_DeberiaRetonarSerieConRelaciones()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerSeriePorIdAsyncDb");
+        using var context = new FitRankDbContext(options);
+
+        // Crear grupo muscular, ejercicio, ejercicio asignado y serie
+        var grupo = new GrupoMuscular { Nombre = "Pecho" };
+        context.GruposMusculares.Add(grupo);
+        await context.SaveChangesAsync();
+
+        var ejercicio = new Ejercicio { GrupoMuscularId = grupo.Id, Tipo = 0 };
+        context.Ejercicios.Add(ejercicio);
+        await context.SaveChangesAsync();
+
+        var ejercicioAsignado = new EjercicioAsignado { EjercicioId = ejercicio.Id, SesionId = 1, NumeroEjercicio = 1 };
+        context.EjerciciosAsignados.Add(ejercicioAsignado);
+        await context.SaveChangesAsync();
+
+        var serie = new Serie { EjercicioAsignadoId = ejercicioAsignado.Id, NumeroDeSerie = 1, Repeticiones = 10, Peso = 50 };
+        context.Series.Add(serie);
+        await context.SaveChangesAsync();
+
+        var repo = new ActividadRepositorioImpl(context);
+
+        // Act
+        var resultado = await repo.ObtenerSeriePorIdAsync(serie.Id);
+
+        // Assert
+        resultado.Should().NotBeNull();
+        resultado.Id.Should().Be(serie.Id);
+        resultado.EjercicioAsignado.Should().NotBeNull();
+        resultado.EjercicioAsignado.Ejercicio.Should().NotBeNull();
+        resultado.EjercicioAsignado.Ejercicio.GrupoMuscular.Should().NotBeNull();
+        resultado.EjercicioAsignado.Ejercicio.GrupoMuscular.Nombre.Should().Be("Pecho");
+    }
+
+    [Fact]
+    public async Task ObtenerPorSerieAsync_DeberiaRetornarActividadesConRelaciones()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorSerieAsyncDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new ActividadRepositorioImpl(context);
+
+        // Crear socio y entrenamiento
+        var socio = new Socio { Nombre = "Socio Test", Email = "socio@test.com", Nivel = "Intermedio" };
+        context.Socios.Add(socio);
+        await context.SaveChangesAsync();
+
+        var entrenamiento = new Entrenamiento { SocioId = socio.Id };
+        context.Entrenamientos.Add(entrenamiento);
+        await context.SaveChangesAsync();
+
+        // Crear ejercicio asignado y serie
+        var ejercicioAsignado = new EjercicioAsignado { EjercicioId = 1, SesionId = 1, NumeroEjercicio = 1 };
+        context.EjerciciosAsignados.Add(ejercicioAsignado);
+        await context.SaveChangesAsync();
+
+        var serie = new Serie { EjercicioAsignadoId = ejercicioAsignado.Id, NumeroDeSerie = 1, Repeticiones = 10, Peso = 50 };
+        context.Series.Add(serie);
+        await context.SaveChangesAsync();
+
+        // Crear actividad asociada a la serie
+        var actividad = new Actividad
+        {
+            Repeticiones = 10,
+            Peso = 50.0,
+            Punto = 8.5,
+            SerieId = serie.Id,
+            EjercicioAsignadoId = ejercicioAsignado.Id,
+            EntrenamientoId = entrenamiento.Id
+        };
+        context.Actividades.Add(actividad);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorSerieAsync(serie.Id);
+
+        // Assert
+        resultado.Should().HaveCount(1);
+        var act = resultado.First();
+        act.Entrenamiento.Should().NotBeNull();
+        act.Entrenamiento.Socio.Should().NotBeNull();
+        act.EjercicioAsignado.Should().NotBeNull();
+        act.SerieId.Should().Be(serie.Id);
+    }
 }
