@@ -58,6 +58,7 @@ using Amazon.Runtime;
 using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.LogroGimnasioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.ReporteCasosDeUso;
 
 
 
@@ -384,7 +385,16 @@ builder.Services.AddScoped<ObtenerSolicitudesPendientesCasoDeUso>();
 builder.Services.AddScoped<AceptarSolicitudAmistadCasoDeUso>();
 builder.Services.AddScoped<EliminarAmigoCasoDeUso>();
 
-
+builder.Services.AddScoped<IReporteRepositorio, ReporteRepositorioImpl>();
+builder.Services.AddScoped<AgregarReporteCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosReportesDeGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportePorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarReporteCasoDeUso>();
+builder.Services.AddScoped<EliminarReporteCasoDeUso>();
+builder.Services.AddScoped<DesactivarReporteCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportesPorUsuarioCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportesActivosDeUnGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportesInactivosDeUnGimnasioCasoDeUso>();
 
 
 MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];

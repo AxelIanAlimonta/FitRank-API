@@ -38,6 +38,6 @@
         public ICollection<Valoracion> ValoracionesEnviadas { get; set; } = new List<Valoracion>();
         public ICollection<Valoracion> ValoracionesRecibidas { get; set; } = new List<Valoracion>();
 
-
+        public ICollection<Reporte> ReportesCreados { get; set; } = new List<Reporte>();
     }
 }
