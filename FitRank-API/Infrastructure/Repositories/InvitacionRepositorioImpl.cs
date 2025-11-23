@@ -71,7 +71,7 @@ namespace FitRank_API.Infrastructure.Repositories
                 .FirstOrDefaultAsync(i => i.Id == id && i.Estado == estado);
         }
 
-        public async Task<List<Invitacion>> ObtenerTodasAsync(int gimnasioId)
+        public async Task<List<Invitacion>> ObtenerTodasAsync(long gimnasioId)
         {
             return await _context.Invitaciones
                 .Where(i => i.GimnasioId == gimnasioId)
