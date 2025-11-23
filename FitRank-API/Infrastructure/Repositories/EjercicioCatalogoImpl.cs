@@ -1,4 +1,5 @@
-﻿using FitRank_API.Application.DTOs.EjercicioDTOs;
+﻿using System.Diagnostics.CodeAnalysis;
+using FitRank_API.Application.DTOs.EjercicioDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRank_API.Infrastructure.Repositories
 {
+    [ExcludeFromCodeCoverage]
     public class EjercicioCatalogoImpl : IEjercicioCatalogo
     {
         private readonly FitRankDbContext _context;
