@@ -84,7 +84,6 @@ public class GimnasioRepositorioImpl : IGimnasioRepositorio
             if (gimnasio != null)
                 return gimnasio.Id;
 
-            return null; 
         }
 
        

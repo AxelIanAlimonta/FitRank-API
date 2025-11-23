@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.RutinaDTOs;
+using FitRank_API.Application.DTOs.SesionDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.SesionCasosDeUso
@@ -13,6 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.SesionCasosDeUso
             _sesionRepositorio = sesionRepositorio;
             _mapper = mapper;
         }
+        
         public virtual async Task<ObtenerSesionDTO> Ejecutar(ActualizarSesionDTO sesionActualizada)
         {
             var sesionEntidad = _mapper.Map<Domain.Entities.Sesion>(sesionActualizada);

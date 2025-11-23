@@ -9,6 +9,7 @@ using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Application.DTOs;
 using FitRank_API.Controllers;
 using FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
+using FitRank_API.Application.DTOs.SesionDTOs;
 
 namespace FitRank_API.tests.ControllersTests;
 

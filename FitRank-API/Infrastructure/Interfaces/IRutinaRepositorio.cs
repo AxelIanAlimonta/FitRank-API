@@ -12,7 +12,7 @@ public interface IRutinaRepositorio
     Task<Rutina> AgregarAsync(Rutina rutina);
     Task<Rutina?> ActualizarAsync(Rutina rutina);
     Task<bool> EliminarAsync(long id);
-    Task<Rutina> ObtenerPorSocioIdAsync(long socioId);
+    Task<List<Rutina>> ObtenerPorSocioIdAsync(long socioId);
     Task<List<Rutina>> ObtenerRutinasPorSocioAsync(long socioId);
     Task<List<Rutina>> ObtenerFavoritasPorSocioAsync(long socioId);
     Task<bool> MarcarFavoritaAsync(long rutinaId, bool favorita);

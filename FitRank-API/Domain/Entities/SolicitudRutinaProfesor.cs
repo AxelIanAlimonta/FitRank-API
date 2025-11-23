@@ -1,5 +1,7 @@
 ﻿using FitRank_API.Domain.Entities;
 
+namespace FitRank_API.Domain.Entities;
+
 public class SolicitudRutinaProfesor
 {
     public long Id { get; set; }

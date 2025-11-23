@@ -4,7 +4,6 @@ using AutoMapper;
 using Xunit;
 using FitRank_API.Domain.Entities;
 using FluentAssertions;
-using FitRank_API.Application.MappingProfiles;
 using FitRank_API.Application.DTOs.DiaDeLaSemanaDTOs;
 using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 using FitRank_API.Application.Mappings;

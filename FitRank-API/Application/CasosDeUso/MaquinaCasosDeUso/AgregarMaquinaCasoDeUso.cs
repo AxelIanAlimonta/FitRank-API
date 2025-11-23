@@ -4,6 +4,8 @@ using FitRank_API.Application.DTOs.MaquinaDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 
+namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso;
+
 public class AgregarMaquinaCasoDeUso
 {
     private readonly IMaquinaRepositorio _maquinaRepositorio;

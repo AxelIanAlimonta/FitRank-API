@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using FitRank_API.Domain.Entities;
-
 using FitRank_API.Application.DTOs.IngresoDTOs;
 
-namespace FitRank_API.Application.Mapping
+namespace FitRank_API.Application.Mappings
 {
     public class IngresoMappingProfile : Profile
     {

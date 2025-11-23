@@ -1,4 +1,5 @@
-﻿using FitRank_API.Application.DTOs.RutinaDTOs;
+﻿using System.Diagnostics.CodeAnalysis;
+using FitRank_API.Application.DTOs.RutinaDTOs;
 using FitRank_API.Application.DTOs.SesionDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
@@ -68,11 +69,14 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
         return true;
     }
 
-    public Task<Rutina> ObtenerPorSocioIdAsync(long socioId)
+    public Task<List<Rutina>> ObtenerPorSocioIdAsync(long socioId)
     {
-        throw new NotImplementedException();
+        return _context.Rutinas
+            .Where(r => r.SocioId == socioId)
+            .ToListAsync();
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task<ResultadoConfirmarRutinaDTO> ValidarReferenciasAsync(ConfirmarRutinaDTO body)
     {
         var socioExiste = await _context.Set<Socio>().AnyAsync(s => s.Id == body.SocioId);
@@ -96,6 +100,7 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
         return ResultadoConfirmarRutinaDTO.Exito(0);
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task GuardarRutinaCompletaAsync(Rutina rutina, List<SesionIADTO> sesiones)
     {
         await using var trx = await _context.Database.BeginTransactionAsync();

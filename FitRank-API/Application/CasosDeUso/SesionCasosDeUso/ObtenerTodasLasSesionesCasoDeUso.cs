@@ -1,5 +1,6 @@
 ﻿
 using AutoMapper;
+using FitRank_API.Application.DTOs.SesionDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.SesionCasosDeUso

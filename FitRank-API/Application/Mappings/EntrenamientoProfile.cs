@@ -3,7 +3,7 @@ using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.EntrenamientoDTOs;
 using FitRank_API.Domain.Entities;
 
-namespace FitRank_API.Application.MappingProfiles;
+namespace FitRank_API.Application.Mappings;
 
 public class EntrenamientoProfile : Profile
 {
