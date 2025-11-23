@@ -1,6 +1,7 @@
 ﻿using FitRank_API.Application.DTOs;
 using FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
 using Microsoft.AspNetCore.Mvc;
+using FitRank_API.Application.DTOs.SesionDTOs;
 
 namespace FitRank_API.Controllers
 {

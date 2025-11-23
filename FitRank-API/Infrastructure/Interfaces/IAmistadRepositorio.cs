@@ -1,4 +1,5 @@
-﻿using FitRank_API.Domain.Enums;
+﻿using FitRank_API.Domain.Entities;
+using FitRank_API.Domain.Enums;
 
 namespace FitRank_API.Infrastructure.Interfaces
 {

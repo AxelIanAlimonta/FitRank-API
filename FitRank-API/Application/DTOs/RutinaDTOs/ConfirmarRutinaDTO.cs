@@ -1,5 +1,7 @@
 ﻿using FitRank_API.Application.DTOs.RutinaDTOs;
 
+namespace FitRank_API.Application.DTOs.RutinaDTOs;
+
 public class ConfirmarRutinaDTO
 {
 

@@ -1,4 +1,6 @@
-﻿public class ActualizarSesionDTO
+﻿namespace FitRank_API.Application.DTOs.SesionDTOs;
+
+public class ActualizarSesionDTO
 {
     public long Id { get; set; }
     public int NumeroDeSesion { get; set; }

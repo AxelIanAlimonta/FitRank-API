@@ -1,4 +1,5 @@
-﻿using FitRank_API.Domain.Enums;
+﻿using FitRank_API.Domain.Entities;
+using FitRank_API.Domain.Enums;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace FitRank_API.Infrastructure.Repositories
         {
             _context = context;
         }
-
+        
         public async Task<Amistad> CrearAsync(Amistad amistad)
         {
             _context.Amistades.Add(amistad);
