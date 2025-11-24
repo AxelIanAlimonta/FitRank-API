@@ -34,7 +34,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
 
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-            user.Rol = dto.Rol ?? "User";
+            user.Rol = string.IsNullOrEmpty(dto.Rol) ? "User" : dto.Rol;
             user.Estado = "Activo";
 
  
