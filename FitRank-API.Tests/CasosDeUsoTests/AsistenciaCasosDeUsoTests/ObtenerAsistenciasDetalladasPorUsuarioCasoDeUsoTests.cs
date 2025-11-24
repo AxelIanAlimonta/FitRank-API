@@ -102,7 +102,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AsistenciaCasosDeUsoTests
             var usuarioId = 999L;
 
             _mockUsuarioRepo.Setup(r => r.ObtenerSocioConGimnasioPorIdAsync(usuarioId))
-                .ReturnsAsync((Socio)null);
+                .ReturnsAsync((Socio?)null);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(usuarioId);

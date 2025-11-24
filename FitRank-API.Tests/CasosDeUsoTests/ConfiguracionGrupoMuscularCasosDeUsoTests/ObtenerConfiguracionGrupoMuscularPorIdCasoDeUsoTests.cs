@@ -73,4 +73,72 @@ public class ObtenerConfiguracionGrupoMuscularPorIdCasoDeUsoTests
         // Assert
         resultado.Should().BeNull();
     }
+
+    [Fact]
+    public async Task DebeLlamarRepositorioConIdCorrecto()
+    {
+        // Arrange
+        var configuracionId = 555L;
+
+        _configuracionRepositorioMock.Setup(repo => repo.ObtenerPorIdAsync(configuracionId))
+            .ReturnsAsync((ConfiguracionGrupoMuscular?)null);
+
+        var casoDeUso = new ObtenerConfiguracionGrupoMuscularPorIdCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        await casoDeUso.Ejecutar(configuracionId);
+
+        // Assert
+        _configuracionRepositorioMock.Verify(repo => repo.ObtenerPorIdAsync(configuracionId), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeberiaRetornarConfiguracionesConDiferentesValores()
+    {
+        // Arrange
+        var config1 = new ConfiguracionGrupoMuscular { Id = 1, GrupoMuscularId = 1, MultiplicadorPeso = 0.2, MultiplicadorRepeticiones = 0.8, FactorProgresion = 1.0 };
+        var config2 = new ConfiguracionGrupoMuscular { Id = 2, GrupoMuscularId = 2, MultiplicadorPeso = 0.9, MultiplicadorRepeticiones = 0.1, FactorProgresion = 3.0 };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ObtenerPorIdAsync(1))
+            .ReturnsAsync(config1);
+
+        _configuracionRepositorioMock.Setup(repo => repo.ObtenerPorIdAsync(2))
+            .ReturnsAsync(config2);
+
+        var casoDeUso = new ObtenerConfiguracionGrupoMuscularPorIdCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado1 = await casoDeUso.Ejecutar(1);
+        var resultado2 = await casoDeUso.Ejecutar(2);
+
+        // Assert
+        resultado1!.MultiplicadorPeso.Should().Be(0.2);
+        resultado2!.MultiplicadorPeso.Should().Be(0.9);
+    }
+
+    [Fact]
+    public async Task DeberiaRetornarTipoConfiguracionGrupoMuscularDTO()
+    {
+        // Arrange
+        var configuracionId = 1L;
+        var configuracion = new ConfiguracionGrupoMuscular
+        {
+            Id = 1,
+            GrupoMuscularId = 1,
+            MultiplicadorPeso = 0.5,
+            MultiplicadorRepeticiones = 0.5,
+            FactorProgresion = 1.0
+        };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ObtenerPorIdAsync(configuracionId))
+            .ReturnsAsync(configuracion);
+
+        var casoDeUso = new ObtenerConfiguracionGrupoMuscularPorIdCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(configuracionId);
+
+        // Assert
+        resultado.Should().BeOfType<ConfiguracionGrupoMuscularDTO>();
+    }
 }

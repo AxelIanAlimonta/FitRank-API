@@ -67,7 +67,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AsistenciaCasosDeUsoTests
                 .ReturnsAsync(ultimaAsistenciaSocio1);
 
             _mockAsistenciaRepo.Setup(r => r.ObtenerUltimaAsistenciaPorUsuarioAsync(2))
-                .ReturnsAsync((Asistencia)null);
+                .ReturnsAsync((Asistencia?)null);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(diasInactividad);
@@ -151,7 +151,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AsistenciaCasosDeUsoTests
                 .ReturnsAsync(socios);
 
             _mockAsistenciaRepo.Setup(r => r.ObtenerUltimaAsistenciaPorUsuarioAsync(1))
-                .ReturnsAsync((Asistencia)null);
+                .ReturnsAsync((Asistencia?)null);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(diasInactividad);

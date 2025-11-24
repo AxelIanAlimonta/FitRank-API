@@ -66,8 +66,8 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                     return new QrValidationResponseDTO { Valido = false, Mensaje = "QR inválido." };
 
                 var userId = int.Parse(userIdClaim.Value);
-                var validoHasta = DateTime.Parse(validoHastaClaim.Value);
-                var qrGymId = int.Parse(gymIdClaim.Value);
+                var validoHasta = DateTime.Parse(validoHastaClaim!.Value);
+                var qrGymId = int.Parse(gymIdClaim!.Value);
 
                 var user = await _usuarioRepositorio.ObtenerPorIdAsync(userId);
                 if (user == null)

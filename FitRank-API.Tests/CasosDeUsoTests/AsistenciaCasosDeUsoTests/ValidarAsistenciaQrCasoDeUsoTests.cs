@@ -66,7 +66,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AsistenciaCasosDeUsoTests
             };
 
             _mockUsuarioRepo.Setup(r => r.ObtenerPorIdAsync(It.IsAny<long>()))
-                .ReturnsAsync((Socio)null);
+                .ReturnsAsync((Socio?)null);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto, null);
@@ -141,10 +141,10 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AsistenciaCasosDeUsoTests
         public async Task DeberiaCrearNuevaAsistenciaCuandoNoExiste()
         {
             // Arrange
-            Asistencia asistenciaCapturada = null;
+            Asistencia? asistenciaCapturada = null;
 
             _mockAsistenciaRepo.Setup(r => r.ObtenerPorUsuarioYFechaAsync(It.IsAny<long>(), It.IsAny<DateTime>()))
-                .ReturnsAsync((Asistencia)null);
+                .ReturnsAsync((Asistencia?)null);
 
             _mockAsistenciaRepo.Setup(r => r.AgregarAsync(It.IsAny<Asistencia>()))
                 .Callback<Asistencia>(a => asistenciaCapturada = a)
@@ -183,7 +183,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AsistenciaCasosDeUsoTests
                 HoraSalida = null
             };
 
-            Asistencia asistenciaActualizada = null;
+            Asistencia? asistenciaActualizada = null;
 
             _mockAsistenciaRepo.Setup(r => r.ActualizarAsync(It.IsAny<Asistencia>()))
                 .Callback<Asistencia>(a => asistenciaActualizada = a)
@@ -231,8 +231,8 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AsistenciaCasosDeUsoTests
             var usuarioVencido = await _mockUsuarioRepo.Object.ObtenerPorIdAsync(2);
 
             // Assert
-            usuarioVigente.CuotaPagadaHasta.Should().BeAfter(DateTime.Now);
-            usuarioVencido.CuotaPagadaHasta.Should().BeBefore(DateTime.Now);
+            usuarioVigente!.CuotaPagadaHasta!.Value.Should().BeAfter(DateTime.Now);
+            usuarioVencido!.CuotaPagadaHasta!.Value.Should().BeBefore(DateTime.Now);
         }
 
         [Fact]

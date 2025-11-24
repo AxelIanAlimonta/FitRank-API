@@ -88,4 +88,123 @@ public class ActualizarConfiguracionGrupoMuscularCasoDeUsoTests
         // Assert
         resultado.Should().BeNull();
     }
+
+    [Fact]
+    public async Task DebeMapearCorrectamenteTodosLosCampos()
+    {
+        // Arrange
+        var dto = new ConfiguracionGrupoMuscularDTO
+        {
+            Id = 10,
+            GrupoMuscularId = 5,
+            MultiplicadorPeso = 0.75,
+            MultiplicadorRepeticiones = 0.25,
+            FactorProgresion = 1.5
+        };
+
+        var configuracionActualizada = new ConfiguracionGrupoMuscular
+        {
+            Id = 10,
+            GrupoMuscularId = 5,
+            MultiplicadorPeso = 0.75,
+            MultiplicadorRepeticiones = 0.25,
+            FactorProgresion = 1.5
+        };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ActualizarAsync(It.IsAny<ConfiguracionGrupoMuscular>()))
+            .ReturnsAsync(configuracionActualizada);
+
+        var casoDeUso = new ActualizarConfiguracionGrupoMuscularCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(dto);
+
+        // Assert
+        resultado.Should().NotBeNull();
+        resultado!.Id.Should().Be(10);
+        resultado.GrupoMuscularId.Should().Be(5);
+        resultado.MultiplicadorPeso.Should().Be(0.75);
+        resultado.MultiplicadorRepeticiones.Should().Be(0.25);
+        resultado.FactorProgresion.Should().Be(1.5);
+    }
+
+    [Fact]
+    public async Task DebeLlamarRepositorioConDatosCorrectos()
+    {
+        // Arrange
+        var dto = new ConfiguracionGrupoMuscularDTO
+        {
+            Id = 3,
+            GrupoMuscularId = 7,
+            MultiplicadorPeso = 0.8,
+            MultiplicadorRepeticiones = 0.2,
+            FactorProgresion = 1.4
+        };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ActualizarAsync(It.IsAny<ConfiguracionGrupoMuscular>()))
+            .ReturnsAsync((ConfiguracionGrupoMuscular c) => c);
+
+        var casoDeUso = new ActualizarConfiguracionGrupoMuscularCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        await casoDeUso.Ejecutar(dto);
+
+        // Assert
+        _configuracionRepositorioMock.Verify(repo => repo.ActualizarAsync(
+            It.Is<ConfiguracionGrupoMuscular>(c => c.Id == dto.Id && 
+                                                   c.GrupoMuscularId == dto.GrupoMuscularId && 
+                                                   c.MultiplicadorPeso == dto.MultiplicadorPeso &&
+                                                   c.MultiplicadorRepeticiones == dto.MultiplicadorRepeticiones &&
+                                                   c.FactorProgresion == dto.FactorProgresion)), 
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task DeberiaActualizarConfiguracionesConDiferentesMultiplicadores()
+    {
+        // Arrange
+        var dto1 = new ConfiguracionGrupoMuscularDTO { Id = 1, GrupoMuscularId = 1, MultiplicadorPeso = 0.1, MultiplicadorRepeticiones = 0.9, FactorProgresion = 1.0 };
+        var dto2 = new ConfiguracionGrupoMuscularDTO { Id = 2, GrupoMuscularId = 2, MultiplicadorPeso = 0.9, MultiplicadorRepeticiones = 0.1, FactorProgresion = 2.0 };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ActualizarAsync(It.Is<ConfiguracionGrupoMuscular>(c => c.Id == 1)))
+            .ReturnsAsync((ConfiguracionGrupoMuscular c) => c);
+
+        _configuracionRepositorioMock.Setup(repo => repo.ActualizarAsync(It.Is<ConfiguracionGrupoMuscular>(c => c.Id == 2)))
+            .ReturnsAsync((ConfiguracionGrupoMuscular c) => c);
+
+        var casoDeUso = new ActualizarConfiguracionGrupoMuscularCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado1 = await casoDeUso.Ejecutar(dto1);
+        var resultado2 = await casoDeUso.Ejecutar(dto2);
+
+        // Assert
+        resultado1!.MultiplicadorPeso.Should().Be(0.1);
+        resultado2!.MultiplicadorPeso.Should().Be(0.9);
+    }
+
+    [Fact]
+    public async Task DeberiaRetornarTipoConfiguracionGrupoMuscularDTO()
+    {
+        // Arrange
+        var dto = new ConfiguracionGrupoMuscularDTO
+        {
+            Id = 1,
+            GrupoMuscularId = 1,
+            MultiplicadorPeso = 0.5,
+            MultiplicadorRepeticiones = 0.5,
+            FactorProgresion = 1.1
+        };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ActualizarAsync(It.IsAny<ConfiguracionGrupoMuscular>()))
+            .ReturnsAsync((ConfiguracionGrupoMuscular c) => c);
+
+        var casoDeUso = new ActualizarConfiguracionGrupoMuscularCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(dto);
+
+        // Assert
+        resultado.Should().BeOfType<ConfiguracionGrupoMuscularDTO>();
+    }
 }

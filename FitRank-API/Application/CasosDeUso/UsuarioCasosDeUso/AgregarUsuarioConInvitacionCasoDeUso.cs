@@ -44,8 +44,9 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
                         ?? new Dictionary<string, object>();
 
             Socio socio = await RegistrarSocioConInvitacion(dto, invitacion, datosPre);
-
-            invitacion.UsuarioId = (int?)socio.Id;
+            
+            // Actualizar invitación con el ID del socio registrado
+            invitacion.UsuarioId = socio.Id;
             invitacion.Estado = "Usada";
             await _invitacionRepo.ActualizarAsync(invitacion);
 
@@ -88,9 +89,9 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
                 GimnasioId = invitacion.GimnasioId
             };
 
-
-            await _usuarioRepo.AgregarAsync(socio);
-            return socio;
+            // AgregarAsync puede modificar el socio (ej: asignar el ID)
+            var socioRegistrado = await _usuarioRepo.AgregarAsync(socio);
+            return socioRegistrado as Socio ?? socio;
         }
     }
 }

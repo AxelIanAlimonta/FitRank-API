@@ -93,4 +93,77 @@ public class ObtenerTodasLasConfiguracionGrupoMuscularCasoDeUsoTests
         resultado.Should().NotBeNull();
         resultado.Count.Should().Be(0);
     }
+
+    [Fact]
+    public async Task DebeLlamarRepositorioUnaVez()
+    {
+        // Arrange
+        var configuraciones = new List<ConfiguracionGrupoMuscular>();
+
+        _configuracionRepositorioMock.Setup(repo => repo.ObtenerTodosAsync())
+            .ReturnsAsync(configuraciones);
+
+        var casoDeUso = new ObtenerTodasLasConfiguracionGrupoMuscularCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        await casoDeUso.Ejecutar();
+
+        // Assert
+        _configuracionRepositorioMock.Verify(repo => repo.ObtenerTodosAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeberiaRetornarConfiguracionesEnElMismoOrdenDelRepositorio()
+    {
+        // Arrange
+        var configuraciones = new List<ConfiguracionGrupoMuscular>
+        {
+            new ConfiguracionGrupoMuscular { Id = 3, GrupoMuscularId = 3, MultiplicadorPeso = 0.7, MultiplicadorRepeticiones = 0.3, FactorProgresion = 1.3 },
+            new ConfiguracionGrupoMuscular { Id = 1, GrupoMuscularId = 1, MultiplicadorPeso = 0.5, MultiplicadorRepeticiones = 0.5, FactorProgresion = 1.1 },
+            new ConfiguracionGrupoMuscular { Id = 2, GrupoMuscularId = 2, MultiplicadorPeso = 0.6, MultiplicadorRepeticiones = 0.4, FactorProgresion = 1.2 }
+        };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ObtenerTodosAsync())
+            .ReturnsAsync(configuraciones);
+
+        var casoDeUso = new ObtenerTodasLasConfiguracionGrupoMuscularCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar();
+
+        // Assert
+        resultado[0].Id.Should().Be(3);
+        resultado[1].Id.Should().Be(1);
+        resultado[2].Id.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task DeberiaRetornarListaConUnaConfiguracionCuandoSoloHayUna()
+    {
+        // Arrange
+        var configuraciones = new List<ConfiguracionGrupoMuscular>
+        {
+            new ConfiguracionGrupoMuscular
+            {
+                Id = 100,
+                GrupoMuscularId = 50,
+                MultiplicadorPeso = 0.85,
+                MultiplicadorRepeticiones = 0.15,
+                FactorProgresion = 2.5
+            }
+        };
+
+        _configuracionRepositorioMock.Setup(repo => repo.ObtenerTodosAsync())
+            .ReturnsAsync(configuraciones);
+
+        var casoDeUso = new ObtenerTodasLasConfiguracionGrupoMuscularCasoDeUso(_configuracionRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar();
+
+        // Assert
+        resultado.Count.Should().Be(1);
+        resultado[0].Id.Should().Be(100);
+        resultado[0].GrupoMuscularId.Should().Be(50);
+    }
 }

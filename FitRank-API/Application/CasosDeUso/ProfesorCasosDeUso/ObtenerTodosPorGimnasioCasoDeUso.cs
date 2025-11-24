@@ -10,8 +10,11 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
         private readonly IProfesorRepositorio _profesorRepositorio;
         private readonly IMapper _mapper;
 
-
-      
+        public ObtenerTodosPorGimnasioCasoDeUso(IProfesorRepositorio profesorRepositorio, IMapper mapper)
+        {
+            _profesorRepositorio = profesorRepositorio;
+            _mapper = mapper;
+        }
 
         public virtual async Task<List<ProfesorDTO>> Ejecutar(long gimnasioId)
         {
