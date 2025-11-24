@@ -10,7 +10,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
         {
             _repositorio = repositorio;
         }
-        public async Task<bool> EjecutarAsync(long solicitudId)
+        public virtual async Task<bool> EjecutarAsync(long solicitudId)
         {
             var solicitud = await _repositorio.ObtenerPorIdAsync(solicitudId);
             if (solicitud == null)

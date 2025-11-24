@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.Ingreso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerIngresoDTO?> Ejecutar(long id)
+        public virtual async Task<ObtenerIngresoDTO?> Ejecutar(long id)
         {
             
             var ingreso = await _repo.ObtenerPorIdAsync(id);

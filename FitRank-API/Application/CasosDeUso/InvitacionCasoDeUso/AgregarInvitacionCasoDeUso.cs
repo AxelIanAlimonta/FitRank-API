@@ -48,7 +48,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _agregarIngresoCasoDeUso = agregarIngresoCasoDeUso;
         }
 
-        public async Task<InvitacionResponseDTO> Ejecutar(GenerarInvitacionDTO dto, int adminId)
+        public virtual async Task<InvitacionResponseDTO> Ejecutar(GenerarInvitacionDTO dto, int adminId)
         {
 
             var tokenActivacion = Guid.NewGuid().ToString("N");

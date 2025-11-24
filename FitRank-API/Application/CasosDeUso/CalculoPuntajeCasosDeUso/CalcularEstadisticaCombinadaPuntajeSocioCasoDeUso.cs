@@ -20,7 +20,7 @@ namespace FitRank_API.Application.UseCases
             _actividadRepositorio = actividadRepositorio;
         }
 
-        public async Task<PuntajeTotalDTO?> Ejecutar(long socioId)
+        public virtual async Task<PuntajeTotalDTO?> Ejecutar(long socioId)
         {
             var socio = await _socioRepositorio.ObtenerSocioConEntrenamientosAsync(socioId);
 

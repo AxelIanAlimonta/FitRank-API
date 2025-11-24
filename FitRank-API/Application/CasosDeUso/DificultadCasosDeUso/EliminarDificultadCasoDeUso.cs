@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.DificultadCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task Ejecutar(int id)
+        public virtual async Task Ejecutar(int id)
         {
             await _dificultadRepositorio.EliminarAsync(id);
         }

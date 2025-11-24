@@ -19,7 +19,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             _usuarioRepositorio = usuarioRepositorio;
         }
 
-        public async Task<List<SocioInactivoDTO>> Ejecutar(int diasInactividad = 5)
+        public virtual async Task<List<SocioInactivoDTO>> Ejecutar(int diasInactividad = 5)
         {
             var socios = await _usuarioRepositorio.ObtenerSociosActivosAsync();
             var resultado = new List<SocioInactivoDTO>();

@@ -27,7 +27,7 @@ public class AgregarMaquinaCasoDeUso
         _qrHelper = qrHelper;
     }
 
-    public async Task<ObtenerMaquinaDTO> Ejecutar(AgregarMaquinaDTO dto, long gimnasioId)
+    public virtual async Task<ObtenerMaquinaDTO> Ejecutar(AgregarMaquinaDTO dto, long gimnasioId)
     {
         var maquina = _mapper.Map<Maquina>(dto);
 

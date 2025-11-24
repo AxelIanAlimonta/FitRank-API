@@ -24,7 +24,7 @@ public class OtorgarLogroPorNombreClaveCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<LogroOtorgadoDTO> Ejecutar(OtorgarLogroPorNombreClaveDTO dto)
+    public virtual async Task<LogroOtorgadoDTO> Ejecutar(OtorgarLogroPorNombreClaveDTO dto)
     {
         // DTO base: siempre devolvemos socio + gym
         var salida = new LogroOtorgadoDTO

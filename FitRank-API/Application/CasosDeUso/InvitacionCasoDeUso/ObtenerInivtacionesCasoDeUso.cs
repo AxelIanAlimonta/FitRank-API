@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _mapper = mapper;
         }
 
-        public async Task<List<InvitacionListadoDTO>> Ejecutar(int gimnasioId)
+        public virtual async Task<List<InvitacionListadoDTO>> Ejecutar(int gimnasioId)
         {
             var invitaciones = await _invitacionRepositorio.ObtenerTodasAsync(gimnasioId);
 

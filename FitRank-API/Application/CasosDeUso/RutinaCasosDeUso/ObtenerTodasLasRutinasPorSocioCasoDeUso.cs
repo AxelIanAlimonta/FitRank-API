@@ -20,7 +20,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
         }
 
 
-        public async Task<List<ObtenerRutinaDTO>> Ejecutar(long socioId)
+        public virtual async Task<List<ObtenerRutinaDTO>> Ejecutar(long socioId)
         {
             var socio = await _socioRepositorio.ObtenerPorIdAsync(socioId);
             if (socio == null)

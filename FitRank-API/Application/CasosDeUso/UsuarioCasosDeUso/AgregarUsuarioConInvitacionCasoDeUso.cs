@@ -28,7 +28,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             _generarToken = generarToken;
         }
 
-        public async Task<AuthResponseDTO?> Ejecutar(RegisterInvitacionDTO dto)
+        public virtual async Task<AuthResponseDTO?> Ejecutar(RegisterInvitacionDTO dto)
         {
             int? invitacionId = TokenInvitacionHelper.ParseIdFromJwt(dto.TokenInvitacion)
                                 ?? TokenInvitacionHelper.ParseIdFromTokenSimple(dto.TokenInvitacion);

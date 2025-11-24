@@ -14,8 +14,8 @@ namespace FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso
             _puntajeRepositorio = puntajeRepositorio;
             _mapper = mapper;
         }
-        
-        public async Task<ObtenerPuntajeDTO> Ejecutar(AgregarPuntajeDTO nuevoPuntaje)
+
+        public virtual async Task<ObtenerPuntajeDTO> Ejecutar(AgregarPuntajeDTO nuevoPuntaje)
         {
             var puntajeEntidad = _mapper.Map<Puntaje>(nuevoPuntaje);
             var puntajeAgregado = await _puntajeRepositorio.AgregarAsync(puntajeEntidad);

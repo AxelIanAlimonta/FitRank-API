@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.AmistadCasosDeUso
             _usuarioRepositorio = usuarioRepositorio;
         }
 
-        public async Task<AmistadDTO> Ejecutar(EnviarSolicitudAmistadDTO dto)
+        public virtual async Task<AmistadDTO> Ejecutar(EnviarSolicitudAmistadDTO dto)
         {
             if (dto.SolicitanteId == dto.DestinatarioId)
             {

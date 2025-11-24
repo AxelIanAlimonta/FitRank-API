@@ -17,7 +17,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<(Usuario entidad, UsuarioAuthDTO dto)?> Ejecutar(LoginDTO dto)
+        public virtual async Task<(Usuario entidad, UsuarioAuthDTO dto)?> Ejecutar(LoginDTO dto)
         {
             var usuario = await _usuarioRepositorio.ObtenerPorCondicionAsync(u => u.Email == dto.Email);
 

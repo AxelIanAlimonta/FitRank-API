@@ -24,7 +24,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<AuthResponseDTO?> Ejecutar(RegisterDTO dto)
+        public virtual async Task<AuthResponseDTO?> Ejecutar(RegisterDTO dto)
         {
             
             if (await _usuarioRepositorio.ExistePorEmailAsync(dto.Email))
