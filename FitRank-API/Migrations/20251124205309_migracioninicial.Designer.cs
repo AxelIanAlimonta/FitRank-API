@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     [DbContext(typeof(FitRankDbContext))]
-    [Migration("20251124190027_MigracionCompleta")]
-    partial class MigracionCompleta
+    [Migration("20251124205309_migracioninicial")]
+    partial class migracioninicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

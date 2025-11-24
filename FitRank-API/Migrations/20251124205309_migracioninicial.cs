@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     /// <inheritdoc />
-    public partial class MigracionCompleta : Migration
+    public partial class migracioninicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
