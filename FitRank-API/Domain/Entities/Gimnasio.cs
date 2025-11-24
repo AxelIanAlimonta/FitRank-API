@@ -19,6 +19,6 @@
         public ICollection<Asistencia>? Asistencias { get; set; }
         public ICollection<Profesor>? Profesores { get; set; } = new List<Profesor>();
         public ICollection<LogroGimnasio> LogrosConfigurados { get; set; } = new List<LogroGimnasio>();
-
+        public ICollection<Reporte> Reportes { get; set; } = new List<Reporte>();
     }
 }
