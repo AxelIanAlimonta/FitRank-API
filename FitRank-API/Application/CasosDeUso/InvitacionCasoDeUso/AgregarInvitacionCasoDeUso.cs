@@ -115,7 +115,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             };
         }
 
-        public async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(
+        public virtual async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(
      GenerarInvitacionDTO dto,
      string tokenActivacion,
      Domain.Entities.Invitacion invitacion)

@@ -9,6 +9,8 @@ namespace FitRank_API.Application.Mappings
         public InvitacionProfile()
         {
  
+            CreateMap<Invitacion, InvitacionListadoDTO>();
+
             CreateMap<GenerarInvitacionDTO, Invitacion>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.MetodoPago, opt => opt.MapFrom(src => src.MetodoPago ?? "Efectivo"))

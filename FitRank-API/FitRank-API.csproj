@@ -15,11 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20251120030131_MigracionGigante.cs" />
-    <Compile Remove="Migrations\20251120030131_MigracionGigante.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="AWSSDK.S3" Version="4.0.12" />
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
@@ -45,11 +40,7 @@
 
   <ItemGroup>
     <Folder Include="Application\Servicio\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Migrations\20251120030131_MigracionGigante.cs" />
-    <None Include="Migrations\20251120030131_MigracionGigante.Designer.cs" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

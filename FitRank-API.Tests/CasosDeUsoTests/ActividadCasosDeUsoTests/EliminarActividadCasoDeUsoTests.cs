@@ -59,4 +59,43 @@ public class EliminarActividadCasoDeUsoTests
         resultado.Should().BeFalse();
         _actividadRepositorioMock.Verify(repo => repo.EliminarAsync(actividadId), Times.Once);
     }
+
+    [Fact]
+    public async Task EliminarActividad_DebeLlamarRepositorioConIdCorrecto()
+    {
+        // Arrange
+        var actividadId = 42L;
+
+        _actividadRepositorioMock
+            .Setup(repo => repo.EliminarAsync(actividadId))
+            .ReturnsAsync(true);
+
+        var casoDeUso = new EliminarActividadCasoDeUso(_actividadRepositorioMock.Object);
+
+        // Act
+        await casoDeUso.Ejecutar(actividadId);
+
+        // Assert
+        _actividadRepositorioMock.Verify(repo => repo.EliminarAsync(actividadId), Times.Once);
+    }
+
+    [Fact]
+    public async Task EliminarActividad_DebeRetornarResultadoDelRepositorio()
+    {
+        // Arrange
+        var actividadId = 10L;
+        var resultadoEsperado = true;
+
+        _actividadRepositorioMock
+            .Setup(repo => repo.EliminarAsync(actividadId))
+            .ReturnsAsync(resultadoEsperado);
+
+        var casoDeUso = new EliminarActividadCasoDeUso(_actividadRepositorioMock.Object);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(actividadId);
+
+        // Assert
+        resultado.Should().Be(resultadoEsperado);
+    }
 }
