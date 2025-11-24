@@ -25,7 +25,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _qrHelper = qrHelper;
         }
 
-        public async Task<InvitacionResponseDTO> Ejecutar(FallbackEfectivoDTO dto, int adminId)
+        public virtual async Task<InvitacionResponseDTO> Ejecutar(FallbackEfectivoDTO dto, int adminId)
         {
            
             var gimnasio = await _gimnasioRepositorio.ObtenerPorAdministradorIdAsync(adminId);

@@ -12,7 +12,7 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
             _notiRepo = notiRepo;
         }
 
-        public async Task<Notificacion> Ejecutar(long emisorId, long receptorId, string titulo, string mensaje)
+        public virtual async Task<Notificacion> Ejecutar(long emisorId, long receptorId, string titulo, string mensaje)
         {
             var noti = new Notificacion
             {

@@ -20,7 +20,7 @@ namespace FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<LogroDisponibleDTO>> Ejecutar(int socioId, int gimnasioId)
+        public virtual async Task<IEnumerable<LogroDisponibleDTO>> Ejecutar(int socioId, int gimnasioId)
         {
             // 1) Config de logros del gimnasio (incluye Logro)
             var configGimnasio = await _logroGimnasioRepositorio

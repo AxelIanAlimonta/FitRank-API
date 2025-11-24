@@ -13,7 +13,7 @@ namespace FitRank_API.Application.CasosDeUso.AmistadCasosDeUso
             _amistadRepositorio = amistadRepositorio;
         }
 
-        public async Task<List<SolicitudAmistadDTO>> Ejecutar(int socioId)
+        public virtual async Task<List<SolicitudAmistadDTO>> Ejecutar(int socioId)
         {
             var solicitudes = await _amistadRepositorio.ObtenerSolicitudesPendientesAsync(socioId);
 

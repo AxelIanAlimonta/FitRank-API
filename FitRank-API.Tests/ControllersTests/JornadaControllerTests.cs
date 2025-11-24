@@ -115,6 +115,29 @@ public class JornadaControllerTests
         objectResult.Value.Should().Be("Error al agregar la jornada");
     }
 
+    //agregar devuelve badrequest cuando el modelo no es válido
+    [Fact]
+    public async Task Agregar_RetornaBadRequest_CuandoModeloNoEsValido()
+    {
+        // Arrange
+        var nuevaJornadaDTO = new AgregarJornadaDTO
+        {
+            HoraInicio = new TimeSpan(8, 0, 0),
+            HoraFin = new TimeSpan(14, 0, 0),
+            ProfesorId = -1, // ID inválido para simular error de validación
+            DiaDeLaSemanaId = 2
+        };
+        _controller.ModelState.AddModelError("ProfesorId", "El ID del profesor es inválido.");
+        // Act
+        var resultado = await _controller.Agregar(nuevaJornadaDTO);
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+        var errors = badRequestResult.Value as SerializableError;
+        errors!.Should().ContainKey("ProfesorId");
+    }
+
     [Fact]
     public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
     {
@@ -466,5 +489,5 @@ public class JornadaControllerTests
         objectResult.Value.Should().Be("Error al eliminar la jornada");
     }
 
-    
+
 }

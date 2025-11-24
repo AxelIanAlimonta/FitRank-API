@@ -118,7 +118,7 @@ public class EjercicioControllerTests
             new ObtenerEjercicioDTO { Id = 2, Nombre = "Ejercicio 2" }
         };
 
-        _mockObtenerTodos.Setup(caso => caso.EjecutarAsync())
+        _mockObtenerTodos.Setup(caso => caso.Ejecutar())
             .ReturnsAsync(listaEjerciciosDTO);
 
         // Act
@@ -138,7 +138,7 @@ public class EjercicioControllerTests
         // Arrange
         var listaEjerciciosDTO = new List<ObtenerEjercicioDTO>();
 
-        _mockObtenerTodos.Setup(caso => caso.EjecutarAsync())
+        _mockObtenerTodos.Setup(caso => caso.Ejecutar())
             .ReturnsAsync(listaEjerciciosDTO);
 
         // Act
@@ -156,7 +156,7 @@ public class EjercicioControllerTests
     public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
     {
         // Arrange
-        _mockObtenerTodos.Setup(caso => caso.EjecutarAsync())
+        _mockObtenerTodos.Setup(caso => caso.Ejecutar())
             .ThrowsAsync(new Exception("Error al obtener ejercicios"));
 
         // Act

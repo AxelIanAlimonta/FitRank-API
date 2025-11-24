@@ -19,7 +19,7 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
             _http = new HttpClient();
         }
 
-        public async Task<(string linkPago, string qrImage)> Ejecutar(decimal monto, string email, long invitacionId)
+        public virtual async Task<(string linkPago, string qrImage)> Ejecutar(decimal monto, string email, long invitacionId)
         {
             var payload = new
             {

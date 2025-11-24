@@ -17,7 +17,7 @@ namespace FitRank_API.Application.CasosDeUso.Ingreso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerIngresoDTO> Ejecutar(AgregarIngresoDTO dto)
+        public virtual async Task<ObtenerIngresoDTO> Ejecutar(AgregarIngresoDTO dto)
         {
             var ingreso = _mapper.Map<Domain.Entities.Ingreso>(dto);
             ingreso.Fecha = DateTime.UtcNow;

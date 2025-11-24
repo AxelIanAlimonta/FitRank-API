@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _invitacionRepositorio = invitacionRepositorio;
         }
 
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             var eliminado = await _invitacionRepositorio.Eliminar(id);
             if (!eliminado)

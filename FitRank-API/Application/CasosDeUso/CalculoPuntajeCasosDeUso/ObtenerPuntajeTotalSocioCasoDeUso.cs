@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
             _socioRepositorio = socioRepositorio;
         }
 
-        public async Task<double> Ejecutar(long socioId)
+        public virtual async Task<double> Ejecutar(long socioId)
         {
             var socio = await _socioRepositorio.ObtenerSocioConEntrenamientosAsync(socioId);
             if (socio == null || socio.Entrenamientos == null) return 0;

@@ -21,7 +21,7 @@ namespace FitRank_API.Application.CasosDeUso.MaquinaCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<MaquinaDetalleDTO> Ejecutar(long maquinaId)
+        public virtual async Task<MaquinaDetalleDTO> Ejecutar(long maquinaId)
         {
             var maquina = await _maquinaRepositorio.ObtenerMaquinaPorId(maquinaId);
 

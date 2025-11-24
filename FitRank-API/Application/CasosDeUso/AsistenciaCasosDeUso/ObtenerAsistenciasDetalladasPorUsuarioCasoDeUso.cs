@@ -22,7 +22,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<DetalleUsuarioAsistenciaRespuestaDTO> Ejecutar(long usuarioId)
+        public virtual async Task<DetalleUsuarioAsistenciaRespuestaDTO> Ejecutar(long usuarioId)
         {
             var socio = await _usuarioRepositorio.ObtenerSocioConGimnasioPorIdAsync(usuarioId);
 

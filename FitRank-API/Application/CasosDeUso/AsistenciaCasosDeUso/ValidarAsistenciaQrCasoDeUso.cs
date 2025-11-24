@@ -35,7 +35,7 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
         }
 
 
-        public async Task<QrValidationResponseDTO> Ejecutar(QrValidationDTO dto, int? adminId)
+        public virtual async Task<QrValidationResponseDTO> Ejecutar(QrValidationDTO dto, int? adminId)
         {
             try
             {

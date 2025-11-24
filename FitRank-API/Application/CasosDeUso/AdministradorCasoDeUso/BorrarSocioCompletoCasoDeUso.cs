@@ -13,7 +13,7 @@ namespace FitRank_API.Application.CasosDeUso.SocioCasosDeUso
             _context = context;
         }
 
-        public async Task<string> Ejecutar(long usuarioId)
+        public virtual async Task<string> Ejecutar(long usuarioId)
         {
             // ====== 1. INVITACIONES ======
             var invitaciones = await _context.Invitaciones

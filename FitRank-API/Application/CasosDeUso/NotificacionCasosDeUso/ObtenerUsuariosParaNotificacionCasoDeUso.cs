@@ -19,7 +19,7 @@ public class ObtenerUsuariosParaNotificacionCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<List<UsuarioNotificacionDTO>> Ejecutar()
+    public virtual async Task<List<UsuarioNotificacionDTO>> Ejecutar()
     {
         var usuarios = await _usuarioRepositorio.ObtenerTodosAsync();
 

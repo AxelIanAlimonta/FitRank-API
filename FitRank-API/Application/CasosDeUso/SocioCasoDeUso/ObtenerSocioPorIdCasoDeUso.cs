@@ -18,7 +18,7 @@ public class ObtenerSocioPorIdCasoDeUso
     }
 
 
-    public async Task<SocioDTO?> Ejecutar(long id)
+    public virtual async Task<SocioDTO?> Ejecutar(long id)
     {
         var socio = await _socioRepositorio.ObtenerPorIdAsync(id);
         return socio == null ? null : _mapper.Map<SocioDTO>(socio);

@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ObtenerAdministradorDTO>> Ejecutar()
+        public virtual async Task<IEnumerable<ObtenerAdministradorDTO>> Ejecutar()
         {
             var admins = await _repo.ObtenerTodosAsync();
             return _mapper.Map<IEnumerable<ObtenerAdministradorDTO>>(admins);

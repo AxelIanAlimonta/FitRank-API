@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.RankingCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<PosicionDTO?> Ejecutar(long socioId)
+        public virtual async Task<PosicionDTO?> Ejecutar(long socioId)
         {
             var posicionEntidad = await _rankingRepositorio.ObtenerPosicionPorIdAsync(socioId);
             if (posicionEntidad == null)

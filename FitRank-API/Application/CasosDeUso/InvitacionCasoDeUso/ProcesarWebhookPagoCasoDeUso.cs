@@ -32,7 +32,7 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
         }
 
         // ⚠️ Ahora recibe un long, NO el body
-        public async Task Ejecutar(long paymentId)
+        public virtual async Task Ejecutar(long paymentId)
         {
             try
             {

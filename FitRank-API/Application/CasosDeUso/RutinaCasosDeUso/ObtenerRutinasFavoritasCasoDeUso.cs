@@ -12,7 +12,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             _repo = repo;
         }
 
-        public async Task<List<ObtenerRutinaDTO>> Ejecutar(long socioId)
+        public virtual async Task<List<ObtenerRutinaDTO>> Ejecutar(long socioId)
         {
             var rutinas = await _repo.ObtenerFavoritasPorSocioAsync(socioId);
 

@@ -12,7 +12,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             _usuarioRepositorio = usuarioRepositorio;
         }
 
-        public async Task<string?> Ejecutar(string token, string nuevaPassword)
+        public virtual async Task<string?> Ejecutar(string token, string nuevaPassword)
         {
            
             var usuario = await _usuarioRepositorio.ObtenerPorCondicionAsync(

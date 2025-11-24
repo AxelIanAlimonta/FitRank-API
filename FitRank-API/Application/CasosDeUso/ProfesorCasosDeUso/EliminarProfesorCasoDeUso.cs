@@ -9,7 +9,7 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
         {
             _profesorRepositorio = profesorRepositorio;
         }
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             return await _profesorRepositorio.EliminarAsync(id);
         }

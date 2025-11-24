@@ -15,7 +15,7 @@ public class ObtenerSociosCasoDeUso
         _socioRepositorio = socioRepositorio;
         _mapper = mapper;
     }
-    public async Task<List<SocioDTO>> Ejecutar()
+    public virtual async Task<List<SocioDTO>> Ejecutar()
     {
         var socios = await _socioRepositorio.ObtenerTodosAsync();
         return _mapper.Map<List<SocioDTO>>(socios);

@@ -16,7 +16,7 @@ public class ActualizarDificultadCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<DificultadDTO?> Ejecutar(DificultadDTO dificultadDTO)
+    public virtual async Task<DificultadDTO?> Ejecutar(DificultadDTO dificultadDTO)
     {
         var dificultadEntidad = _mapper.Map<Dificultad>(dificultadDTO);
         var dificultadActualizada = await _dificultadRepositorio.ActualizarAsync(dificultadEntidad);
