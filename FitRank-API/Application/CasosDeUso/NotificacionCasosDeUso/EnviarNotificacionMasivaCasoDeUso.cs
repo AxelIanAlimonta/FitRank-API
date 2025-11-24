@@ -43,7 +43,7 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
             return null;
         }
 
-        public async Task<int> Ejecutar(long emisorId, string titulo, string mensaje)
+        public virtual async Task<int> Ejecutar(long emisorId, string titulo, string mensaje)
         {
             var gymId = await ObtenerGimnasioDeUsuario(emisorId);
             if (gymId == null)

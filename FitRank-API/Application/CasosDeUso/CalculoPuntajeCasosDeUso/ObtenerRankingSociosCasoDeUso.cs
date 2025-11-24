@@ -41,7 +41,7 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
         //    return ranking;
         //}
 
-        public async Task<List<SocioRankingDto>> Ejecutar(long gimnasioId, int cantidad)
+        public virtual async Task<List<SocioRankingDto>> Ejecutar(long gimnasioId, int cantidad)
         {
             return await _socioRepositorio.ObtenerRankingGeneralAsync(gimnasioId, cantidad);
         }

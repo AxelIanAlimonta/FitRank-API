@@ -13,7 +13,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             _asistenciaRepositorio = asistenciaRepositorio;
         }
 
-        public async Task<List<AsistenciaPorDiaDTO>> Ejecutar(long gimnasioId, DateTime? desde = null, DateTime? hasta = null)
+        public virtual async Task<List<AsistenciaPorDiaDTO>> Ejecutar(long gimnasioId, DateTime? desde = null, DateTime? hasta = null)
         {
             var asistencias = await _asistenciaRepositorio.ObtenerPorGimnasioYRangoAsync(gimnasioId, desde, hasta);
 

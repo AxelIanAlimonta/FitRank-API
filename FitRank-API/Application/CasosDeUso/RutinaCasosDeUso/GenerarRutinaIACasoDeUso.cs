@@ -18,7 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             _builder = builder;
         }
 
-        public async Task<ResultadoGenerarRutinaDTO> EjecutarAsync(RutinaRequestDTO input)
+        public virtual async Task<ResultadoGenerarRutinaDTO> EjecutarAsync(RutinaRequestDTO input)
         {
             // Ejecuta las reglas del motor
             var decisiones = await _rulesRunner.RunAsync(input);

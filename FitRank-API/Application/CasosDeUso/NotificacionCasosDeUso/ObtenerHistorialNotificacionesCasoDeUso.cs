@@ -37,7 +37,7 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
             return null;
         }
 
-        public async Task<IEnumerable<HistorialNotificacionDTO>> Ejecutar(long userId)
+        public virtual async Task<IEnumerable<HistorialNotificacionDTO>> Ejecutar(long userId)
         {
             var gymId = await ObtenerGimnasioDeUsuario(userId);
             if (gymId == null) return Enumerable.Empty<HistorialNotificacionDTO>();

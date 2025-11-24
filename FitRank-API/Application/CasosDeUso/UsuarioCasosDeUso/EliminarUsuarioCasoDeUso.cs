@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             _usuarioRepositorio = usuarioRepositorio;
         }
 
-        public async Task<bool> EjecutarAsync(long id)
+        public virtual async Task<bool> EjecutarAsync(long id)
         {
     
             var usuario = await _usuarioRepositorio.ObtenerPorIdAsync(id);

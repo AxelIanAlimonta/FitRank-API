@@ -20,7 +20,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             _profesorRepositorio = profesorRepositorio;
         }
 
-        public async Task<List<RutinaProfesorDTO>> Ejecutar(long profesorId)
+        public virtual async Task<List<RutinaProfesorDTO>> Ejecutar(long profesorId)
         {
             var profesor = await _profesorRepositorio.ObtenerPorIdAsync(profesorId);
             if (profesor == null)

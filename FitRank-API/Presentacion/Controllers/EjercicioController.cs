@@ -36,7 +36,7 @@ public class EjercicioController : ControllerBase
     {
         try
         {
-            var ejercicios = await _obtenerEjerciciosCasoDeUso.EjecutarAsync();
+            var ejercicios = await _obtenerEjerciciosCasoDeUso.Ejecutar();
             return Ok(ejercicios);
         }
         catch (Exception ex)

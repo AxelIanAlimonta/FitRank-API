@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<ObtenerRankingPorFechaDTO>> Ejecutar(long gimnasioId, int cantidad, DateOnly desde, DateOnly hasta)
+        public virtual async Task<List<ObtenerRankingPorFechaDTO>> Ejecutar(long gimnasioId, int cantidad, DateOnly desde, DateOnly hasta)
         {
             var socios = await _socioRepositorio.ObtenerSociosParaRankingAsync(gimnasioId);
             foreach (var s in socios)

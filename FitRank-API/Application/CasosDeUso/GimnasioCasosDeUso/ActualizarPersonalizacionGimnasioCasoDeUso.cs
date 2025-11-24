@@ -18,7 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.GimnasioCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerGimnasioDTO?> Ejecutar(ActualizarPersonalizacionDTO dto)
+        public virtual async Task<ObtenerGimnasioDTO?> Ejecutar(ActualizarPersonalizacionDTO dto)
         {
             var gymActualizado = await _gimnasioRepositorio.ActualizarPersonalizacion(
                 dto.Id,

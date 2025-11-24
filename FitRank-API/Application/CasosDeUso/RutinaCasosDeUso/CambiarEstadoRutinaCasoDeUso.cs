@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             _rutinaRepositorio = rutinaRepositorio;
         }
 
-        public async Task<bool> Ejecutar(long rutinaId, bool activa)
+        public virtual async Task<bool> Ejecutar(long rutinaId, bool activa)
         {
             return await _rutinaRepositorio.CambiarEstadoRutinaAsync(rutinaId, activa);
         }

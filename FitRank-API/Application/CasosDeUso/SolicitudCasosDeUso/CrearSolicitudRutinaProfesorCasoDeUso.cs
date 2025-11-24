@@ -14,7 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
         }
 
 
-        public async Task<long> EjecutarAsync(CrearSolicitudRutinaProfesorDTO dto, long socioId)
+        public virtual async Task<long> EjecutarAsync(CrearSolicitudRutinaProfesorDTO dto, long socioId)
         {
             var solicitud = new SolicitudRutinaProfesor
             {

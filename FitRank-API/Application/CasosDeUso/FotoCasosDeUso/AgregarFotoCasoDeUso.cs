@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.FotoCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerFotoDTO> Ejecutar(AgregarFotoDTO dto)
+        public virtual async Task<ObtenerFotoDTO> Ejecutar(AgregarFotoDTO dto)
         {
             var foto = _mapper.Map<Foto>(dto);
             await _fotoRepositorio.AgregarAsync(foto);

@@ -13,7 +13,7 @@ namespace FitRank_API.Application.CasosDeUso.AmistadCasosDeUso
             _amistadRepositorio = amistadRepositorio;
         }
 
-        public async Task<bool> Ejecutar(EliminarAmigoDTO dto)
+        public virtual async Task<bool> Ejecutar(EliminarAmigoDTO dto)
         {
             if (dto.SocioId == dto.AmigoId)
                 return false;
