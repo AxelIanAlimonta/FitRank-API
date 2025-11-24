@@ -18,7 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         }
 
        
-        public string GenerarQrToken(FitRank_API.Domain.Entities.Invitacion invitacion)
+        public virtual string GenerarQrToken(FitRank_API.Domain.Entities.Invitacion invitacion)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -41,7 +41,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         }
 
      
-        public async Task<string> GenerarQrImage(string data)
+        public virtual async Task<string> GenerarQrImage(string data)
         {
             var qrGenerator = new QRCodeGenerator();
             var qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
@@ -55,7 +55,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         }
 
     
-        public string GenerarQrDePaseJWT(Socio socio, long gimnasioId)
+        public virtual string GenerarQrDePaseJWT(Socio socio, long gimnasioId)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["QrSecret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -80,7 +80,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         }
 
       
-        public string GenerarQrDeMercadoPago(string linkPago)
+        public virtual string GenerarQrDeMercadoPago(string linkPago)
         {
             var qrGenerator = new QRCodeGenerator();
             var qrCodeData = qrGenerator.CreateQrCode(linkPago, QRCodeGenerator.ECCLevel.Q);
