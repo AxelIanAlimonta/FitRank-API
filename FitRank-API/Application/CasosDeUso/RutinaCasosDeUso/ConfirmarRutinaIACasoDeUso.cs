@@ -14,7 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             _rutinaRepositorio = rutinaRepositorio;
         }
 
-        public async Task<ResultadoConfirmarRutinaDTO> EjecutarAsync(ConfirmarRutinaDTO body)
+        public virtual async Task<ResultadoConfirmarRutinaDTO> EjecutarAsync(ConfirmarRutinaDTO body)
         {
             if (body is null || body.Rutina is null)
                 return ResultadoConfirmarRutinaDTO.Fallo("Body vacío.");

@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<ObtenerNotificacionDTO?> Ejecutar(AgregarNotificacionDTO dto)
+        public virtual async Task<ObtenerNotificacionDTO?> Ejecutar(AgregarNotificacionDTO dto)
         {
             var notificacion = _mapper.Map<Notificacion>(dto);
             var notificacionCreada = await _repo.AgregarAsync(notificacion);

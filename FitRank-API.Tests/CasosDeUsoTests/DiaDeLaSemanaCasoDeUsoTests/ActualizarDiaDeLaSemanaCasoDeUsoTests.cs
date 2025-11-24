@@ -83,7 +83,7 @@ public class ActualizarDiaDeLaSemanaCasoDeUsoTests
         resultado.Should().BeNull();
     }
 
-    //actualizar dia de la semana falla por dia no encontrado
+    //actualizar dia de la semana falla por dia no encontrado y retorna null
     [Fact]
     public async Task ActualizarDiaDeLaSemana_DeberiaFallar_CuandoElDiaNoExiste()
     {
@@ -96,12 +96,15 @@ public class ActualizarDiaDeLaSemanaCasoDeUsoTests
 
         _diaDeLaSemanaRepositorioMock
             .Setup(repo => repo.ActualizarDiaDeLaSemanaAsync(It.IsAny<DiaDeLaSemana>()))
-            .ThrowsAsync(new KeyNotFoundException("Día de la semana no encontrado"));
+            .ReturnsAsync((DiaDeLaSemana?)null);
 
         var actualizarDiaDeLaSemanaCasoDeUso = new ActualizarDiaDeLaSemanaCasoDeUso(_diaDeLaSemanaRepositorioMock.Object, _mapper);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(actualizarDiaDTO));
+        // Act
+        var resultado = await actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(actualizarDiaDTO);
+
+        // Assert
+        resultado.Should().BeNull();
     }
 
 }

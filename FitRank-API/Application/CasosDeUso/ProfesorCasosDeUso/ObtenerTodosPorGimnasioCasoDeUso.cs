@@ -13,7 +13,7 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
 
       
 
-        public async Task<List<ProfesorDTO>> Ejecutar(long gimnasioId)
+        public virtual async Task<List<ProfesorDTO>> Ejecutar(long gimnasioId)
         {
             var profesores = await _profesorRepositorio.ObtenerPorGimnasioAsync(gimnasioId);
 

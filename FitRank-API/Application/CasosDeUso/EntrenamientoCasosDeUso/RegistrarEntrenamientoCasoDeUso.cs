@@ -23,7 +23,7 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
             _context = context;
         }
 
-        public async Task<ObtenerEntrenamientoConPuntaje> Ejecutar(RegistrarEntrenamientoConActividadesDTO dto)
+        public virtual async Task<ObtenerEntrenamientoConPuntaje> Ejecutar(RegistrarEntrenamientoConActividadesDTO dto)
         {
             // 1️⃣ Crear entrenamiento
             var entrenamiento = new Entrenamiento

@@ -12,7 +12,7 @@ namespace FitRank_API.Application.CasosDeUso.SocioCasosDeUso
             _repo = repo;
         }
 
-        public async Task<bool> Ejecutar(long socioId, EditarPerfilSocioDTO dto)
+        public virtual async Task<bool> Ejecutar(long socioId, EditarPerfilSocioDTO dto)
         {
             var socio = await _repo.ObtenerPorIdAsync(socioId);
             if (socio == null) return false;

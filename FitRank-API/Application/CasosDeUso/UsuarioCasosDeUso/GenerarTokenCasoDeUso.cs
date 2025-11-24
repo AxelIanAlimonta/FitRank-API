@@ -18,7 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             _gimnasioRepositorio = gimnasioRepositorio;
         }
 
-        public string Ejecutar(Usuario user)
+        public virtual string Ejecutar(Usuario user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

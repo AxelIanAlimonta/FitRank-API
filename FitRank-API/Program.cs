@@ -124,6 +124,7 @@ builder.Services.AddScoped<ObtenerEjercicioPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarEjercicioCasoDeUso>();
 builder.Services.AddScoped<ActualizarEjercicioCasoDeUso>();
 builder.Services.AddScoped<EliminarEjercicioCasoDeUso>();
+builder.Services.AddScoped<ObtenerEjerciciosPorGrupoMuscularCasoDeUso>();
 
 builder.Services.AddScoped<IMaquinaRepositorio, MaquinaRepositorioImpl>();
 builder.Services.AddScoped<ObtenerMaquinasCasoDeUso>();

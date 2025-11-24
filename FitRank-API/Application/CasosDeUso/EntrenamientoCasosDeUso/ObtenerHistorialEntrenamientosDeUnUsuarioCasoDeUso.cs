@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<EntrenamientoHistorialDTO>> EjecutarAsync(long socioId)
+        public virtual async Task<List<EntrenamientoHistorialDTO>> EjecutarAsync(long socioId)
         {
             var entrenamientos = await _entrenamientoRepositorio.ObtenerHistorialCompletoPorSocioAsync(socioId);
 

@@ -17,7 +17,7 @@ namespace FitRank_API.Application.CasosDeUso.SocioCasosDeUso
             _medidaRepositorio = medidaRepositorio;
         }
 
-        public async Task<SocioConMedidasDTO?> Ejecutar(long socioId)
+        public virtual async Task<SocioConMedidasDTO?> Ejecutar(long socioId)
         {
             var socio = await _socioRepositorio.ObtenerSocioYUsuarioPorIdAsync(socioId);
             if (socio == null) return null;

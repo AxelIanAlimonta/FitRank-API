@@ -13,7 +13,7 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
         }
 
 
-        public async Task<bool> Ejecutar(long notificacionId, bool? leida = null, bool? activa = null)
+        public virtual async Task<bool> Ejecutar(long notificacionId, bool? leida = null, bool? activa = null)
         {
             var notificacion = await _notificacionRepositorio.ObtenerPorIdAsync(notificacionId);
 

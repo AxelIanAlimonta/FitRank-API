@@ -16,7 +16,7 @@ public class ActualizarSocioCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<SocioDTO> Ejecutar(SocioDTO socioDTO)
+    public virtual async Task<SocioDTO> Ejecutar(SocioDTO socioDTO)
     {
         var socio = _mapper.Map<Socio>(socioDTO);
         var socioActualizado = await _socioRepositorio.ActualizarAsync(socio);

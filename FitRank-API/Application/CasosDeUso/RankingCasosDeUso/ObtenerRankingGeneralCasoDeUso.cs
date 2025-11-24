@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.RankingCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<RankingDTO>> Ejecutar(int top)
+        public virtual async Task<List<RankingDTO>> Ejecutar(int top)
         {
             var rankingEntidades = await _rankingRepositorio.ObtenerTopSociosAsync(top);
             return _mapper.Map<List<RankingDTO>>(rankingEntidades);

@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular
             _mapper = mapper;
         }
 
-        public async Task<List<ConfiguracionGrupoMuscularDTO>> Ejecutar()
+        public virtual async Task<List<ConfiguracionGrupoMuscularDTO>> Ejecutar()
         {
             var configuracionesGrupoMuscular = await _configuracionGrupoMuscularRepositorio.ObtenerTodosAsync();
             return _mapper.Map<List<ConfiguracionGrupoMuscularDTO>>(configuracionesGrupoMuscular);

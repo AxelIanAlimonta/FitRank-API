@@ -17,7 +17,7 @@ namespace FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<Administrador> Ejecutar(AgregarAdministradorDTO dto)
+        public virtual async Task<Administrador> Ejecutar(AgregarAdministradorDTO dto)
         {
             var admin = _mapper.Map<Administrador>(dto);
             admin.Rol = "Admin";
