@@ -40,10 +40,7 @@
 
   <ItemGroup>
     <Folder Include="Application\Servicio\" />
-<<<<<<< HEAD
     <Folder Include="Migrations\" />
-=======
->>>>>>> dev-completar-tests
   </ItemGroup>
 
 </Project>
