@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitRank_API.Migrations
 {
     /// <inheritdoc />
-    public partial class MigracionGigante : Migration
+    public partial class MigracionCompleta : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,7 +64,8 @@ namespace FitRank_API.Migrations
                     Descripcion = table.Column<string>(type: "text", nullable: false),
                     Categoria = table.Column<string>(type: "text", nullable: false),
                     Imagen = table.Column<string>(type: "text", nullable: false),
-                    Puntos = table.Column<int>(type: "integer", nullable: false)
+                    Puntos = table.Column<int>(type: "integer", nullable: false),
+                    Estado = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,28 +133,6 @@ namespace FitRank_API.Migrations
                         name: "FK_ConfiguracionesGrupoMuscular_GruposMusculares_GrupoMuscular~",
                         column: x => x.GrupoMuscularId,
                         principalTable: "GruposMusculares",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LogrosSocios",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    LogroId = table.Column<long>(type: "bigint", nullable: false),
-                    SocioId = table.Column<long>(type: "bigint", nullable: false),
-                    PuntosOtorgados = table.Column<int>(type: "integer", nullable: false),
-                    FechaOtorgado = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LogrosSocios", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LogrosSocios_Logros_LogroId",
-                        column: x => x.LogroId,
-                        principalTable: "Logros",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -301,6 +280,33 @@ namespace FitRank_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LogrosGimnasio",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GimnasioId = table.Column<long>(type: "bigint", nullable: false),
+                    LogroId = table.Column<long>(type: "bigint", nullable: false),
+                    EstaActivo = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogrosGimnasio", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LogrosGimnasio_Gimnasios_GimnasioId",
+                        column: x => x.GimnasioId,
+                        principalTable: "Gimnasios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LogrosGimnasio_Logros_LogroId",
+                        column: x => x.LogroId,
+                        principalTable: "Logros",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Maquinas",
                 columns: table => new
                 {
@@ -343,6 +349,36 @@ namespace FitRank_API.Migrations
                     table.ForeignKey(
                         name: "FK_Profesores_Usuarios_Id",
                         column: x => x.Id,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reportes",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Titulo = table.Column<string>(type: "text", nullable: false),
+                    Descripcion = table.Column<string>(type: "text", nullable: false),
+                    FechaCreacion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Activo = table.Column<bool>(type: "boolean", nullable: false),
+                    UsuarioId = table.Column<long>(type: "bigint", nullable: false),
+                    GimnasioId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reportes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reportes_Gimnasios_GimnasioId",
+                        column: x => x.GimnasioId,
+                        principalTable: "Gimnasios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reportes_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
                         principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -552,6 +588,40 @@ namespace FitRank_API.Migrations
                         principalTable: "Socios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LogroSocio",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LogroId = table.Column<long>(type: "bigint", nullable: false),
+                    GimnasioId = table.Column<long>(type: "bigint", nullable: false),
+                    SocioId = table.Column<long>(type: "bigint", nullable: false),
+                    FechaObtenido = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogroSocio", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LogroSocio_Gimnasios_GimnasioId",
+                        column: x => x.GimnasioId,
+                        principalTable: "Gimnasios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LogroSocio_Logros_LogroId",
+                        column: x => x.LogroId,
+                        principalTable: "Logros",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LogroSocio_Socios_SocioId",
+                        column: x => x.SocioId,
+                        principalTable: "Socios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -961,9 +1031,37 @@ namespace FitRank_API.Migrations
                 column: "ProfesorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogrosSocios_LogroId",
-                table: "LogrosSocios",
+                name: "IX_Logros_NombreClave",
+                table: "Logros",
+                column: "NombreClave",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogrosGimnasio_GimnasioId_LogroId",
+                table: "LogrosGimnasio",
+                columns: new[] { "GimnasioId", "LogroId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogrosGimnasio_LogroId",
+                table: "LogrosGimnasio",
                 column: "LogroId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogroSocio_GimnasioId",
+                table: "LogroSocio",
+                column: "GimnasioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogroSocio_LogroId_GimnasioId_SocioId",
+                table: "LogroSocio",
+                columns: new[] { "LogroId", "GimnasioId", "SocioId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogroSocio_SocioId",
+                table: "LogroSocio",
+                column: "SocioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Maquinas_GimnasioId",
@@ -994,6 +1092,16 @@ namespace FitRank_API.Migrations
                 name: "IX_Puntajes_SocioId",
                 table: "Puntajes",
                 column: "SocioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reportes_GimnasioId",
+                table: "Reportes",
+                column: "GimnasioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reportes_UsuarioId",
+                table: "Reportes",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rutinas_AdministradorId",
@@ -1092,7 +1200,10 @@ namespace FitRank_API.Migrations
                 name: "Jornadas");
 
             migrationBuilder.DropTable(
-                name: "LogrosSocios");
+                name: "LogrosGimnasio");
+
+            migrationBuilder.DropTable(
+                name: "LogroSocio");
 
             migrationBuilder.DropTable(
                 name: "MedidasCorporales");
@@ -1105,6 +1216,9 @@ namespace FitRank_API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Puntajes");
+
+            migrationBuilder.DropTable(
+                name: "Reportes");
 
             migrationBuilder.DropTable(
                 name: "SolicitudesRutinaProfesor");
