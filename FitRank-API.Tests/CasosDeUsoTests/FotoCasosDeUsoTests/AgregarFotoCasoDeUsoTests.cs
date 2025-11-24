@@ -65,4 +65,104 @@ public class AgregarFotoCasoDeUsoTests
         resultado.UrlImagen.Should().Be(nuevaFotoDTO.UrlImagen);
         resultado.SocioId.Should().Be(nuevaFotoDTO.SocioId);
     }
+
+    [Fact]
+    public async Task DebeMapearCorrectamenteTodosLosCampos()
+    {
+        // Arrange
+        var dto = new AgregarFotoDTO
+        {
+            Fecha = new DateTime(2024, 6, 15, 10, 30, 0),
+            UrlImagen = "https://example.com/foto.jpg",
+            SocioId = 123
+        };
+
+        _fotoRepositorioMock.Setup(repo => repo.AgregarAsync(It.IsAny<Foto>()))
+            .ReturnsAsync((Foto f) => f);
+
+        var casoDeUso = new AgregarFotoCasoDeUso(_fotoRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(dto);
+
+        // Assert
+        resultado.Should().NotBeNull();
+        resultado.Fecha.Should().Be(dto.Fecha);
+        resultado.UrlImagen.Should().Be(dto.UrlImagen);
+        resultado.SocioId.Should().Be(dto.SocioId);
+    }
+
+    [Fact]
+    public async Task DebeLlamarRepositorioConDatosCorrectos()
+    {
+        // Arrange
+        var dto = new AgregarFotoDTO
+        {
+            Fecha = DateTime.UtcNow,
+            UrlImagen = "https://storage.com/image.png",
+            SocioId = 999
+        };
+
+        _fotoRepositorioMock.Setup(repo => repo.AgregarAsync(It.IsAny<Foto>()))
+            .ReturnsAsync((Foto f) => f);
+
+        var casoDeUso = new AgregarFotoCasoDeUso(_fotoRepositorioMock.Object, _mapper);
+
+        // Act
+        await casoDeUso.Ejecutar(dto);
+
+        // Assert
+        _fotoRepositorioMock.Verify(repo => repo.AgregarAsync(
+            It.Is<Foto>(f => f.SocioId == dto.SocioId && 
+                            f.UrlImagen == dto.UrlImagen && 
+                            f.Fecha == dto.Fecha)), 
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task DeberiaManteneFechaOriginalDelDTO()
+    {
+        // Arrange
+        var fechaEspecifica = new DateTime(2022, 3, 10, 14, 25, 30);
+        var dto = new AgregarFotoDTO
+        {
+            Fecha = fechaEspecifica,
+            UrlImagen = "http://test.com/image.jpg",
+            SocioId = 50
+        };
+
+        _fotoRepositorioMock.Setup(repo => repo.AgregarAsync(It.IsAny<Foto>()))
+            .ReturnsAsync((Foto f) => f);
+
+        var casoDeUso = new AgregarFotoCasoDeUso(_fotoRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(dto);
+
+        // Assert
+        resultado.Fecha.Should().Be(fechaEspecifica);
+    }
+
+    [Fact]
+    public async Task DeberiaRetornarTipoObtenerFotoDTO()
+    {
+        // Arrange
+        var dto = new AgregarFotoDTO
+        {
+            Fecha = DateTime.UtcNow,
+            UrlImagen = "http://example.com/photo.jpg",
+            SocioId = 1
+        };
+
+        _fotoRepositorioMock.Setup(repo => repo.AgregarAsync(It.IsAny<Foto>()))
+            .ReturnsAsync((Foto f) => f);
+
+        var casoDeUso = new AgregarFotoCasoDeUso(_fotoRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(dto);
+
+        // Assert
+        resultado.Should().BeOfType<ObtenerFotoDTO>();
+    }
 }

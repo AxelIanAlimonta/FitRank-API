@@ -85,5 +85,117 @@ namespace FitRank_API.Tests.CasosDeUsoTests.PuntajeCasosDeUsoTests
             resultado.Should().BeNull();
             _mockRepositorio.Verify(r => r.ActualizarAsync(It.IsAny<Puntaje>()), Times.Once);
         }
+
+        [Fact]
+        public async Task DebeMapearCorrectamenteTodosLosCampos()
+        {
+            // Arrange
+            var fecha = new DateTime(2024, 5, 10, 14, 30, 0);
+            var dto = new ActualizarPuntajeDTO
+            {
+                Id = 25,
+                SocioId = 100,
+                Motivo = "Buen rendimiento",
+                Fecha = fecha,
+                Valor = 20
+            };
+
+            var puntajeActualizado = new Puntaje
+            {
+                Id = 25,
+                SocioId = 100,
+                Motivo = "Buen rendimiento",
+                Fecha = fecha,
+                Valor = 20
+            };
+
+            _mockRepositorio.Setup(r => r.ActualizarAsync(It.IsAny<Puntaje>()))
+                .ReturnsAsync(puntajeActualizado);
+
+            // Act
+            var resultado = await _casoDeUso.Ejecutar(dto);
+
+            // Assert
+            resultado.Should().NotBeNull();
+            resultado!.Id.Should().Be(25);
+            resultado.SocioId.Should().Be(100);
+            resultado.Motivo.Should().Be("Buen rendimiento");
+            resultado.Fecha.Should().Be(fecha);
+            resultado.Valor.Should().Be(20);
+        }
+
+        [Fact]
+        public async Task DebeLlamarRepositorioConDatosCorrectos()
+        {
+            // Arrange
+            var dto = new ActualizarPuntajeDTO
+            {
+                Id = 5,
+                SocioId = 50,
+                Motivo = "Test",
+                Fecha = DateTime.UtcNow,
+                Valor = 30
+            };
+
+            _mockRepositorio.Setup(r => r.ActualizarAsync(It.IsAny<Puntaje>()))
+                .ReturnsAsync((Puntaje p) => p);
+
+            // Act
+            await _casoDeUso.Ejecutar(dto);
+
+            // Assert
+            _mockRepositorio.Verify(r => r.ActualizarAsync(
+                It.Is<Puntaje>(p => p.Id == dto.Id && 
+                                   p.SocioId == dto.SocioId && 
+                                   p.Motivo == dto.Motivo && 
+                                   p.Valor == dto.Valor)), 
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task DeberiaActualizarPuntajesConDiferentesValores()
+        {
+            // Arrange
+            var dto1 = new ActualizarPuntajeDTO { Id = 1, SocioId = 1, Motivo = "M1", Fecha = DateTime.Now, Valor = 5 };
+            var dto2 = new ActualizarPuntajeDTO { Id = 2, SocioId = 2, Motivo = "M2", Fecha = DateTime.Now, Valor = 50 };
+
+            _mockRepositorio.Setup(r => r.ActualizarAsync(It.Is<Puntaje>(p => p.Id == 1)))
+                .ReturnsAsync(new Puntaje { Id = 1, SocioId = 1, Motivo = "M1", Fecha = dto1.Fecha, Valor = 5 });
+
+            _mockRepositorio.Setup(r => r.ActualizarAsync(It.Is<Puntaje>(p => p.Id == 2)))
+                .ReturnsAsync(new Puntaje { Id = 2, SocioId = 2, Motivo = "M2", Fecha = dto2.Fecha, Valor = 50 });
+
+            // Act
+            var resultado1 = await _casoDeUso.Ejecutar(dto1);
+            var resultado2 = await _casoDeUso.Ejecutar(dto2);
+
+            // Assert
+            resultado1!.Valor.Should().Be(5);
+            resultado2!.Valor.Should().Be(50);
+        }
+
+        [Fact]
+        public async Task DeberiaRetornarTipoObtenerPuntajeDTO()
+        {
+            // Arrange
+            var dto = new ActualizarPuntajeDTO
+            {
+                Id = 1,
+                SocioId = 1,
+                Motivo = "Test",
+                Fecha = DateTime.Now,
+                Valor = 10
+            };
+
+            _mockRepositorio.Setup(r => r.ActualizarAsync(It.IsAny<Puntaje>()))
+                .ReturnsAsync((Puntaje p) => p);
+
+            // Act
+            var resultado = await _casoDeUso.Ejecutar(dto);
+
+            // Assert
+            resultado.Should().NotBeNull();
+            resultado.Should().BeAssignableTo<FitRank_API.Application.DTOs.PuntajeDTOs.ObtenerPuntajeDTO>();
+        }
     }
 }

@@ -72,5 +72,95 @@ namespace FitRank_API.Tests.CasosDeUsoTests.RankingCasosDeUsoTests
             resultado.Should().BeEmpty();
             _mockRepositorio.Verify(r => r.ObtenerTopSociosAsync(top), Times.Once);
         }
+
+        [Fact]
+        public async Task DebeMapearCorrectamenteTodosLosCampos()
+        {
+            // Arrange
+            int top = 5;
+            var rankingDTOs = new List<RankingDTO>
+            {
+                new RankingDTO { SocioId = 10, NombreCompleto = "Carlos Rodríguez", PuntajeTotal = 250 },
+                new RankingDTO { SocioId = 20, NombreCompleto = "Ana Martínez", PuntajeTotal = 200 }
+            };
+
+            _mockRepositorio.Setup(r => r.ObtenerTopSociosAsync(top))
+                .ReturnsAsync(rankingDTOs);
+
+            // Act
+            var resultado = await _casoDeUso.Ejecutar(top);
+
+            // Assert
+            resultado.Should().HaveCount(2);
+            resultado[0].SocioId.Should().Be(10);
+            resultado[0].NombreCompleto.Should().Be("Carlos Rodríguez");
+            resultado[0].PuntajeTotal.Should().Be(250);
+            resultado[1].SocioId.Should().Be(20);
+            resultado[1].NombreCompleto.Should().Be("Ana Martínez");
+            resultado[1].PuntajeTotal.Should().Be(200);
+        }
+
+        [Fact]
+        public async Task DebeLlamarRepositorioConTopCorrecto()
+        {
+            // Arrange
+            int top = 20;
+            var rankingDTOs = new List<RankingDTO>();
+
+            _mockRepositorio.Setup(r => r.ObtenerTopSociosAsync(top))
+                .ReturnsAsync(rankingDTOs);
+
+            // Act
+            await _casoDeUso.Ejecutar(top);
+
+            // Assert
+            _mockRepositorio.Verify(r => r.ObtenerTopSociosAsync(top), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeberiaRetornarExactamenteCantidadTopSolicitada()
+        {
+            // Arrange
+            int top = 3;
+            var rankingDTOs = new List<RankingDTO>
+            {
+                new RankingDTO { SocioId = 1, NombreCompleto = "Primero", PuntajeTotal = 300 },
+                new RankingDTO { SocioId = 2, NombreCompleto = "Segundo", PuntajeTotal = 200 },
+                new RankingDTO { SocioId = 3, NombreCompleto = "Tercero", PuntajeTotal = 100 }
+            };
+
+            _mockRepositorio.Setup(r => r.ObtenerTopSociosAsync(top))
+                .ReturnsAsync(rankingDTOs);
+
+            // Act
+            var resultado = await _casoDeUso.Ejecutar(top);
+
+            // Assert
+            resultado.Should().HaveCount(3);
+        }
+
+        [Fact]
+        public async Task DeberiaRetornarRankingEnElMismoOrdenDelRepositorio()
+        {
+            // Arrange
+            int top = 5;
+            var rankingDTOs = new List<RankingDTO>
+            {
+                new RankingDTO { SocioId = 5, NombreCompleto = "Quinto", PuntajeTotal = 150 },
+                new RankingDTO { SocioId = 3, NombreCompleto = "Tercero", PuntajeTotal = 250 },
+                new RankingDTO { SocioId = 1, NombreCompleto = "Primero", PuntajeTotal = 350 }
+            };
+
+            _mockRepositorio.Setup(r => r.ObtenerTopSociosAsync(top))
+                .ReturnsAsync(rankingDTOs);
+
+            // Act
+            var resultado = await _casoDeUso.Ejecutar(top);
+
+            // Assert
+            resultado[0].SocioId.Should().Be(5);
+            resultado[1].SocioId.Should().Be(3);
+            resultado[2].SocioId.Should().Be(1);
+        }
     }
 }

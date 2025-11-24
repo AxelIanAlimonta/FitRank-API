@@ -68,5 +68,80 @@ namespace FitRank_API.Tests.CasosDeUsoTests.IngresoCasosDeUsoTests
             resultado.Should().BeNull();
             _mockRepositorio.Verify(r => r.ObtenerPorIdAsync(ingresoId), Times.Once);
         }
+
+        [Fact]
+        public async Task DebeMapearCorrectamenteTodosLosCampos()
+        {
+            // Arrange
+            long ingresoId = 5;
+            var fechaEsperada = new DateTime(2024, 11, 20, 10, 30, 0, DateTimeKind.Utc);
+            var ingresoExistente = new Ingreso
+            {
+                Id = ingresoId,
+                GimnasioId = 3,
+                Monto = 2500,
+                MetodoPago = "Transferencia",
+                Observaciones = "Mensualidad",
+                Confirmado = false,
+                Fecha = fechaEsperada,
+                UsuarioId = 10
+            };
+
+            _mockRepositorio.Setup(r => r.ObtenerPorIdAsync(ingresoId))
+                .ReturnsAsync(ingresoExistente);
+
+            // Act
+            var resultado = await _casoDeUso.Ejecutar(ingresoId);
+
+            // Assert
+            resultado.Should().NotBeNull();
+            resultado!.Id.Should().Be(5);
+            resultado.GimnasioId.Should().Be(3);
+            resultado.Monto.Should().Be(2500);
+            resultado.MetodoPago.Should().Be("Transferencia");
+            resultado.Confirmado.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task DebeLlamarRepositorioConIdCorrecto()
+        {
+            // Arrange
+            long ingresoId = 42;
+            var ingreso = new Ingreso { Id = ingresoId };
+
+            _mockRepositorio.Setup(r => r.ObtenerPorIdAsync(ingresoId))
+                .ReturnsAsync(ingreso);
+
+            // Act
+            await _casoDeUso.Ejecutar(ingresoId);
+
+            // Assert
+            _mockRepositorio.Verify(r => r.ObtenerPorIdAsync(ingresoId), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeberiaMapearIngresoConMontoCero()
+        {
+            // Arrange
+            long ingresoId = 7;
+            var ingresoExistente = new Ingreso
+            {
+                Id = ingresoId,
+                GimnasioId = 2,
+                Monto = 0,
+                MetodoPago = "Efectivo",
+                Confirmado = true
+            };
+
+            _mockRepositorio.Setup(r => r.ObtenerPorIdAsync(ingresoId))
+                .ReturnsAsync(ingresoExistente);
+
+            // Act
+            var resultado = await _casoDeUso.Ejecutar(ingresoId);
+
+            // Assert
+            resultado.Should().NotBeNull();
+            resultado!.Monto.Should().Be(0);
+        }
     }
 }
