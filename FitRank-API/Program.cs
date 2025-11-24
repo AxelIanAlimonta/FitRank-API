@@ -159,6 +159,7 @@ builder.Services.AddScoped<ObtenerRutinaCompletaCasoDeUso>();
 builder.Services.AddScoped<CambiarEstadoRutinaCasoDeUso>();
 builder.Services.AddScoped<MarcarDesmarcarRutinaFavoritaCasoDeUso>();
 builder.Services.AddScoped<ObtenerRutinasFavoritasCasoDeUso>();
+builder.Services.AddScoped<ObtenerRutinasFavoritasGimnasioCasoDeUso>();
 
 
 builder.Services.AddScoped<ISesionRepositorio, SesionRepositorioImpl>();

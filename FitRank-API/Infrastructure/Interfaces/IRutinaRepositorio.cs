@@ -23,6 +23,6 @@ public interface IRutinaRepositorio
     Task GuardarRutinaCompletaAsync(Rutina rutina, List<SesionIADTO> sesiones);
     Task<List<Rutina>> ObtenerTodasLasRutinasPorProfesorIdAsync(long profesorId);
 
-   
+    Task<List<Rutina>> ObtenerRutinasFavoritasPorSociosAsync(List<long> socioIds);
 
 }

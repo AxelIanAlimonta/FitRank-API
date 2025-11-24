@@ -39,6 +39,7 @@ namespace FitRank_API.Application.CasosDeUso.SocioCasosDeUso
                 Nivel = socio.Nivel,
                 Puntaje = socio.Puntaje,
                 ParticipaEnRanking = socio.ParticipaEnRanking,
+                FechaRegistro=socio.FechaRegistro,
                 GimnasioId = socio.GimnasioId,
                 GimnasioNombre = socio.Gimnasio?.Nombre,
                 QrToken = socio.QrToken

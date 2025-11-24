@@ -208,4 +208,13 @@ public class RutinaRepositorioImpl : IRutinaRepositorio
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<List<Rutina>> ObtenerRutinasFavoritasPorSociosAsync(List<long> socioIds)
+    {
+        return await _context.Rutinas
+            .Where(r => r.Favorita == true && socioIds.Contains(r.SocioId))
+            .ToListAsync();
+    }
+
+
 }

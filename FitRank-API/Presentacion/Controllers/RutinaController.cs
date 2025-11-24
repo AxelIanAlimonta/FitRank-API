@@ -24,6 +24,8 @@ public class RutinaController : ControllerBase
     private readonly ObtenerRutinasFavoritasCasoDeUso _obtenerFavoritasCasoDeUso;
     private readonly MarcarDesmarcarRutinaFavoritaCasoDeUso _marcarDesmarcarRutinaFavoritaCasoDeUso;
     private readonly CambiarEstadoRutinaCasoDeUso _cambiarEstadoRutinaCasoDeUso;
+    private readonly ObtenerRutinasFavoritasCasoDeUso _obtenerFavoritasGimnasioCasoDeUso;
+
 
 
 
@@ -32,32 +34,32 @@ public class RutinaController : ControllerBase
         AgregarRutinaCasoDeUso agregarRutinaCasoDeUso,
         ObtenerRutinaPorIdCasoDeUso obtenerRutinaPorIdCasoDeUso,
         ActualizarRutinaCasoDeUso actualizarRutinaCasoDeUso,
-        ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
         EliminarRutinaCasoDeUso eliminarRutinaCasoDeUso,
+        ObtenerTodasLasRutinasCasoDeUso obtenerTodasLasRutinasCasoDeUso,
         GenerarRutinaIACasoDeUso generarRutinaIACasoDeUso,
         ConfirmarRutinaIACasoDeUso confirmarRutinaIACasoDeUso,
         ObtenerRutinaCompletaCasoDeUso obtenerRutinaCompletaCasoDeUso,
+        ObtenerRutinasFavoritasCasoDeUso obtenerFavoritasCasoDeUso,
         MarcarDesmarcarRutinaFavoritaCasoDeUso marcarDesmarcarRutinaFavoritaCasoDeUso,
         CambiarEstadoRutinaCasoDeUso cambiarEstadoRutinaCasoDeUso,
-        ObtenerRutinasFavoritasCasoDeUso obtenerRutinasFavoritasCasoDeUso)
+        ObtenerRutinasFavoritasCasoDeUso obtenerFavoritasGimnasioCasoDeUso
+        )
     {
         _agregarRutinaCasoDeUso = agregarRutinaCasoDeUso;
         _obtenerRutinaPorIdCasoDeUso = obtenerRutinaPorIdCasoDeUso;
         _actualizarRutinaCasoDeUso = actualizarRutinaCasoDeUso;
-        
-        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _eliminarRutinaCasoDeUso = eliminarRutinaCasoDeUso;
+        _obtenerTodasLasRutinasCasoDeUso = obtenerTodasLasRutinasCasoDeUso;
         _generarRutinaIACasoDeUso = generarRutinaIACasoDeUso;
         _confirmarRutinaIACasoDeUso = confirmarRutinaIACasoDeUso;
         _obtenerRutinaCompletaCasoDeUso = obtenerRutinaCompletaCasoDeUso;
-        _obtenerFavoritasCasoDeUso = obtenerRutinasFavoritasCasoDeUso;
+        _obtenerFavoritasCasoDeUso = obtenerFavoritasCasoDeUso;
         _marcarDesmarcarRutinaFavoritaCasoDeUso = marcarDesmarcarRutinaFavoritaCasoDeUso;
         _cambiarEstadoRutinaCasoDeUso = cambiarEstadoRutinaCasoDeUso;
+        _obtenerFavoritasGimnasioCasoDeUso = obtenerFavoritasGimnasioCasoDeUso;
     }
 
-   
-  
-  
+
 
     //post
     [HttpPost]
@@ -243,6 +245,14 @@ public class RutinaController : ControllerBase
         var list = await _obtenerFavoritasCasoDeUso.Ejecutar(socioId);
         return Ok(list);
     }
+    [HttpGet("rutina/favoritas/gimnasio/{gimnasioId}")]
+    public async Task<IActionResult> GetFavoritasGimnasio(long gimnasioId)
+    {
+        var list = await _obtenerFavoritasGimnasioCasoDeUso.Ejecutar(gimnasioId);
+        return Ok(list);
+    }
+
+
 
     /*
     [HttpPost("confirmar")]

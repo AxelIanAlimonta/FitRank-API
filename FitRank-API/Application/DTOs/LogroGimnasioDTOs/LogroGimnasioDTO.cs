@@ -7,7 +7,7 @@
         public bool EstaHabilitado { get; set; }
 
 
-        // datos del logro global para mostrar en el panel
+    
         public string Nombre { get; set; }
         public string NombreClave { get; set; }
         public string Descripcion { get; set; }
