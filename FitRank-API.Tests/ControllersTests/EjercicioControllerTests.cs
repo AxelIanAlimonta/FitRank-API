@@ -25,6 +25,7 @@ public class EjercicioControllerTests
     private readonly Mock<EliminarEjercicioCasoDeUso> _mockEliminar;
     private readonly Mock<ObtenerEjercicioPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerEjerciciosCasoDeUso> _mockObtenerTodos;
+    private readonly Mock<ObtenerEjerciciosPorGrupoMuscularCasoDeUso> _mockObtenerEjerciciosPorGrupoMuscularCasoDeUso;
 
     public EjercicioControllerTests()
     {
@@ -36,13 +37,15 @@ public class EjercicioControllerTests
         _mockEliminar = new Mock<EliminarEjercicioCasoDeUso>(mockRepositorio.Object);
         _mockObtenerPorId = new Mock<ObtenerEjercicioPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerEjerciciosCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockObtenerEjerciciosPorGrupoMuscularCasoDeUso = new Mock<ObtenerEjerciciosPorGrupoMuscularCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
 
         _controller = new EjercicioController(
             _mockObtenerTodos.Object,
             _mockObtenerPorId.Object,
             _mockAgregar.Object,
             _mockActualizar.Object,
-            _mockEliminar.Object
+            _mockEliminar.Object,
+            _mockObtenerEjerciciosPorGrupoMuscularCasoDeUso.Object
         );
 
     }

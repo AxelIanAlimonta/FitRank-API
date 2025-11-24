@@ -1,4 +1,5 @@
-﻿using FitRank_API.Domain.Entities;
+﻿using FitRank_API.Application.DTOs.RutinaDTOs;
+using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -77,6 +78,15 @@ public class EjercicioRepositorioImpl : IEjercicioRepositorio
         return await _context.Ejercicios
             .Where(e => e.MaquinaId == maquinaId)
             .Include(e => e.GrupoMuscular)
+            .ToListAsync();
+    }
+
+    public async Task<List<Ejercicio>> ObtenerEjerciciosPorGrupoMuscularAsync(long grupoMuscularId)
+    {
+        return await _context.Ejercicios
+            .Where(e => e.GrupoMuscularId == grupoMuscularId)
+            .Include(e => e.GrupoMuscular)
+            .Include(e => e.Maquina)
             .ToListAsync();
     }
 }
