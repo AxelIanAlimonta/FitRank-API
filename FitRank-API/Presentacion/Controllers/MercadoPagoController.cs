@@ -108,7 +108,7 @@ namespace FitRank_API.Presentacion.Controllers
         {
             try
             {
-                decimal monto = 30000;
+                decimal monto = 1;
 
                 var resultado = await _crearPreferenciaCaso.Ejecutar(
                     monto,
