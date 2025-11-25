@@ -19,7 +19,7 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
             _grupoMuscularRepositorio = grupoMuscularRepositorio;
         }
 
-        public virtual async Task<List<ObtenerRankingPorGrupoMuscularDTO>> Ejecutar(long gimnasioId, string grupo, int cantidad)
+        public virtual async Task<List<ObtenerRankingPorGrupoMuscularDTO>> Ejecutar(long gimnasioId, long grupoId, int cantidad)
         {
             var grupoMuscular = await _grupoMuscularRepositorio.ObtenerPorIdAsync(grupoId);
             if (grupoMuscular == null)
