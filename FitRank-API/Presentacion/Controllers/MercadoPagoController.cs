@@ -119,7 +119,8 @@ namespace FitRank_API.Presentacion.Controllers
                 return Ok(new
                 {
                     linkPago = resultado.linkPago,
-                    mensaje = "Link generado correctamente"
+                    qrImage = resultado.qrImage, 
+                    mensaje = "Pago generado correctamente"
                 });
             }
             catch (Exception ex)
@@ -127,6 +128,7 @@ namespace FitRank_API.Presentacion.Controllers
                 return BadRequest(new { mensaje = "Error al generar pago", detalle = ex.Message });
             }
         }
+
 
 
 

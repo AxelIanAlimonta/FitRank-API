@@ -127,7 +127,7 @@ namespace FitRank_API.Controllers
                 var actividad = await _registrar.Ejecutar(dto);
                 return Ok(new
                 {
-                    actividad.Id,
+                    actividad.Id,   
                     actividad.SerieId,
                     actividad.EntrenamientoId,
                     actividad.Repeticiones,
