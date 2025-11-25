@@ -44,7 +44,14 @@ namespace FitRank_API.Application.Hubs
             await base.OnConnectedAsync();
         }
 
+
+        public async Task EnviarActualizacionTema(long gimnasioId, object tema)
+        {
+            await Clients.Group($"gimnasio-{gimnasioId}")
+                .SendAsync("ThemeUpdated", tema);
+
+            Console.WriteLine($"🎨 Tema enviado al grupo gimnasio-{gimnasioId}");
+        }
+
     }
-
 }
-

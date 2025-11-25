@@ -1,4 +1,5 @@
 ﻿using FitRank_API.Application.DTOs.AmistadDTOs;
+using FitRank_API.Domain.Entities;
 using FitRank_API.Domain.Enums;
 using FitRank_API.Infrastructure.Interfaces;
 
@@ -15,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.AmistadCasosDeUso
             _usuarioRepositorio = usuarioRepositorio;
         }
 
-        public async Task<AmistadDTO> Ejecutar(EnviarSolicitudAmistadDTO dto)
+        public virtual async Task<AmistadDTO> Ejecutar(EnviarSolicitudAmistadDTO dto)
         {
             if (dto.SolicitanteId == dto.DestinatarioId)
             {
@@ -45,7 +46,7 @@ namespace FitRank_API.Application.CasosDeUso.AmistadCasosDeUso
 
             if (existente != null)
             {
-                if (existente.Estado == EstadoAmistad.Aceptado) 
+                if (existente.Estado == EstadoAmistad.Aceptado)
                 {
                     return new AmistadDTO
                     {

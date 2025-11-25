@@ -7,11 +7,13 @@ using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+[ExcludeFromCodeCoverage]
 public sealed class RoutineBuilderImpl : IRoutineBuilder
 {
     private readonly IEjercicioCatalogo _catalogo;

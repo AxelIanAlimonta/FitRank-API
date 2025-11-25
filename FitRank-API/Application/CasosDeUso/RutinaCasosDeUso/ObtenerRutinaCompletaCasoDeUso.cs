@@ -2,6 +2,8 @@
 using FitRank_API.Application.DTOs.RutinaDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
+namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
+
 public class ObtenerRutinaCompletaCasoDeUso
 {
     private readonly IRutinaRepositorio _repo;
@@ -13,12 +15,12 @@ public class ObtenerRutinaCompletaCasoDeUso
         _mapper = mapper;
     }
 
-   public async Task<List<RutinaCompletaDTO>> Ejecutar(long socioId)
-        {
-      
+    public virtual async Task<List<RutinaCompletaDTO>> Ejecutar(long socioId)
+    {
+
         var rutinas = await _repo.ObtenerRutinasPorSocioAsync(socioId);
 
-       
+
         var resultado = rutinas.Select(r => new RutinaCompletaDTO
         {
             Id = r.Id,

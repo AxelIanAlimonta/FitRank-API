@@ -16,19 +16,22 @@ public class EjercicioController : ControllerBase
     private readonly AgregarEjercicioCasoDeUso _agregarEjercicioCasoDeUso;
     private readonly ActualizarEjercicioCasoDeUso _actualizarEjercicioCasoDeUso;
     private readonly EliminarEjercicioCasoDeUso _eliminarEjercicioCasoDeUso;
+    private readonly ObtenerEjerciciosPorGrupoMuscularCasoDeUso _obtenerEjerciciosporGrupoMuscularCasoDeUso;
 
     public EjercicioController(
         ObtenerEjerciciosCasoDeUso obtenerEjerciciosCasoDeUso,
         ObtenerEjercicioPorIdCasoDeUso obtenerEjercicioPorIdCasoDeUso,
         AgregarEjercicioCasoDeUso agregarEjercicioCasoDeUso,
         ActualizarEjercicioCasoDeUso actualizarEjercicioCasoDeUso,
-        EliminarEjercicioCasoDeUso eliminarEjercicioCasoDeUso)
+        EliminarEjercicioCasoDeUso eliminarEjercicioCasoDeUso,
+        ObtenerEjerciciosPorGrupoMuscularCasoDeUso obtenerEjerciciosporGrupoMuscularCasoDeUso)
     {
         _obtenerEjerciciosCasoDeUso = obtenerEjerciciosCasoDeUso;
         _obtenerEjercicioPorIdCasoDeUso = obtenerEjercicioPorIdCasoDeUso;
         _agregarEjercicioCasoDeUso = agregarEjercicioCasoDeUso;
         _actualizarEjercicioCasoDeUso = actualizarEjercicioCasoDeUso;
         _eliminarEjercicioCasoDeUso = eliminarEjercicioCasoDeUso;
+        _obtenerEjerciciosporGrupoMuscularCasoDeUso = obtenerEjerciciosporGrupoMuscularCasoDeUso;
     }
 
     [HttpGet]
@@ -36,7 +39,7 @@ public class EjercicioController : ControllerBase
     {
         try
         {
-            var ejercicios = await _obtenerEjerciciosCasoDeUso.EjecutarAsync();
+            var ejercicios = await _obtenerEjerciciosCasoDeUso.Ejecutar();
             return Ok(ejercicios);
         }
         catch (Exception ex)
@@ -122,6 +125,24 @@ public class EjercicioController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Error al eliminar ejercicio");
+        }
+    }
+
+    [HttpGet("grupo/{grupoMuscularId}")]
+    public async Task<IActionResult> GetEjerciciosPorGrupoMuscular(long grupoMuscularId)
+    {
+        if (grupoMuscularId <= 0)
+            return BadRequest("El ID del grupo muscular debe ser mayor a 0.");
+
+        try
+        {
+            // Necesitás un caso de uso que traiga ejercicios por grupoMuscularId
+            var ejercicios = await _obtenerEjerciciosporGrupoMuscularCasoDeUso.Ejecutar(grupoMuscularId);
+            return Ok(ejercicios);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 

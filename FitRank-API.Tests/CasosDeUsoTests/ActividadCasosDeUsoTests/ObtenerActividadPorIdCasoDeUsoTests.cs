@@ -4,7 +4,7 @@ using AutoMapper;
 using Xunit;
 using FitRank_API.Domain.Entities;
 using FluentAssertions;
-using FitRank_API.Application.MappingProfiles;
+using FitRank_API.Application.Mappings;
 using FitRank_API.Application.DTOs.ActividadDTOs;
 using FitRank_API.Application.UseCases.Actividad;
 
@@ -78,5 +78,61 @@ public class ObtenerActividadPorIdCasoDeUsoTests
 
         // Assert
         resultado.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ObtenerActividadPorId_DebeMapearCorrectamenteTodosLosCampos()
+    {
+        // Arrange
+        var actividadId = 5L;
+        var actividadExistente = new Actividad
+        {
+            Id = actividadId,
+            Repeticiones = 15,
+            Peso = 75.25,
+            Punto = 30.5,
+            EjercicioAsignadoId = 10,
+            EntrenamientoId = 20,
+            SerieId = 30
+        };
+
+        _actividadRepositorioMock
+            .Setup(repo => repo.ObtenerPorIdAsync(actividadId))
+            .ReturnsAsync(actividadExistente);
+
+        var casoDeUso = new ObtenerActividadPorIdCasoDeUso(_actividadRepositorioMock.Object, _mapper);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(actividadId);
+
+        // Assert
+        resultado.Should().BeOfType<ObtenerActividadDTO>();
+        resultado!.Id.Should().Be(5);
+        resultado.Repeticiones.Should().Be(15);
+        resultado.Peso.Should().Be(75.25);
+        resultado.Punto.Should().Be(30.5);
+        resultado.EjercicioAsignadoId.Should().Be(10);
+        resultado.EntrenamientoId.Should().Be(20);
+        resultado.SerieId.Should().Be(30);
+    }
+
+    [Fact]
+    public async Task ObtenerActividadPorId_DebeLlamarRepositorioConIdCorrecto()
+    {
+        // Arrange
+        var actividadId = 123L;
+        var actividadExistente = new Actividad { Id = actividadId };
+
+        _actividadRepositorioMock
+            .Setup(repo => repo.ObtenerPorIdAsync(actividadId))
+            .ReturnsAsync(actividadExistente);
+
+        var casoDeUso = new ObtenerActividadPorIdCasoDeUso(_actividadRepositorioMock.Object, _mapper);
+
+        // Act
+        await casoDeUso.Ejecutar(actividadId);
+
+        // Assert
+        _actividadRepositorioMock.Verify(repo => repo.ObtenerPorIdAsync(actividadId), Times.Once);
     }
 }

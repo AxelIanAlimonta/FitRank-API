@@ -8,6 +8,7 @@
         public TimeSpan? Duracion { get; set; }
         public double PuntosTotales { get; set; }
         public string NombreRutina { get; set; } = string.Empty;
+        public string? NombreSocio { get; set; } = string.Empty;
         public List<ActividadHistorialDTO> Actividades { get; set; } = new();
     }
 

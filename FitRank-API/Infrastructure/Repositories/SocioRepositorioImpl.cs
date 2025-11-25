@@ -43,6 +43,13 @@ public class SocioRepositorioImpl : ISocioRepositorio
         // Actualiza las propiedades necesarias
         socioExistente.Nombre = socio.Nombre;
         socioExistente.Apellido = socio.Apellido;
+        socioExistente.Email = socio.Email;
+        socioExistente.Altura = socio.Altura;
+        socioExistente.Peso = socio.Peso;
+        socioExistente.Nivel = socio.Nivel;
+        socioExistente.GimnasioId = socio.GimnasioId;
+        socioExistente.ParticipaEnRanking = socio.ParticipaEnRanking;
+
 
         await _context.SaveChangesAsync();
         return socioExistente;
@@ -150,4 +157,12 @@ public class SocioRepositorioImpl : ISocioRepositorio
 
         return query;
     }
+
+    public async Task<Socio?> ObtenerSocioYUsuarioPorIdAsync(long socioId)
+    {
+        return await _context.Socios
+            .Include(s => s.Gimnasio)
+            .FirstOrDefaultAsync(s => s.Id == socioId);
+    }
+
 }

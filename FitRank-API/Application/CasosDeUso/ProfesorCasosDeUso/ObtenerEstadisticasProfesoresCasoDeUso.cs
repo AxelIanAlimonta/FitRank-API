@@ -1,6 +1,4 @@
-﻿
-
-using FitRank_API.Application.DTOs.ProfesorDTOs;
+﻿using FitRank_API.Application.DTOs.ProfesorDTOs;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
@@ -14,10 +12,12 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
             _solicitudRepo = solicitudRepo;
         }
 
-        public async Task<EstadisticasProfesoresDTO> Ejecutar()
+        public virtual async Task<EstadisticasProfesoresDTO> Ejecutar()
         {
-            var (topSolicitado, topPendientes, topCumplidor, topValorado)
-                = await _solicitudRepo.ObtenerEstadisticasProfesoresAsync();
+            var topSolicitado = await _solicitudRepo.ObtenerProfesorMasSolicitadoAsync();
+            var topPendientes = await _solicitudRepo.ObtenerProfesorConMasPendientesAsync();
+            var topCumplidor = await _solicitudRepo.ObtenerProfesorMasCumplidorAsync();
+            var topValorado = await _solicitudRepo.ObtenerProfesorMejorPromedioValoracionesAsync();
 
             return new EstadisticasProfesoresDTO
             {
@@ -37,14 +37,16 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
                 {
                     NombreProfesor = $"{topCumplidor.Nombre} {topCumplidor.Apellido}",
                     Completadas = topCumplidor.Solicitudes?
-                        .Count(s => s.Estado == EstadoSolicitud.TomadaPorProfesor || s.Estado == EstadoSolicitud.Rechazada) ?? 0
+            .Count(s => s.Estado == EstadoSolicitud.TomadaPorProfesor || s.Estado == EstadoSolicitud.Rechazada) ?? 0
                 } : null,
 
-                TopValorado = topValorado != null ? new TopValoradaDTO
+                TopValorado = (topValorado != null && topValorado.Value.Item1 != null && topValorado.Value.Item2 != null)
+                ? new TopValoradaDTO
                 {
-                    NombreProfesor = $"{topValorado.Value.profesor?.Nombre} {topValorado.Value.profesor?.Apellido}",
-                    PromedioValoracion = topValorado.Value.promedio
-                } : null
+                    NombreProfesor = $"{topValorado.Value.Item1.Nombre} {topValorado.Value.Item1.Apellido}",
+                    PromedioValoracion = topValorado.Value.Item2.Value
+                }
+                : null
             };
         }
     }

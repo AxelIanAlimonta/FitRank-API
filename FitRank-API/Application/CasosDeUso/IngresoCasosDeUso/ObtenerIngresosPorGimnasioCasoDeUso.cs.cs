@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.Ingreso
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ObtenerIngresoDTO>> Ejecutar(long gimnasioId)
+        public virtual async Task<IEnumerable<ObtenerIngresoDTO>> Ejecutar(long gimnasioId)
         {
             var ingresos = await _repo.ObtenerPorGimnasioAsync(gimnasioId);
             return _mapper.Map<IEnumerable<ObtenerIngresoDTO>>(ingresos);

@@ -2,6 +2,7 @@
 //using casos de uso
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.DTOs.SocioDTOs;
+using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
 
 
 namespace FitRank_API.Presentacion.Controllers;
@@ -17,14 +18,20 @@ public class SocioController : ControllerBase
     private readonly ActualizarSocioCasoDeUso _actualizarSocioCasoDeUso;
     private readonly EliminarSocioCasoDeUso _eliminarSocioCasoDeUso;
     private readonly CambiarParticipacionRankingCasoDeUso _cambiarParticipacionRankingCasoDeUso;
+    private readonly ObtenerSocioConMedidasCasoDeUso _obtenerSocioConMedidasCasoDeUso;
+    private readonly EditarPerfilSocioCasoDeUso _editarPerfilCasoDeUso;
 
-
-    public SocioController(ObtenerSociosCasoDeUso obtenerSociosCasoDeUso,
+ 
+    public SocioController(
+        ObtenerSociosCasoDeUso obtenerSociosCasoDeUso,
         ObtenerSocioPorIdCasoDeUso obtenerSocioPorIdCasoDeUso,
         AgregarSocioCasoDeUso agregarSocioCasoDeUso,
         ActualizarSocioCasoDeUso actualizarSocioCasoDeUso,
         EliminarSocioCasoDeUso eliminarSocioCasoDeUso,
-        CambiarParticipacionRankingCasoDeUso cambiarParticipacionRankingCasoDeUso)
+        CambiarParticipacionRankingCasoDeUso cambiarParticipacionRankingCasoDeUso,
+        ObtenerSocioConMedidasCasoDeUso obtenerSocioConMedidasCasoDeUso,
+        EditarPerfilSocioCasoDeUso editarPerfilCasoDeUso
+        )
     {
         _obtenerSociosCasoDeUso = obtenerSociosCasoDeUso;
         _obtenerSocioPorIdCasoDeUso = obtenerSocioPorIdCasoDeUso;
@@ -32,7 +39,11 @@ public class SocioController : ControllerBase
         _actualizarSocioCasoDeUso = actualizarSocioCasoDeUso;
         _eliminarSocioCasoDeUso = eliminarSocioCasoDeUso;
         _cambiarParticipacionRankingCasoDeUso = cambiarParticipacionRankingCasoDeUso;
+        _obtenerSocioConMedidasCasoDeUso = obtenerSocioConMedidasCasoDeUso;
+        _editarPerfilCasoDeUso = editarPerfilCasoDeUso;
     }
+
+
 
     [HttpGet]
     public async Task<IActionResult> obtenerTodos()
@@ -96,6 +107,27 @@ public class SocioController : ControllerBase
             return NotFound(new { mensaje = "Socio no encontrado" });
 
         return Ok(new { mensaje = "Participación actualizada", participa = body.ParticipaEnRanking });
+    }
+    [HttpGet("completo/{id}")]
+    public async Task<IActionResult> ObtenerSocioCompleto(long id)
+    {
+        var result = await _obtenerSocioConMedidasCasoDeUso.Ejecutar(id);
+
+        if (result == null)
+            return NotFound("No existe el socio");
+
+        return Ok(result);
+    }
+
+    [HttpPut("editar-perfil/{socioId}")]
+    public async Task<IActionResult> EditarPerfil(long socioId, [FromBody] EditarPerfilSocioDTO dto)
+    {
+        var ok = await _editarPerfilCasoDeUso.Ejecutar(socioId, dto);
+
+        if (!ok)
+            return NotFound(new { mensaje = "Socio no encontrado" });
+
+        return Ok(new { mensaje = "Perfil actualizado correctamente" });
     }
 
 }

@@ -12,7 +12,7 @@ namespace FitRank_API.Application.CasosDeUso.Ingreso
             _repo = repo;
         }
 
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             var ingreso = await _repo.ObtenerPorIdAsync(id);
             if (ingreso == null) return false;

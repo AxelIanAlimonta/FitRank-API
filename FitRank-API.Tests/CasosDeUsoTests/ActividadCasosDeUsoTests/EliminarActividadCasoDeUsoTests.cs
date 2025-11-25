@@ -4,7 +4,7 @@ using AutoMapper;
 using Xunit;
 using FitRank_API.Domain.Entities;
 using FluentAssertions;
-using FitRank_API.Application.MappingProfiles;
+using FitRank_API.Application.Mappings;
 using FitRank_API.Application.DTOs.ActividadDTOs;
 using FitRank_API.Application.UseCases.Actividad;
 
@@ -58,5 +58,44 @@ public class EliminarActividadCasoDeUsoTests
         // Assert
         resultado.Should().BeFalse();
         _actividadRepositorioMock.Verify(repo => repo.EliminarAsync(actividadId), Times.Once);
+    }
+
+    [Fact]
+    public async Task EliminarActividad_DebeLlamarRepositorioConIdCorrecto()
+    {
+        // Arrange
+        var actividadId = 42L;
+
+        _actividadRepositorioMock
+            .Setup(repo => repo.EliminarAsync(actividadId))
+            .ReturnsAsync(true);
+
+        var casoDeUso = new EliminarActividadCasoDeUso(_actividadRepositorioMock.Object);
+
+        // Act
+        await casoDeUso.Ejecutar(actividadId);
+
+        // Assert
+        _actividadRepositorioMock.Verify(repo => repo.EliminarAsync(actividadId), Times.Once);
+    }
+
+    [Fact]
+    public async Task EliminarActividad_DebeRetornarResultadoDelRepositorio()
+    {
+        // Arrange
+        var actividadId = 10L;
+        var resultadoEsperado = true;
+
+        _actividadRepositorioMock
+            .Setup(repo => repo.EliminarAsync(actividadId))
+            .ReturnsAsync(resultadoEsperado);
+
+        var casoDeUso = new EliminarActividadCasoDeUso(_actividadRepositorioMock.Object);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(actividadId);
+
+        // Assert
+        resultado.Should().Be(resultadoEsperado);
     }
 }

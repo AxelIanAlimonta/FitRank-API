@@ -4,10 +4,10 @@ using AutoMapper;
 using Xunit;
 using FitRank_API.Domain.Entities;
 using FluentAssertions;
-using FitRank_API.Application.MappingProfiles;
-using FitRank_API.Application.DTOs.DiaDeLaSemanaDTOs;
-using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 using FitRank_API.Application.Mappings;
+using FitRank_API.Application.DTOs.DiaDeLaSemanaDTOs;
+using FitRank_API.Application.Mappings;
+using FitRank_API.Application.CasosDeUso.DiaDeLaSemanaCasoDeUso;
 
 namespace CasosDeUsoTests.DiaDeLaSemanaCasoDeUsoTests;
 
@@ -63,7 +63,27 @@ public class ActualizarDiaDeLaSemanaCasoDeUsoTests
         resultado.Nombre.Should().Be(actualizarDiaDTO.Nombre);
     }
 
-    //actualizar dia de la semana falla por dia no encontrado
+    //actualizar dia de la semana returna null cuando no se encuentra
+    [Fact]
+    public async Task ActualizarDiaDeLaSemana_DeberiaRetornarNull_CuandoElDiaNoSeEncuentra()
+    {
+        // Arrange
+        var actualizarDiaDTO = new ActualizarDiaDeLaSemanaDTO
+        {
+            Id = 1,
+            Nombre = "Lunes"
+        };
+        _diaDeLaSemanaRepositorioMock
+            .Setup(repo => repo.ActualizarDiaDeLaSemanaAsync(It.IsAny<DiaDeLaSemana>()))
+            .ReturnsAsync((DiaDeLaSemana?)null);
+        var actualizarDiaDeLaSemanaCasoDeUso = new ActualizarDiaDeLaSemanaCasoDeUso(_diaDeLaSemanaRepositorioMock.Object, _mapper);
+        // Act
+        var resultado = await actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(actualizarDiaDTO);
+        // Assert
+        resultado.Should().BeNull();
+    }
+
+    //actualizar dia de la semana falla por dia no encontrado y retorna null
     [Fact]
     public async Task ActualizarDiaDeLaSemana_DeberiaFallar_CuandoElDiaNoExiste()
     {
@@ -76,12 +96,15 @@ public class ActualizarDiaDeLaSemanaCasoDeUsoTests
 
         _diaDeLaSemanaRepositorioMock
             .Setup(repo => repo.ActualizarDiaDeLaSemanaAsync(It.IsAny<DiaDeLaSemana>()))
-            .ThrowsAsync(new KeyNotFoundException("Día de la semana no encontrado"));
+            .ReturnsAsync((DiaDeLaSemana?)null);
 
         var actualizarDiaDeLaSemanaCasoDeUso = new ActualizarDiaDeLaSemanaCasoDeUso(_diaDeLaSemanaRepositorioMock.Object, _mapper);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(actualizarDiaDTO));
+        // Act
+        var resultado = await actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(actualizarDiaDTO);
+
+        // Assert
+        resultado.Should().BeNull();
     }
 
 }

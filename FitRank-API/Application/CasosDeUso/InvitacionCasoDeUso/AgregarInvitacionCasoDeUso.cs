@@ -48,7 +48,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _agregarIngresoCasoDeUso = agregarIngresoCasoDeUso;
         }
 
-        public async Task<InvitacionResponseDTO> Ejecutar(GenerarInvitacionDTO dto, int adminId)
+        public virtual async Task<InvitacionResponseDTO> Ejecutar(GenerarInvitacionDTO dto, int adminId)
         {
 
             var tokenActivacion = Guid.NewGuid().ToString("N");
@@ -115,7 +115,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             };
         }
 
-        public async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(
+        public virtual async Task<(string tokenInvitacion, string qrImage)> ProcesarInvitacionQrAsync(
      GenerarInvitacionDTO dto,
      string tokenActivacion,
      Domain.Entities.Invitacion invitacion)
@@ -230,7 +230,8 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 MetodoPago = dto.MetodoPago ?? "Efectivo",
                 CreadaEn = DateTime.Now,
                 ExpiraEn = DateTime.Now.AddHours(24),
-                Estado = "Pagado",
+                Estado = dto.MetodoPago == "Efectivo" ? "Pagado" : "Pendiente",
+
                 CuotaPagadaHasta = dto.Periodo == "Yearly"
                     ? DateTime.Now.AddYears(1)
                     : DateTime.Now.AddMonths(1)

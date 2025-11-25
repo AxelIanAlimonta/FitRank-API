@@ -1,9 +1,9 @@
-﻿
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
+using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
 using FitRank_API.Application.DTOs.AdministradorDTOs;
 using FitRank_API.Application.DTOs.Asistencia;
@@ -20,7 +20,6 @@ namespace FitRank_API.Presentacion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class AdminController : ControllerBase
     {
         private readonly AgregarInvitacionCasoDeUso _agregarInvitacionCasoDeUso;
@@ -30,14 +29,18 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly EliminarAdministradorCasoDeUso _eliminarAdministradorCasoDeUso;
         private readonly ValidarQrCasoDeUso _validarQrCasoDeUso;
         private readonly ObtenerAdministradorCasoDeUso obtenerAdministradorCasoDeUso;
- 
-        public AdminController(AgregarInvitacionCasoDeUso agregarInvitacionCasoDeUso,
+        private readonly BorrarSocioCompletoCasoDeUso _borrarSocioCompletoCasoDeUso;
+
+        public AdminController(
+            AgregarInvitacionCasoDeUso agregarInvitacionCasoDeUso,
             FallbackEfectivoCasoDeUso fallbackEfectivoCasoDeUso,
             EnviarEmailQrCasoDeUso enviarEmailQrCasoDeUso,
             AgregarAdministradorCasoDeUso agregarAdministradorCasoDeUso,
             EliminarAdministradorCasoDeUso eliminarAdministradorCasoDeUso,
             ValidarQrCasoDeUso validarQrCasoDeUso,
-            ObtenerAdministradorCasoDeUso obtenerAdministradorCasoDeUso)
+            ObtenerAdministradorCasoDeUso obtenerAdministradorCasoDeUso,
+            BorrarSocioCompletoCasoDeUso borrarSocioCompletoCasoDeUso
+            )
         {
             _agregarInvitacionCasoDeUso = agregarInvitacionCasoDeUso;
             _fallbackEfectivoCasoDeUso = fallbackEfectivoCasoDeUso;
@@ -46,19 +49,16 @@ namespace FitRank_API.Presentacion.Controllers
             _eliminarAdministradorCasoDeUso = eliminarAdministradorCasoDeUso;
             _validarQrCasoDeUso = validarQrCasoDeUso;
             this.obtenerAdministradorCasoDeUso = obtenerAdministradorCasoDeUso;
+            _borrarSocioCompletoCasoDeUso = borrarSocioCompletoCasoDeUso;
         }
 
-
         [HttpPost("generar-invitacion")]
-
-        public async Task<ActionResult<InvitacionResponseDTO>> GenerarInvitacion([FromBody] GenerarInvitacionDTO dto)
+        public async Task<IActionResult> GenerarInvitacion([FromBody] GenerarInvitacionDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // ✅ Obtener el ID del admin desde el token JWT
             var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             if (string.IsNullOrEmpty(adminIdClaim))
                 return Unauthorized(new { Mensaje = "No se pudo identificar al administrador autenticado." });
 
@@ -73,7 +73,7 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         [HttpPost("fallback-efectivo")]
-        public async Task<ActionResult<InvitacionResponseDTO>> FallbackEfectivo([FromBody] FallbackEfectivoDTO dto)
+        public async Task<IActionResult> FallbackEfectivo([FromBody] FallbackEfectivoDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -89,9 +89,8 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(result);
         }
 
-
         [HttpPost("enviar-email-qr")]
-        public async Task<ActionResult<EmailResponseDTO>> EnviarEmailQr([FromBody] EmailDTO dto)
+        public async Task<IActionResult> EnviarEmailQr([FromBody] EmailDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -103,9 +102,8 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(result);
         }
 
-
         [HttpPost("validar-qr")]
-        public async Task<ActionResult<QrValidationResponseDTO>> ValidarQr([FromBody] QrValidationDTO dto)
+        public async Task<IActionResult> ValidarQr([FromBody] QrValidationDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -120,15 +118,14 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(result);
         }
 
-
         [HttpPost("crear-admin")]
-        public async Task<ActionResult<Administrador>> Agregar([FromBody] AgregarAdministradorDTO dto)
+        public async Task<IActionResult> Agregar([FromBody] AgregarAdministradorDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var admin = await _agregarAdministradorCasoDeUso.Ejecutar(dto);
-            return Ok(admin);
+            return CreatedAtAction(nameof(Agregar), new { id = admin.Id }, admin);
         }
 
         [HttpDelete("eliminar-admin/{id}")]
@@ -142,13 +139,18 @@ namespace FitRank_API.Presentacion.Controllers
             return Ok(new { Mensaje = "Administrador eliminado correctamente" });
         }
 
-
         [HttpGet]
-
         public async Task<IActionResult> ObtenerTodosLosAdministradores()
         {
             var result = await obtenerAdministradorCasoDeUso.Ejecutar();
             return Ok(result);
+        }
+
+        [HttpDelete("borrar-completo/{usuarioId}")]
+        public async Task<IActionResult> BorrarCompleto(long usuarioId)
+        {
+            var resultado = await _borrarSocioCompletoCasoDeUso.Ejecutar(usuarioId);
+            return Ok(resultado);
         }
     }
 }

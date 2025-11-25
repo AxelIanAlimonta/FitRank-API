@@ -59,10 +59,10 @@ namespace FitRank_API.Infrastructure.Repositories
         public async Task<Invitacion?> ObtenerPorIdAsync(long id)
         {
             return await _context.Invitaciones
-        .Include(i => i.Gimnasio)
-        .FirstOrDefaultAsync(i => i.Id == id && i.Estado == "Pagado");
-
+                .Include(i => i.Gimnasio)
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
+
 
 
         public async Task<Invitacion?> ObtenerPorIdYEstadoAsync(long id, string estado)
@@ -71,7 +71,7 @@ namespace FitRank_API.Infrastructure.Repositories
                 .FirstOrDefaultAsync(i => i.Id == id && i.Estado == estado);
         }
 
-        public async Task<List<Invitacion>> ObtenerTodasAsync(int gimnasioId)
+        public async Task<List<Invitacion>> ObtenerTodasAsync(long gimnasioId)
         {
             return await _context.Invitaciones
                 .Where(i => i.GimnasioId == gimnasioId)

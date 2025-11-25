@@ -262,4 +262,17 @@ public class EjercicioAsignadoRepositorioTests
         ejercicioAsignadoEliminado.Should().BeNull();
     }
 
+    //eliminar ejercicio asignado inexistente
+    [Fact]
+    public async Task EliminarEjercicioAsignado_Inexistente_DeberiaRetornarFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarEjercicioAsignadoInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var ejercicioAsignadoRepositorio = new EjercicioAsignadoRepositorioImpl(context);
+        // Act
+        var resultado = await ejercicioAsignadoRepositorio.EliminarAsync(999);
+        // Assert
+        resultado.Should().BeFalse();
+    }
 }

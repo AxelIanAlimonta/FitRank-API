@@ -15,7 +15,7 @@ public class ObtenerNotificacionPorUsuarioCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<ObtenerNotificacionDTO>> Ejecutar(long usuarioId)
+    public virtual async Task<IEnumerable<ObtenerNotificacionDTO>> Ejecutar(long usuarioId)
     {
         var notificaciones = await _repo.ObtenerPorUsuarioAsync(usuarioId);
         return _mapper.Map<IEnumerable<ObtenerNotificacionDTO>>(notificaciones);

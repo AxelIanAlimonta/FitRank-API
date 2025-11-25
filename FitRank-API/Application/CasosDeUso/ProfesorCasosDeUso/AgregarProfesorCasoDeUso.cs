@@ -14,7 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
             _profesorRepositorio = profesorRepositorio;
             _mapper = mapper;
         }
-        public async Task<ProfesorDTO> Ejecutar(AgregarProfesorDTO dto)
+        public virtual async Task<ProfesorDTO> Ejecutar(AgregarProfesorDTO dto)
         {
             var profesor = _mapper.Map<Profesor>(dto);
 

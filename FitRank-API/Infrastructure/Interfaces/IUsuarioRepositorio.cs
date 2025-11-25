@@ -10,7 +10,7 @@ namespace FitRank_API.Infrastructure.Interfaces
         Task<Usuario?> ObtenerPorIdAsync(long id);
         Task<Usuario?> ObtenerPorTokenActivacionAsync(string token);
         Task <Usuario>AgregarAsync(Usuario usuario);
-        Task <Usuario>ActualizarAsync(Usuario usuario);
+        Task <Usuario?>ActualizarAsync(Usuario usuario);
         Task EliminarAsync(Usuario usuario);
         Task<List<Usuario>> ObtenerTodosAsync();
         

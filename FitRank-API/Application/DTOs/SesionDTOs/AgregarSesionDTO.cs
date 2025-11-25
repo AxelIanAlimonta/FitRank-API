@@ -1,4 +1,6 @@
-﻿public class AgregarSesionDTO
+﻿namespace FitRank_API.Application.DTOs.SesionDTOs;
+
+public class AgregarSesionDTO
 {
     public int NumeroDeSesion { get; set; }
     public string Nombre { get; set; } = string.Empty;

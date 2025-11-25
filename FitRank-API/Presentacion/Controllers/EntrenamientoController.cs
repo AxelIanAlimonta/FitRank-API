@@ -16,6 +16,7 @@ namespace FitRank_API.Controllers
         private readonly ActualizarEntrenamientoCasoDeUso _actualizar;
         private readonly EliminarEntrenamientoCasoDeUso _eliminar;
         private readonly ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso _obtenerHostialEntrenamientosCasoDeUso;
+        private readonly ObtenerHistorialEntrenamientosDeProfesorCasoDeUso _obtenerHistorialProfesorCasoDeUso;
 
         public EntrenamientoController(
             AgregarEntrenamientoCasoDeUso crear,
@@ -23,7 +24,8 @@ namespace FitRank_API.Controllers
             ObtenerEntrenamientoPorIdCasoDeUso obtenerPorId,
             ActualizarEntrenamientoCasoDeUso actualizar,
             EliminarEntrenamientoCasoDeUso eliminar,
-            ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso obtenerHistorialEntrenamientoDeUnUsuarioCasoDeUso
+            ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso obtenerHistorialEntrenamientoDeUnUsuarioCasoDeUso,
+            ObtenerHistorialEntrenamientosDeProfesorCasoDeUso obtenerHistorialProfesorCasoDeUso
             )
         {
             _crear = crear;
@@ -32,6 +34,7 @@ namespace FitRank_API.Controllers
             _actualizar = actualizar;
             _eliminar = eliminar;
             _obtenerHostialEntrenamientosCasoDeUso = obtenerHistorialEntrenamientoDeUnUsuarioCasoDeUso;
+            _obtenerHistorialProfesorCasoDeUso = obtenerHistorialProfesorCasoDeUso;
         }
 
         [HttpGet]
@@ -115,6 +118,14 @@ namespace FitRank_API.Controllers
         public async Task<ActionResult<List<EntrenamientoHistorialDTO>>> ObtenerHistorial(long socioId)
         {
             var result = await _obtenerHostialEntrenamientosCasoDeUso.EjecutarAsync(socioId);
+            return Ok(result);
+        }
+
+        [HttpGet("profesor/{profesorId}/historial")]
+        public async Task<ActionResult<List<EntrenamientoHistorialDTO>>> ObtenerHistorialProfesor(long profesorId,
+                                                                                                 [FromQuery] string? nombre = null)
+        {
+            var result = await _obtenerHistorialProfesorCasoDeUso.EjecutarAsync(profesorId, nombre);
             return Ok(result);
         }
 

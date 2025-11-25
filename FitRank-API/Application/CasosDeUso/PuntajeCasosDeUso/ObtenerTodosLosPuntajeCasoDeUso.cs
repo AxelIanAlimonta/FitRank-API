@@ -13,8 +13,8 @@ namespace FitRank_API.Application.CasosDeUso.PuntajeCasosDeUso
             _puntajeRepositorio = puntajeRepositorio;
             _mapper = mapper;
         }
-        
-        public async Task<IEnumerable<ObtenerPuntajeDTO>> Ejecutar()
+
+        public virtual async Task<IEnumerable<ObtenerPuntajeDTO>> Ejecutar()
         {
             var puntajesEntidad = await _puntajeRepositorio.ObtenerTodasAsync();
             return _mapper.Map<IEnumerable<ObtenerPuntajeDTO>>(puntajesEntidad);

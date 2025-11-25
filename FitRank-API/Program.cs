@@ -49,13 +49,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SendGrid;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using Amazon.S3;
 using Amazon.Runtime;
+using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.LogroGimnasioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso;
+using FitRank_API.Application.CasosDeUso.ReporteCasosDeUso;
 using FitRank_API.Application.CasosDeUso.BatallasCasosDeUso;
 using FitRank_API.Application.UseCases.Batallas;
 
@@ -105,6 +108,10 @@ builder.Services.AddScoped<ObtenerSocioPorIdCasoDeUso>();
 builder.Services.AddScoped<ActualizarSocioCasoDeUso>();
 builder.Services.AddScoped<EliminarSocioCasoDeUso>();
 builder.Services.AddScoped<CambiarParticipacionRankingCasoDeUso>();
+builder.Services.AddScoped<ObtenerSocioConMedidasCasoDeUso>();
+builder.Services.AddScoped<EditarPerfilSocioCasoDeUso>();
+
+
 
 builder.Services.AddScoped<IGrupoMuscularRepositorio, GrupoMuscularRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodosLosGruposMuscularesCasoDeUso>();
@@ -119,6 +126,7 @@ builder.Services.AddScoped<ObtenerEjercicioPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarEjercicioCasoDeUso>();
 builder.Services.AddScoped<ActualizarEjercicioCasoDeUso>();
 builder.Services.AddScoped<EliminarEjercicioCasoDeUso>();
+builder.Services.AddScoped<ObtenerEjerciciosPorGrupoMuscularCasoDeUso>();
 
 builder.Services.AddScoped<IMaquinaRepositorio, MaquinaRepositorioImpl>();
 builder.Services.AddScoped<ObtenerMaquinasCasoDeUso>();
@@ -126,6 +134,7 @@ builder.Services.AddScoped<ObtenerMaquinaPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarMaquinaCasoDeUso>();
 builder.Services.AddScoped<ActualizarMaquinaCasoDeUso>();
 builder.Services.AddScoped<EliminarMaquinaCasoDeUso>();
+builder.Services.AddScoped<ObtenerMaquinaDetalleCasoDeUso>();
 
 builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
 builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
@@ -199,18 +208,21 @@ builder.Services.AddScoped<ObtenerBatallaPorIdCasoDeUso>();
 
 
 builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();
+builder.Services.AddScoped<ILogroGimnasioRepositorio, LogroGimnasioRepositorio>();
+builder.Services.AddScoped<ILogroSocioRepositorio, LogroSocioRepositorio>();
 builder.Services.AddScoped<ObtenerLogrosCasoDeUso>();
 builder.Services.AddScoped<ObtenerLogroPorIdCasoDeUso>();
 builder.Services.AddScoped<AgregarLogroCasoDeUso>();
 builder.Services.AddScoped<EliminarLogroCasoDeUso>();
 builder.Services.AddScoped<ActualizarLogroCasoDeUso>();
+builder.Services.AddScoped<OtorgarLogroPorNombreClaveCasoDeUso>();
 
-builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();
-builder.Services.AddScoped<ObtenerGimnasiosCasoDeUso>();
-builder.Services.AddScoped<ObtenerGimnasioPorIdCasoDeUso>();
-builder.Services.AddScoped<AgregarGimnasioCasoDeUso>();
-builder.Services.AddScoped<EliminarGimnasioCasoDeUso>();
-builder.Services.AddScoped<ActualizarGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerLogrosGimnasioCasoDeUso>();
+builder.Services.AddScoped<ActualizarLogroGimnasioCasoDeUso>();
+
+builder.Services.AddScoped<ObtenerLogrosSocioCasoDeUso>();
+builder.Services.AddScoped<ObtenerLogrosDisponiblesPorSocioCasoDeUso>();
+
 
 builder.Services.AddScoped<IRankingRepositorio, RankingRepositorioImpl>();
 builder.Services.AddScoped<ObtenerRankingGeneralCasoDeUso>();
@@ -226,9 +238,17 @@ builder.Services.AddScoped<GenerarTokenCasoDeUso>();
 builder.Services.AddScoped<ObtenerUsuarioPorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarUsuarioCasoDeUso>();
 builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
+builder.Services.AddScoped<GenerarTokenCasoDeUso>();
 
 
 builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorioImpl>();
+builder.Services.AddScoped<ObtenerGimnasiosCasoDeUso>();
+builder.Services.AddScoped<ObtenerGimnasioPorIdCasoDeUso>();
+builder.Services.AddScoped<AgregarGimnasioCasoDeUso>();
+builder.Services.AddScoped<EliminarGimnasioCasoDeUso>();
+builder.Services.AddScoped<ActualizarGimnasioCasoDeUso>();
+
+builder.Services.AddScoped<ActualizarPersonalizacionGimnasioCasoDeUso>();
 
 
 builder.Services.AddScoped<IInvitacionRepositorio, InvitacionRepositorioImpl>();
@@ -284,6 +304,7 @@ builder.Services.AddScoped<FallbackEfectivoCasoDeUso>();
 builder.Services.AddScoped<AgregarInvitacionCasoDeUso>();
 builder.Services.AddScoped<AgregarAdministradorCasoDeUso>();
 builder.Services.AddScoped<ObtenerAdministradorCasoDeUso>();
+builder.Services.AddScoped<BorrarSocioCompletoCasoDeUso>();
 
 builder.Services.AddScoped<IMedidaCorporalRepositorio, MedidaCorporalRepositorioImpl>();
 builder.Services.AddScoped<AgregarMedidaCorporalCasoDeUso>();
@@ -315,6 +336,7 @@ builder.Services.AddScoped<ObtenerHistorialNotificacionesCasoDeUso>();
 builder.Services.AddScoped<ObtenerUsuariosParaNotificacionCasoDeUso>();
 builder.Services.AddScoped<EnviarNotificacionIndividualCasoDeUso>();
 
+
 builder.Services.AddScoped<ISerieRepositorio, SerieRepositorioImpl>();
 builder.Services.AddScoped<ActualizarSerieCasoDeUso>();
 builder.Services.AddScoped<AgregarSerieCasoDeUso>();
@@ -343,6 +365,8 @@ builder.Services.AddScoped<ObtenerEntrenamientosCasoDeUso>();
 builder.Services.AddScoped<ObtenerEntrenamientoPorIdCasoDeUso>();
 builder.Services.AddScoped<RegistrarEntrenamientoCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso>();
+builder.Services.AddScoped<ObtenerHistorialEntrenamientosDeProfesorCasoDeUso>();
+
 
 builder.Services.AddScoped<IRulesEvaluator, RulesEvaluator>();
 builder.Services.AddScoped<IRoutineRulesRunner, RoutineRulesRunner>();
@@ -374,7 +398,16 @@ builder.Services.AddScoped<ObtenerSolicitudesPendientesCasoDeUso>();
 builder.Services.AddScoped<AceptarSolicitudAmistadCasoDeUso>();
 builder.Services.AddScoped<EliminarAmigoCasoDeUso>();
 
-
+builder.Services.AddScoped<IReporteRepositorio, ReporteRepositorioImpl>();
+builder.Services.AddScoped<AgregarReporteCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosLosReportesDeGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportePorIdCasoDeUso>();
+builder.Services.AddScoped<ActualizarReporteCasoDeUso>();
+builder.Services.AddScoped<EliminarReporteCasoDeUso>();
+builder.Services.AddScoped<DesactivarReporteCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportesPorUsuarioCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportesActivosDeUnGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerReportesInactivosDeUnGimnasioCasoDeUso>();
 
 
 MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
@@ -387,12 +420,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularDev",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200") // Angular dev server
+            policy.WithOrigins("http://localhost:4200", "https://fitrank-frontend.vercel.app")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-                  .WithMethods("GET", "POST")
-                  .AllowCredentials()
-                   .SetIsOriginAllowed(_ => true);
+                 .AllowCredentials();
+                   
         });
 });
 
@@ -535,12 +567,15 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAngularDev");
+
+app.UseRouting();  
+
+app.UseCors("AllowAngularDev"); 
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllers();
 app.MapHub<NotificacionesHub>("/hubs/notificaciones");
+
 app.Run();

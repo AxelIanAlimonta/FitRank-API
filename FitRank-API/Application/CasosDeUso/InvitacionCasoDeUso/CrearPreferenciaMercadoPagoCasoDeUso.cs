@@ -12,14 +12,14 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
         private readonly QrHelper _qrHelper;
         private readonly HttpClient _http;
 
-        public CrearPreferenciaMercadoPagoCasoDeUso(IConfiguration config, QrHelper qrHelper)
+        public CrearPreferenciaMercadoPagoCasoDeUso(IConfiguration config, QrHelper qrHelper, HttpClient httpClient = null)
         {
             _config = config;
             _qrHelper = qrHelper;
-            _http = new HttpClient();
+            _http = httpClient ?? new HttpClient();
         }
 
-        public async Task<(string linkPago, string qrImage)> Ejecutar(decimal monto, string email, long invitacionId)
+        public virtual async Task<(string linkPago, string qrImage)> Ejecutar(decimal monto, string email, long invitacionId)
         {
             var payload = new
             {

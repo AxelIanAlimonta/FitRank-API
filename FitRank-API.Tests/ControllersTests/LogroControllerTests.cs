@@ -26,10 +26,13 @@ public class LogroControllerTests
     private readonly Mock<EliminarLogroCasoDeUso> _mockEliminar;
     private readonly Mock<ObtenerLogroPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerLogrosCasoDeUso> _mockObtenerTodos;
+    private readonly Mock<OtorgarLogroPorNombreClaveCasoDeUso> _mockOtorgarLogroPorNombreClave;
 
     public LogroControllerTests()
     {
         var mockRepositorio = new Mock<ILogroRepositorio>();
+        var mockLogroGimnasioRepo = new Mock<ILogroGimnasioRepositorio>();
+        var mockLogroSocioRepo = new Mock<ILogroSocioRepositorio>();
         var mockMapper = new Mock<IMapper>();
 
         _mockActualizar = new Mock<ActualizarLogroCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
@@ -37,13 +40,15 @@ public class LogroControllerTests
         _mockEliminar = new Mock<EliminarLogroCasoDeUso>(mockRepositorio.Object);
         _mockObtenerPorId = new Mock<ObtenerLogroPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerLogrosCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockOtorgarLogroPorNombreClave = new Mock<OtorgarLogroPorNombreClaveCasoDeUso>(mockRepositorio.Object, mockLogroGimnasioRepo.Object, mockLogroSocioRepo.Object, mockMapper.Object);
 
         _controller = new LogroController(
             _mockObtenerTodos.Object,
             _mockAgregar.Object,
             _mockActualizar.Object,
             _mockEliminar.Object,
-            _mockObtenerPorId.Object
+            _mockObtenerPorId.Object,
+            _mockOtorgarLogroPorNombreClave.Object
         );
 
     }

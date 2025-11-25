@@ -56,12 +56,15 @@ public class FitRankDbContext : DbContext
 
     public DbSet<Valoracion> Valoraciones { get; set; }
     public DbSet<Amistad> Amistades { get; set; }
+    public DbSet<LogroGimnasio> LogrosGimnasio { get; set; }
+    public DbSet<LogroSocio> LogrosSocio { get; set; }
+    public DbSet<Reporte> Reportes { get; set; }
     public DbSet<BatallaPunto> Batallas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         ConfigureEntityRelationships(modelBuilder);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -85,6 +88,19 @@ public class FitRankDbContext : DbContext
                 }
             }
         }
+        modelBuilder.Entity<Logro>()
+            .HasIndex(l => l.NombreClave)
+            .IsUnique();
+
+        // índice único por gimnasio + logro
+        modelBuilder.Entity<LogroGimnasio>()
+            .HasIndex(lg => new { lg.GimnasioId, lg.LogroId })
+            .IsUnique();
+
+        // índice único para evitar duplicar logro de socio
+        modelBuilder.Entity<LogroSocio>()
+            .HasIndex(ls => new { ls.LogroId, ls.GimnasioId, ls.SocioId })
+            .IsUnique();
     }
 
     private static void ConfigureEntityRelationships(ModelBuilder modelBuilder)

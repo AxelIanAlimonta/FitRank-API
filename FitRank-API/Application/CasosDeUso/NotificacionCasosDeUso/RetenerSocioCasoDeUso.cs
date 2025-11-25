@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
             _notificacionRepositorio = notificacionRepositorio;
         }
 
-        public async Task<bool> Ejecutar(long adminId, long socioId)
+        public virtual async Task<bool> Ejecutar(long adminId, long socioId)
         {
           
             var socio = await _usuarioRepositorio.ObtenerPorIdAsync(socioId);

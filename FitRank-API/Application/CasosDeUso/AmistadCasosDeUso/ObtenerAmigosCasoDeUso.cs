@@ -18,7 +18,7 @@ namespace FitRank_API.Application.CasosDeUso.AmistadCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<AmigoDTO>> Ejecutar(long socioId)
+        public virtual async Task<List<AmigoDTO>> Ejecutar(long socioId)
         {
             var amistades = await _amistadRepositorio.ObtenerPorSocioIdAsync(
                 socioId,

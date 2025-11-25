@@ -205,4 +205,226 @@ public class GimnasioRepositorioTests
         var gimnasioEnDb = await context.Gimnasios.FindAsync(gimnasio.Id);
         Assert.Null(gimnasioEnDb);
     }
+
+    //elimminar gimnasio inexistente
+    [Fact]
+    public async Task EliminarGimnasio_Inexistente_DeberiaRetornarFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarGimnasioInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var gimnasioRepositorioMock = new GimnasioRepositorioImpl(context);
+        // Act
+        var resultado = await gimnasioRepositorioMock.EliminarGimnasio(999);
+        // FluentAssert
+        Assert.False(resultado);
+    }
+
+    [Fact]
+    public async Task ObtenerPorAdministradorIdAsync_DeberiaRetornarGimnasioSiExiste()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorAdministradorIdAsyncDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        var admin = new Administrador { Nombre = "Admin", Email = "admin@test.com" };
+        context.Administradores.Add(admin);
+        await context.SaveChangesAsync();
+
+        var gimnasio = new Gimnasio
+        {
+            Nombre = "Gimnasio Admin",
+            Direccion = "Calle 123",
+            AdministradorId = admin.Id
+        };
+        context.Gimnasios.Add(gimnasio);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorAdministradorIdAsync(admin.Id);
+
+        // Assert
+        Assert.NotNull(resultado);
+        Assert.Equal("Gimnasio Admin", resultado!.Nombre);
+        Assert.Equal(admin.Id, resultado.AdministradorId);
+        Assert.NotNull(resultado.Administrador);
+        Assert.Equal("Admin", resultado.Administrador!.Nombre);
+    }
+
+    [Fact]
+    public async Task ObtenerPorAdministradorIdAsync_DeberiaRetornarNullSiNoExisteGimnasio()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorAdministradorIdAsyncVacioDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        var admin = new Administrador { Nombre = "Admin", Email = "admin@test.com" };
+        context.Administradores.Add(admin);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorAdministradorIdAsync(admin.Id);
+
+        // Assert
+        Assert.Null(resultado);
+    }
+
+    [Fact]
+    public void ObtenerGimnasioIdPorUsuario_DeberiaRetornarIdParaAdministrador()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerGimnasioIdPorUsuarioAdminDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        var admin = new Administrador { Nombre = "Admin", Email = "admin@test.com" };
+        context.Administradores.Add(admin);
+        context.SaveChanges();
+
+        var gimnasio = new Gimnasio { Nombre = "Gimnasio Admin", AdministradorId = admin.Id };
+        context.Gimnasios.Add(gimnasio);
+        context.SaveChanges();
+
+        // Act
+        var resultado = repo.ObtenerGimnasioIdPorUsuario(admin.Id);
+
+        // Assert
+        Assert.Equal(gimnasio.Id, resultado);
+    }
+
+    [Fact]
+    public void ObtenerGimnasioIdPorUsuario_DeberiaRetornarIdParaProfesor()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerGimnasioIdPorUsuarioProfesorDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        var gimnasio = new Gimnasio { Nombre = "Gimnasio Profesor" };
+        context.Gimnasios.Add(gimnasio);
+        context.SaveChanges();
+
+        var profesor = new Profesor { Nombre = "Profesor", Email = "prof@test.com", GimnasioId = gimnasio.Id };
+        context.Profesores.Add(profesor);
+        context.SaveChanges();
+
+        // Act
+        var resultado = repo.ObtenerGimnasioIdPorUsuario(profesor.Id);
+
+        // Assert
+        Assert.Equal(gimnasio.Id, resultado);
+    }
+
+    [Fact]
+    public void ObtenerGimnasioIdPorUsuario_DeberiaRetornarIdParaSocio()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerGimnasioIdPorUsuarioSocioDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        var gimnasio = new Gimnasio { Nombre = "Gimnasio Socio" };
+        context.Gimnasios.Add(gimnasio);
+        context.SaveChanges();
+
+        var socio = new Socio { Nombre = "Socio", Email = "socio@test.com", GimnasioId = gimnasio.Id, Nivel = "Principiante" };
+        context.Socios.Add(socio);
+        context.SaveChanges();
+
+        // Act
+        var resultado = repo.ObtenerGimnasioIdPorUsuario(socio.Id);
+
+        // Assert
+        Assert.Equal(gimnasio.Id, resultado);
+    }
+
+    [Fact]
+    public void ObtenerGimnasioIdPorUsuario_DeberiaRetornarNullSiUsuarioNoExiste()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerGimnasioIdPorUsuarioInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        // Act
+        var resultado = repo.ObtenerGimnasioIdPorUsuario(999);
+
+        // Assert
+        Assert.Null(resultado);
+    }
+
+    [Fact]
+    public async Task ActualizarPersonalizacion_DeberiaActualizarColoresYLogo()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ActualizarPersonalizacionDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        var gimnasio = new Gimnasio
+        {
+            Nombre = "Gimnasio Test",
+            ColorPrincipal = "Rojo",
+            ColorSecundario = "Azul",
+            LogoUrl = "logo_viejo.png"
+        };
+        context.Gimnasios.Add(gimnasio);
+        await context.SaveChangesAsync();
+
+        // Act
+        var actualizado = await repo.ActualizarPersonalizacion(
+            gimnasio.Id, "Verde", "Amarillo", "logo_nuevo.png");
+
+        // Assert
+        Assert.NotNull(actualizado);
+        Assert.Equal("Verde", actualizado!.ColorPrincipal);
+        Assert.Equal("Amarillo", actualizado.ColorSecundario);
+        Assert.Equal("logo_nuevo.png", actualizado.LogoUrl);
+    }
+
+    [Fact]
+    public async Task ActualizarPersonalizacion_DeberiaActualizarSoloColoresSiLogoEsNullOVacio()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ActualizarPersonalizacionSoloColoresDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        var gimnasio = new Gimnasio
+        {
+            Nombre = "Gimnasio Test",
+            ColorPrincipal = "Rojo",
+            ColorSecundario = "Azul",
+            LogoUrl = "logo_viejo.png"
+        };
+        context.Gimnasios.Add(gimnasio);
+        await context.SaveChangesAsync();
+
+        // Act
+        var actualizado = await repo.ActualizarPersonalizacion(
+            gimnasio.Id, "Negro", "Blanco", null);
+
+        // Assert
+        Assert.NotNull(actualizado);
+        Assert.Equal("Negro", actualizado!.ColorPrincipal);
+        Assert.Equal("Blanco", actualizado.ColorSecundario);
+        Assert.Equal("logo_viejo.png", actualizado.LogoUrl);
+    }
+
+    [Fact]
+    public async Task ActualizarPersonalizacion_DeberiaRetornarNullSiNoExisteGimnasio()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ActualizarPersonalizacionInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new GimnasioRepositorioImpl(context);
+
+        // Act
+        var actualizado = await repo.ActualizarPersonalizacion(999, "Verde", "Amarillo", "logo.png");
+
+        // Assert
+        Assert.Null(actualizado);
+    }
 }

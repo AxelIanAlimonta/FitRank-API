@@ -223,4 +223,18 @@ public class MaquinaRepositorioTests
         resultado.Should().BeTrue();
         maquinaEliminada.Should().BeNull();
     }
+
+    //eliminar maquina inexistente deberia retornar false
+    [Fact]
+    public async Task EliminarMaquina_Inexistente_DeberiaRetornarFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarMaquinaInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var maquinaRepositorioMock = new MaquinaRepositorioImpl(context);
+        // Act
+        var resultado = await maquinaRepositorioMock.EliminarMaquina(999);
+        // FluentAssertions
+        resultado.Should().BeFalse();
+    }
 }

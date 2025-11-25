@@ -3,7 +3,7 @@ using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.EntrenamientoDTOs;
 using FitRank_API.Domain.Entities;
 
-namespace FitRank_API.Application.MappingProfiles;
+namespace FitRank_API.Application.Mappings;
 
 public class EntrenamientoProfile : Profile
 {
@@ -23,14 +23,14 @@ public class EntrenamientoProfile : Profile
                 return act?.EjercicioAsignado?.Sesion?.Nombre ?? "Sesión sin nombre";
             }))
             .ForMember(dest => dest.NombreRutina,
-    opt => opt.MapFrom(src =>
-        src.Actividades
-            .OrderBy(a => a.Id)
-            .Select(a => a.EjercicioAsignado.Sesion.Rutina.Nombre)
-            .FirstOrDefault() ?? "Sin rutina"
-    )
-)
-
+                opt => opt.MapFrom(src =>
+                    src.Actividades
+                        .OrderBy(a => a.Id)
+                        .Select(a => a.EjercicioAsignado.Sesion.Rutina.Nombre)
+                        .FirstOrDefault() ?? "Sin rutina"
+            ))
+            .ForMember(dest => dest.NombreSocio,
+                opt => opt.MapFrom(src => src.Socio.Nombre))
             .ForMember(dest => dest.PuntosTotales,
                 opt => opt.MapFrom(src => src.Actividades.Sum(a => a.Punto ?? 0)));
 

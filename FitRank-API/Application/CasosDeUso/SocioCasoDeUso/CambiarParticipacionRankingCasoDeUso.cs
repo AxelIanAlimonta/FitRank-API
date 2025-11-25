@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.SocioCasoDeUso
             _socioRepositorio = socioRepositorio;
         }
 
-        public async Task<bool> Ejecutar(long socioId, bool participa)
+        public virtual async Task<bool> Ejecutar(long socioId, bool participa)
         {
             return await _socioRepositorio.CambiarParticipacionRankingAsync(socioId, participa);
         }

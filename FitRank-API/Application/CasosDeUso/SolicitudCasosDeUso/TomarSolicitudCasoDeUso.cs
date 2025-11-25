@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
             _repositorio = repositorio;
         }
 
-        public async Task<bool> EjecutarAsync(long solicitudId, long profesorId)
+        public virtual async Task<bool> EjecutarAsync(long solicitudId, long profesorId)
         {
             var solicitud = await _repositorio.ObtenerPorIdAsync(solicitudId);
             if (solicitud == null || solicitud.Estado != EstadoSolicitud.Pendiente)
@@ -19,7 +19,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
 
             solicitud.Estado = EstadoSolicitud.TomadaPorProfesor;
             solicitud.ProfesorId = profesorId;
-            await _repositorio.GuardarCambiosAsync();
+            await _repositorio.ActualizarAsync(solicitud);
             return true;
         }
     }

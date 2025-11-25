@@ -1,9 +1,11 @@
 ﻿using FitRank_API.Domain.Entities;
 using FitRank_API.Domain.Enums;
 
+namespace FitRank_API.Domain.Entities;
+
 public class Amistad
 {
-    public long Id{ get; set; }
+    public long Id { get; set; }
 
     public long SocioId1 { get; set; }
     public long SocioId2 { get; set; }

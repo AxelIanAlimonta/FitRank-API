@@ -15,7 +15,7 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<ProfesorDTO>> Ejecutar()
+        public virtual async Task<List<ProfesorDTO>> Ejecutar()
         {
             var profesores = await _profesorRepositorio.ObtenerTodosAsync();
             return _mapper.Map<List<ProfesorDTO>>(profesores);

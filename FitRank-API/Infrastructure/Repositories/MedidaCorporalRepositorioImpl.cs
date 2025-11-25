@@ -65,5 +65,13 @@ namespace FitRank_API.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<MedidaCorporal?> ObtenerUltimaMedidaPorSocioAsync(long socioId)
+        {
+            return await _context.MedidasCorporales
+                .Where(m => m.SocioId == socioId)
+                .OrderByDescending(m => m.Fecha)
+                .FirstOrDefaultAsync();
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FitRank_API.Application.DTOs.SolicitudDTO;
+using FitRank_API.Domain.Entities;
 using FitRank_API.Infrastructure.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
@@ -12,7 +13,8 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
             _repositorio = repositorio;
         }
 
-        public async Task<long> EjecutarAsync(CrearSolicitudRutinaProfesorDTO dto, long socioId)
+
+        public virtual async Task<long> EjecutarAsync(CrearSolicitudRutinaProfesorDTO dto, long socioId)
         {
             var solicitud = new SolicitudRutinaProfesor
             {

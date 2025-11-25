@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace FitRank_API.tests.InfrastructureTests;
+namespace FitRank_API.Tests.InfrastructureTests;
 
 public class SerieRepositorioTests
 {
@@ -78,7 +78,7 @@ public class SerieRepositorioTests
         serieGuardada.EjercicioAsignadoId.Should().Be(ejercicioAsignado.Id);
     }
 
-    //obtener lista de series
+    // obtener lista de series
     [Fact]
     public async Task ObtenerSeries_DeberiaRetornarListaCorrectamente()
     {
@@ -104,7 +104,7 @@ public class SerieRepositorioTests
         series.Should().Contain(s => s.NumeroDeSerie == 2 && s.Repeticiones == 12 && s.Peso == 55.0);
     }
 
-    //lista de series vacia
+    // lista de series vacia
     [Fact]
     public async Task ObtenerSeries_DeberiaRetornarListaVacia()
     {
@@ -120,7 +120,7 @@ public class SerieRepositorioTests
         series.Should().BeEmpty();
     }
 
-    //obtener serie por id
+    // obtener serie por id
     [Fact]
     public async Task ObtenerSeriePorId_DeberiaRetornarSerieCorrectamente()
     {
@@ -152,7 +152,7 @@ public class SerieRepositorioTests
         serieObtenida.EjercicioAsignadoId.Should().Be(ejercicioAsignado.Id);
     }
 
-    //obtener serie por id no existente
+    // obtener serie por id no existente
     [Fact]
     public async Task ObtenerSeriePorId_NoExistente_DeberiaRetornarNull()
     {
@@ -168,7 +168,7 @@ public class SerieRepositorioTests
         serieObtenida.Should().BeNull();
     }
 
-    //actualizar serie
+    // actualizar serie
     [Fact]
     public async Task ActualizarSerie_DeberiaActualizarCorrectamente()
     {
@@ -203,7 +203,7 @@ public class SerieRepositorioTests
         serieActualizada.Peso.Should().Be(55.0);
     }
 
-    //actualizar serie no existente
+    // actualizar serie no existente
     [Fact]
     public async Task ActualizarSerie_NoExistente_DeberiaDevolverNull()
     {
@@ -226,10 +226,9 @@ public class SerieRepositorioTests
 
         // Assert
         await act.Should().NotThrowAsync();
-
     }
 
-    //eliminar serie
+    // eliminar serie
     [Fact]
     public async Task EliminarSerie_DeberiaEliminarCorrectamente()
     {
@@ -258,4 +257,62 @@ public class SerieRepositorioTests
         serieEliminada.Should().BeNull();
     }
 
+    // eliminar serie no existente
+    [Fact]
+    public async Task EliminarSerie_NoExistente_DeberiaNoHacerNada()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarSerieNoExistenteDb");
+        using var context = new FitRankDbContext(options);
+        var serieRepositorio = new SerieRepositorioImpl(context);
+        // Act
+        Func<Task> act = async () => await serieRepositorio.EliminarAsync(999); // ID que no existe
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    // obtener por ejercicio con series
+    [Fact]
+    public async Task ObtenerPorEjercicioAsync_ConSeries_DeberiaRetornarSoloLasSeriesDelEjercicio()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorEjercicioDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new SerieRepositorioImpl(context);
+
+        var ejercicio1 = new EjercicioAsignado { Id = 1, NumeroEjercicio = 1, EjercicioId = 1, SesionId = 1 };
+        var ejercicio2 = new EjercicioAsignado { Id = 2, NumeroEjercicio = 2, EjercicioId = 2, SesionId = 1 };
+
+        var serie1 = new Serie { Id = 1, EjercicioAsignadoId = 1, EjercicioAsignado = ejercicio1, Actividades = new List<Actividad>() };
+        var serie2 = new Serie { Id = 2, EjercicioAsignadoId = 1, EjercicioAsignado = ejercicio1, Actividades = new List<Actividad>() };
+        var serie3 = new Serie { Id = 3, EjercicioAsignadoId = 2, EjercicioAsignado = ejercicio2, Actividades = new List<Actividad>() };
+
+        context.Series.AddRange(serie1, serie2, serie3);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = (await repo.ObtenerPorEjercicioAsync(1)).ToList();
+
+        // Assert
+        resultado.Should().HaveCount(2);
+        resultado.Should().ContainEquivalentOf(serie1, options => options.ExcludingMissingMembers());
+        resultado.Should().ContainEquivalentOf(serie2, options => options.ExcludingMissingMembers());
+        resultado.Should().NotContain(s => s.Id == 3);
+    }
+
+    // obtener por ejercicio sin series
+    [Fact]
+    public async Task ObtenerPorEjercicioAsync_SinSeries_DeberiaRetornarListaVacia()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorEjercicioVacioDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new SerieRepositorioImpl(context);
+
+        // Act
+        var resultado = await repo.ObtenerPorEjercicioAsync(99);
+
+        // Assert
+        resultado.Should().BeEmpty();
+    }
 }

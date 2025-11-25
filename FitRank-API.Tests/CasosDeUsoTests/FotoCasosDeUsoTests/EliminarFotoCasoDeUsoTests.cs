@@ -57,4 +57,70 @@ public class EliminarFotoCasoDeUsoTests
         // Assert
         resultado.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task DebeLlamarRepositorioConIdCorrecto()
+    {
+        // Arrange
+        var fotoId = 123L;
+
+        _fotoRepositorioMock
+            .Setup(repo => repo.EliminarAsync(fotoId))
+            .ReturnsAsync(true);
+
+        var casoDeUso = new EliminarFotoCasoDeUso(_fotoRepositorioMock.Object);
+
+        // Act
+        await casoDeUso.Ejecutar(fotoId);
+
+        // Assert
+        _fotoRepositorioMock.Verify(repo => repo.EliminarAsync(fotoId), Times.Once);
+    }
+
+    [Fact]
+    public async Task DebeRetornarResultadoDelRepositorio()
+    {
+        // Arrange
+        var fotoId = 456L;
+        var resultadoEsperado = true;
+
+        _fotoRepositorioMock
+            .Setup(repo => repo.EliminarAsync(fotoId))
+            .ReturnsAsync(resultadoEsperado);
+
+        var casoDeUso = new EliminarFotoCasoDeUso(_fotoRepositorioMock.Object);
+
+        // Act
+        var resultado = await casoDeUso.Ejecutar(fotoId);
+
+        // Assert
+        resultado.Should().Be(resultadoEsperado);
+    }
+
+    [Fact]
+    public async Task DeberiaEliminarFotosConDiferentesIds()
+    {
+        // Arrange
+        var fotoId1 = 1L;
+        var fotoId2 = 9999L;
+
+        _fotoRepositorioMock
+            .Setup(repo => repo.EliminarAsync(fotoId1))
+            .ReturnsAsync(true);
+
+        _fotoRepositorioMock
+            .Setup(repo => repo.EliminarAsync(fotoId2))
+            .ReturnsAsync(false);
+
+        var casoDeUso = new EliminarFotoCasoDeUso(_fotoRepositorioMock.Object);
+
+        // Act
+        var resultado1 = await casoDeUso.Ejecutar(fotoId1);
+        var resultado2 = await casoDeUso.Ejecutar(fotoId2);
+
+        // Assert
+        resultado1.Should().BeTrue();
+        resultado2.Should().BeFalse();
+        _fotoRepositorioMock.Verify(repo => repo.EliminarAsync(It.IsAny<long>()), Times.Exactly(2));
+    }
 }

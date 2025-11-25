@@ -200,6 +200,28 @@ public class JornadaRepositorioTests
         jornadaActualizada.HoraFin.Should().Be(new TimeSpan(16, 0, 0));
     }
 
+    //actualizar jornada inexistente
+    [Fact]
+    public async Task ActualizarJornada_Inexistente_DeberiaRetornarNull()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ActualizarJornadaInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var jornadaRepositorioMock = new JornadaRepositorioImpl(context);
+        var jornadaInexistente = new Jornada
+        {
+            Id = 999,
+            HoraInicio = new TimeSpan(10, 0, 0),
+            HoraFin = new TimeSpan(16, 0, 0),
+            ProfesorId = 1,
+            DiaDeLaSemanaId = 1
+        };
+        // Act
+        var jornadaActualizada = await jornadaRepositorioMock.ActualizarJornadaAsync(jornadaInexistente);
+        // FluentAssert
+        jornadaActualizada.Should().BeNull();
+    }
+
     //eliminar jornada
     [Fact]
     public async Task EliminarJornada_DeberiaEliminarCorrectamente()

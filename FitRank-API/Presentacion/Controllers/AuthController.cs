@@ -9,6 +9,8 @@ using FitRank_API.Application.DTOs.UsuarioDTOs.ValidarAuth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
+namespace FitRank_API.Presentacion.Controllers;
+
 
 [ApiController]
 [Route("api/[controller]")]
@@ -21,23 +23,26 @@ public class AuthController : ControllerBase
     private readonly ActivarCuentaCasoDeUso _activarCuentaCasoDeUso;
     private readonly AgregarUsuarioConInvitacionCasoDeUso _agregarUsuarioConInvitacionCasoDeUso;
     private readonly IConfiguration _config;
+    private readonly GenerarTokenCasoDeUso _generarTokenLogin;
+
 
     public AuthController(
         LoginUsuarioCasoDeUso loginCasoDeUso,
         RegistrarUsuarioCasoDeUso registerCasoDeUso,
-       
         ValidarTokenActivacionCasoDeUso validarTokenActivacionCasoDeUso,
-        ActivarCuentaCasoDeUso activarCuentaCasoDeUso , AgregarUsuarioConInvitacionCasoDeUso agregarUsuarioConInvitacionCasoDeUso   , IConfiguration configuration )
+        ActivarCuentaCasoDeUso activarCuentaCasoDeUso,
+        AgregarUsuarioConInvitacionCasoDeUso agregarUsuarioConInvitacionCasoDeUso,
+        GenerarTokenCasoDeUso generarTokenLogin,
+        IConfiguration config)
     {
         _loginCasoDeUso = loginCasoDeUso;
         _registerCasoDeUso = registerCasoDeUso;
-      
         _validarTokenActivacionCasoDeUso = validarTokenActivacionCasoDeUso;
         _activarCuentaCasoDeUso = activarCuentaCasoDeUso;
         _agregarUsuarioConInvitacionCasoDeUso = agregarUsuarioConInvitacionCasoDeUso;
-        _config = configuration;
+        _generarTokenLogin = generarTokenLogin;
+        _config = config;
     }
-
 
 
     [HttpPost("login")]
@@ -46,116 +51,78 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // 🔹 Autenticar usuario desde el caso de uso
-        var result = await _loginCasoDeUso.Ejecutar(dto);
-        if (result == null)
+        var resultado = await _loginCasoDeUso.Ejecutar(dto);
+
+        if (resultado == null)
             return Unauthorized(new { Mensaje = "Email o password inválido" });
 
-        // 🔹 Recuperar el usuario autenticado
-        var usuario = result.User; // suponiendo que devuelve UsuarioAuthDTO o similar
-
-        // 🔹 Generar token JWT
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new List<Claim>
-{
-    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()), // ✅ agregado
-    new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
-    new Claim(ClaimTypes.Role, usuario.Rol),
-    new Claim("UserId", usuario.Id.ToString())
-};
+        var (entidad, usuarioDto) = resultado.Value;
 
 
-        if (usuario.GimnasioId.HasValue)
-        {
-            claims.Add(new Claim(ClaimTypes.GroupSid, usuario.GimnasioId.Value.ToString()));
-        }
+        var token = _generarTokenLogin.Ejecutar(entidad);
 
-        var token = new JwtSecurityToken(
-            issuer: "FitRankAPI",
-            audience: "FitRankApp",
-            claims: claims,
-            expires: DateTime.Now.AddHours(5),
-            signingCredentials: creds
-        );
-
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-        // 🔹 Devolver respuesta estándar con el gimnasio incluido
         return Ok(new AuthResponseDTO
         {
-            Token = tokenString,
-            User = new UsuarioAuthDTO
-            {
-                Id = usuario.Id,
-                Nombre = usuario.Nombre,
-                Apellidos = usuario.Apellidos,
-                Email = usuario.Email,
-                NombreUsuario = usuario.NombreUsuario,
-                Rol = usuario.Rol,
-                GimnasioId = usuario.GimnasioId, // 💥 este es el campo nuevo
-                TieneCuotaPagada = usuario.TieneCuotaPagada
-            }
+            Token = token,
+            User = usuarioDto
         });
     }
-
     [HttpPost("register")]
-        public async Task<ActionResult<AuthResponseDTO>> Register([FromBody] RegisterDTO dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+    public async Task<ActionResult<AuthResponseDTO>> Register([FromBody] RegisterDTO dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-            var result = await _registerCasoDeUso.Ejecutar(dto);
-            if (result == null)
-                return BadRequest(new { Mensaje = "Email ya existe" });
+        var result = await _registerCasoDeUso.Ejecutar(dto);
+        if (result == null)
+            return BadRequest(new { Mensaje = "Email ya existe" });
 
-            return Ok(result);
-        }
-
-
-        [HttpPost("register-invitacion")]
-        public async Task<ActionResult<AuthResponseDTO>> AgregarUsuarioConInvitacion([FromBody] RegisterInvitacionDTO dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await _agregarUsuarioConInvitacionCasoDeUso.Ejecutar(dto);
-            if (result == null)
-                return BadRequest(new { Mensaje = "Token de invitación inválido o ya usado" });
-
-            return Ok(result);
-        }
-
-
-
-        [HttpPost("validar-activacion")]
-        public async Task<ActionResult> ValidarActivacion([FromBody] ValidarActivacionDTO dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var esValido = await _validarTokenActivacionCasoDeUso.Ejecutar(dto.Token);
-            if (!esValido)
-                return BadRequest(new { valido = false, Mensaje = "Token inválido o expirado" });
-
-            return Ok(new { valido = true });
-        }
-
-        [HttpPost("activar-cuenta")]
-        public async Task<ActionResult<ActivarResponseDTO>> ActivarCuenta([FromBody] ActivarCuentaDTO dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var email = await _activarCuentaCasoDeUso.Ejecutar(dto.Token, dto.Password);
-            if (email == null)
-                return BadRequest(new { Mensaje = "Token inválido o ya usado" });
-
-
-
-            return Ok(new ActivarResponseDTO { Email = email, Mensaje = "Cuenta activada. Ahora inicia sesión." });
-        }
+        return Ok(result);
     }
+
+
+    [HttpPost("register-invitacion")]
+    public async Task<ActionResult<AuthResponseDTO>> AgregarUsuarioConInvitacion([FromBody] RegisterInvitacionDTO dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _agregarUsuarioConInvitacionCasoDeUso.Ejecutar(dto);
+        if (result == null)
+            return BadRequest(new { Mensaje = "Token de invitación inválido o ya usado" });
+
+        return Ok(result);
+    }
+
+
+
+    [HttpPost("validar-activacion")]
+    public async Task<ActionResult> ValidarActivacion([FromBody] ValidarActivacionDTO dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var esValido = await _validarTokenActivacionCasoDeUso.Ejecutar(dto.Token);
+        if (!esValido)
+            return BadRequest(new { valido = false, Mensaje = "Token inválido o expirado" });
+
+        return Ok(new { valido = true });
+    }
+
+    [HttpPost("activar-cuenta")]
+    public async Task<ActionResult<ActivarResponseDTO>> ActivarCuenta([FromBody] ActivarCuentaDTO dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var email = await _activarCuentaCasoDeUso.Ejecutar(dto.Token, dto.Password);
+        if (email == null)
+            return BadRequest(new { Mensaje = "Token inválido o ya usado" });
+
+
+
+        return Ok(new ActivarResponseDTO { Email = email, Mensaje = "Cuenta activada. Ahora inicia sesión." });
+    }
+}
 
 

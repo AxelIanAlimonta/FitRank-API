@@ -25,7 +25,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             _config = config;
         }
 
-        public async Task<EmailResponseDTO> Ejecutar(EmailDTO dto)
+        public virtual async Task<EmailResponseDTO> Ejecutar(EmailDTO dto)
         {
             try
             {

@@ -111,5 +111,33 @@ namespace FitRank_API.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Entrenamiento>> ObtenerHistorialPorProfesorAsync(long profesorId, string? nombre)
+        {
+            var query = _context.Entrenamientos
+                .Include(e => e.Actividades)
+                    .ThenInclude(a => a.EjercicioAsignado)
+                        .ThenInclude(ea => ea.Sesion)
+                            .ThenInclude(s => s.Rutina)
+                .Include(e => e.Actividades)
+                    .ThenInclude(a => a.EjercicioAsignado)
+                        .ThenInclude(ea => ea.Ejercicio)
+                            .ThenInclude(ex => ex.EjerciciosAsignados)
+                                .ThenInclude(eas => eas.Series)
+                .Include(e => e.Socio)
+                .Where(e =>
+                    e.Actividades.Any(a =>
+                        a.EjercicioAsignado.Sesion.Rutina.UsuarioId == profesorId
+                    )
+                );
+
+            if (!string.IsNullOrWhiteSpace(nombre))
+                query = query.Where(e => e.Socio.Nombre.ToLower().Contains(nombre.ToLower()));
+
+            return await query
+                .OrderByDescending(e => e.Fecha)
+                .ToListAsync();
+        }
+
+
     }
 }

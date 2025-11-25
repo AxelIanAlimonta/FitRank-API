@@ -16,7 +16,7 @@ public class ObtenerDificultadPorIdCasoDeUso
         _mapper = mapper;
     }
 
-    public async Task<DificultadDTO?> Ejecutar(int id)
+    public virtual async Task<DificultadDTO?> Ejecutar(int id)
     {
         var dificultadEntidad = await _dificultadRepositorio.ObtenerPorIdAsync(id);
         return dificultadEntidad == null ? null : _mapper.Map<DificultadDTO>(dificultadEntidad);

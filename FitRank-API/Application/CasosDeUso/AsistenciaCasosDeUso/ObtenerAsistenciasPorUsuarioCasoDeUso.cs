@@ -17,7 +17,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<List<AsistenciaResponseDTO>> Ejecutar(int usuarioId)
+        public virtual async Task<List<AsistenciaResponseDTO>> Ejecutar(int usuarioId)
         {
            
             var asistencias = await _asistenciaRepositorio.ObtenerPorUsuarioAsync(usuarioId);

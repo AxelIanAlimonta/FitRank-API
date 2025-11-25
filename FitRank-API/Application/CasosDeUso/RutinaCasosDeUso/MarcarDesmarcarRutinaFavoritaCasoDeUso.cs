@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             _repo = repo;
         }
 
-        public async Task<bool> Ejecutar(long rutinaId, bool favorita)
+        public virtual async Task<bool> Ejecutar(long rutinaId, bool favorita)
         {
             return await _repo.MarcarFavoritaAsync(rutinaId, favorita);
         }

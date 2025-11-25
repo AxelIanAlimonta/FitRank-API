@@ -11,6 +11,8 @@ using FitRank_API.Controllers;
 using FitRank_API.Application.CasosDeUso.GimnasioCasosDeUso;
 using FitRank_API.Application.DTOs.GimnasioDTOs;
 using FitRank_API.Domain.Entities;
+using FitRank_API.Application.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FitRank_API.tests.ControllersTests;
 
@@ -24,28 +26,41 @@ public class GimnasioControllerTests
     private readonly Mock<ObtenerGimnasioPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerGimnasiosCasoDeUso> _mockObtenerTodos;
     private readonly Mock<IAdministradorRepositorio> _mockAdminRepositorio;
-
+    private readonly Mock<IHubContext<NotificacionesHub>> _hubMock;
+    private readonly Mock<IHubClients> _hubClientsMock;
+    private readonly Mock<IClientProxy> _clientProxyMock;
+    private readonly Mock<ActualizarPersonalizacionGimnasioCasoDeUso> _mockActualizarPersonalizacion;
 
     public GimnasioControllerTests()
     {
-        var mockRepositorio = new Mock<IGimnasioRepositorio>();
-        var mockMapper = new Mock<IMapper>();
-        _mockAdminRepositorio = new Mock<IAdministradorRepositorio>();
+        _hubMock = new Mock<IHubContext<NotificacionesHub>>();
+        _hubClientsMock = new Mock<IHubClients>();
+        _clientProxyMock = new Mock<IClientProxy>();
 
-        _mockActualizar = new Mock<ActualizarGimnasioCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        _mockAgregar = new Mock<AgregarGimnasioCasoDeUso>(mockRepositorio.Object, mockMapper.Object, _mockAdminRepositorio.Object);
-        _mockEliminar = new Mock<EliminarGimnasioCasoDeUso>(mockRepositorio.Object);
-        _mockObtenerPorId = new Mock<ObtenerGimnasioPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        _mockObtenerTodos = new Mock<ObtenerGimnasiosCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        // Mock group calls for SignalR
+        _hubClientsMock.Setup(c => c.Group(It.IsAny<string>())).Returns(_clientProxyMock.Object);
+        _hubMock.Setup(h => h.Clients).Returns(_hubClientsMock.Object);
+
+        var mockRepo = new Mock<IGimnasioRepositorio>();
+        var mapper = new Mock<IMapper>();
+        var mockAdminRepo = new Mock<IAdministradorRepositorio>();
+
+        _mockObtenerTodos = new Mock<ObtenerGimnasiosCasoDeUso>(mockRepo.Object, mapper.Object);
+        _mockAgregar = new Mock<AgregarGimnasioCasoDeUso>(mockRepo.Object, mapper.Object, mockAdminRepo.Object);
+        _mockActualizar = new Mock<ActualizarGimnasioCasoDeUso>(mockRepo.Object, mapper.Object);
+        _mockEliminar = new Mock<EliminarGimnasioCasoDeUso>(mockRepo.Object);
+        _mockObtenerPorId = new Mock<ObtenerGimnasioPorIdCasoDeUso>(mockRepo.Object, mapper.Object);
+        _mockActualizarPersonalizacion = new Mock<ActualizarPersonalizacionGimnasioCasoDeUso>(mockRepo.Object, mapper.Object);
 
         _controller = new GimnasioController(
+            _hubMock.Object,
             _mockObtenerTodos.Object,
             _mockAgregar.Object,
             _mockActualizar.Object,
             _mockEliminar.Object,
-            _mockObtenerPorId.Object
+            _mockObtenerPorId.Object,
+            _mockActualizarPersonalizacion.Object
         );
-
     }
 
     //Agregar_RetornaCreatedAtActionResult

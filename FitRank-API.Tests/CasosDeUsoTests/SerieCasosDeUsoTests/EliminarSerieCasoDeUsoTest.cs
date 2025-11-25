@@ -6,7 +6,7 @@ using FitRank_API.Domain.Entities;
 using FluentAssertions;
 using FitRank_API.Application.DTOs.SerieDTOs;
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
-using FitRank_API.Application.MappingProfiles;
+using FitRank_API.Application.Mappings;
 
 namespace CasosDeUsoTests.SerieCasosDeUsoTests;
 

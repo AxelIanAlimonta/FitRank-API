@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
             _repositorio = repositorio;
         }
 
-        public async Task<bool> EjecutarAsync(long solicitudId, long rutinaId, string? mensaje)
+        public virtual async Task<bool> EjecutarAsync(long solicitudId, long rutinaId, string? mensaje)
         {
             var solicitud = await _repositorio.ObtenerPorIdAsync(solicitudId);
             if (solicitud == null || solicitud.Estado != EstadoSolicitud.TomadaPorProfesor)
@@ -22,7 +22,7 @@ namespace FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso
             solicitud.FechaResolucion = DateTime.UtcNow;
             solicitud.MensajeProfesor = mensaje;
 
-            await _repositorio.GuardarCambiosAsync();
+            await _repositorio.ActualizarAsync(solicitud);
             return true;
         }
     }

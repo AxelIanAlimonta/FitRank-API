@@ -245,4 +245,108 @@ public class LogroRepositorioTests
         logroEliminado.Should().BeNull();
     }
 
+    //eliminar logro inexistente deberia retornar false
+    [Fact]
+    public async Task EliminarLogro_Inexistente_DeberiaRetornarFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("EliminarLogroInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var logroRepositorioMock = new LogroRepositorioImpl(context);
+        // Act
+        var resultado = await logroRepositorioMock.EliminarLogro(999); // ID inexistente
+        // Assert
+        resultado.Should().BeFalse();
+    }
+
+    // obtener logro por nombre clave existente
+    [Fact]
+    public async Task ObtenerPorNombreClaveAsync_Existente_DeberiaRetornarLogro()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorNombreClaveDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new LogroRepositorioImpl(context);
+
+        var logro = new Logro
+        {
+            Nombre = "Logro Test",
+            NombreClave = "clave_test",
+            Descripcion = "Descripción test",
+            Imagen = "http://icono.logro/test.png",
+            Categoria = "Test",
+            Puntos = 10
+        };
+
+        context.Logros.Add(logro);
+        await context.SaveChangesAsync();
+
+        // Act
+        var resultado = await repo.ObtenerPorNombreClaveAsync("clave_test");
+
+        // Assert
+        resultado.Should().NotBeNull();
+        resultado!.Should().BeEquivalentTo(logro, options => options.ExcludingMissingMembers());
+    }
+
+    // obtener logro por nombre clave inexistente
+    [Fact]
+    public async Task ObtenerPorNombreClaveAsync_Inexistente_DeberiaRetornarNull()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ObtenerPorNombreClaveInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new LogroRepositorioImpl(context);
+
+        // Act
+        var resultado = await repo.ObtenerPorNombreClaveAsync("no_existe");
+
+        // Assert
+        resultado.Should().BeNull();
+    }
+
+    // existe nombre clave existente
+    [Fact]
+    public async Task ExisteNombreClaveAsync_Existente_DeberiaRetornarTrue()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ExisteNombreClaveDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new LogroRepositorioImpl(context);
+
+        var logro = new Logro
+        {
+            Nombre = "Logro Test",
+            NombreClave = "clave_existente",
+            Descripcion = "Descripción test",
+            Imagen = "http://icono.logro/test.png",
+            Categoria = "Test",
+            Puntos = 10
+        };
+
+        context.Logros.Add(logro);
+        await context.SaveChangesAsync();
+
+        // Act
+        var existe = await repo.ExisteNombreClaveAsync("clave_existente");
+
+        // Assert
+        existe.Should().BeTrue();
+    }
+
+    // existe nombre clave inexistente
+    [Fact]
+    public async Task ExisteNombreClaveAsync_Inexistente_DeberiaRetornarFalse()
+    {
+        // Arrange
+        var options = CreateInMemoryOptions("ExisteNombreClaveInexistenteDb");
+        using var context = new FitRankDbContext(options);
+        var repo = new LogroRepositorioImpl(context);
+
+        // Act
+        var existe = await repo.ExisteNombreClaveAsync("clave_inexistente");
+
+        // Assert
+        existe.Should().BeFalse();
+    }
 }

@@ -12,7 +12,7 @@ namespace FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso
             _adminRepositorio = adminRepositorio;
         }
 
-        public async Task<bool> Ejecutar(long id)
+        public virtual async Task<bool> Ejecutar(long id)
         {
             var admin = await _adminRepositorio.ObtenerPorIdAsync(id);
 

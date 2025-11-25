@@ -16,7 +16,7 @@ namespace FitRank_API.Application.CasosDeUso.DificultadCasosDeUso
             _mapper = mapper;
         }
 
-        public async Task<DificultadDTO> Ejecutar(AgregarDificultadDTO agregarDificultadDTO)
+        public virtual async Task<DificultadDTO> Ejecutar(AgregarDificultadDTO agregarDificultadDTO)
         {
             var dificultadEntidad = _mapper.Map<Dificultad>(agregarDificultadDTO);
             var dificultadCreada = await _dificultadRepositorio.AgregarAsync(dificultadEntidad);

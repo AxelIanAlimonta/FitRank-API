@@ -25,6 +25,7 @@ public class EntrenamientoControllerTests
     private readonly Mock<ObtenerEntrenamientoPorIdCasoDeUso> _mockObtenerPorId;
     private readonly Mock<ObtenerEntrenamientosCasoDeUso> _mockObtenerTodos;
     private readonly Mock<ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso> _mockObtenerHistorial;
+    private readonly Mock<ObtenerHistorialEntrenamientosDeProfesorCasoDeUso> _mockObtenerHistorialProfesor;
 
     public EntrenamientoControllerTests()
     {
@@ -37,6 +38,7 @@ public class EntrenamientoControllerTests
         _mockObtenerPorId = new Mock<ObtenerEntrenamientoPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerEntrenamientosCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerHistorial = new Mock<ObtenerHistorialEntrenamientosDeUnUsuarioCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockObtenerHistorialProfesor = new Mock<ObtenerHistorialEntrenamientosDeProfesorCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
 
         _controller = new EntrenamientoController(
             _mockAgregar.Object,
@@ -44,7 +46,8 @@ public class EntrenamientoControllerTests
             _mockObtenerPorId.Object,
             _mockActualizar.Object,
             _mockEliminar.Object,
-            _mockObtenerHistorial.Object
+            _mockObtenerHistorial.Object,
+            _mockObtenerHistorialProfesor.Object
         );
     }
 

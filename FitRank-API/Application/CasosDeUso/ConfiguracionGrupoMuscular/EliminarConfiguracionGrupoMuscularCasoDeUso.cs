@@ -11,7 +11,7 @@ namespace FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular
             _configuracionGrupoMuscularRepositorio = configuracionGrupoMuscularRepositorio;
         }
 
-        public async Task Ejecutar(long id)
+        public virtual async Task Ejecutar(long id)
         {
             await _configuracionGrupoMuscularRepositorio.EliminarAsync(id);
         }

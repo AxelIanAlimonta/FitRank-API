@@ -10,4 +10,9 @@ public interface IGimnasioRepositorio
     Task<Gimnasio?> ActualizarGimnasio(Gimnasio gimnasio);
     Task<bool> EliminarGimnasio(long id);
     Task<Gimnasio?> ObtenerPorAdministradorIdAsync(long adminId);
+
+    long? ObtenerGimnasioIdPorUsuario(long userId);
+
+    Task<Gimnasio?> ActualizarPersonalizacion(long id, string colorPrincipal, string colorSecundario, string? logoUrl);
+
 }

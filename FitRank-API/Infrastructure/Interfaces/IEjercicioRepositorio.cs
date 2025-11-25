@@ -1,4 +1,5 @@
-﻿using FitRank_API.Domain.Entities;
+﻿using FitRank_API.Application.DTOs.RutinaDTOs;
+using FitRank_API.Domain.Entities;
 
 namespace FitRank_API.Infrastructure.Interfaces;
 
@@ -9,4 +10,7 @@ public interface IEjercicioRepositorio
     Task<Ejercicio> AgregarEjercicioAsync(Ejercicio ejercicio);
     Task<Ejercicio?> ActualizarEjercicioAsync(Ejercicio ejercicio);
     Task<bool> EliminarEjercicioAsync(long id);
+
+    Task<List<Ejercicio>> ObtenerEjerciciosPorGrupoMuscularAsync(long grupoMuscularId);
+    Task<List<Ejercicio>> ObtenerPorMaquinaId(long maquinaId);
 }

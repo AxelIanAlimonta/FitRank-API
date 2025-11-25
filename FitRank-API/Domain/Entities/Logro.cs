@@ -11,5 +11,11 @@ public class Logro
     public string Categoria { get; set; }
     public string Imagen { get; set; }
     public int Puntos { get; set; }
-    public ICollection<LogroSocio> LogrosOtorgados { get; set; } = new List<LogroSocio>();
+    public bool Estado { get; set; } = true;
+
+    public ICollection<LogroGimnasio> GimnasiosConfigurados { get; set; }
+    = new List<LogroGimnasio>();
+
+    public ICollection<LogroSocio> LogrosOtorgados { get; set; }
+        = new List<LogroSocio>();
 }
