@@ -1,4 +1,5 @@
 ﻿using FitRank_API.Application.CasosDeUso.MercadoPago;
+using FitRank_API.Application.DTOs.MercadoPago;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
@@ -107,10 +108,8 @@ namespace FitRank_API.Presentacion.Controllers
         {
             try
             {
-                // Precio fijo de la cuota
                 decimal monto = 30000;
 
-                // invitacionId lo usamos como referencia externa → acá usamos ID del socio
                 var resultado = await _crearPreferenciaCaso.Ejecutar(
                     monto,
                     req.Email,
@@ -129,11 +128,7 @@ namespace FitRank_API.Presentacion.Controllers
             }
         }
 
-        public class RenovarCuotaRequest
-        {
-            public long SocioId { get; set; }
-            public string Email { get; set; }
-        }
+
 
 
 
