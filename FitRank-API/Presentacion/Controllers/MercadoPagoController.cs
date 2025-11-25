@@ -102,6 +102,38 @@ namespace FitRank_API.Presentacion.Controllers
             }
         }
 
+        [HttpPost("renovar-cuota")]
+        public async Task<IActionResult> RenovarCuota([FromBody] RenovarCuotaRequest req)
+        {
+            try
+            {
+                // Precio fijo de la cuota
+                decimal monto = 30000;
+
+                // invitacionId lo usamos como referencia externa → acá usamos ID del socio
+                var resultado = await _crearPreferenciaCaso.Ejecutar(
+                    monto,
+                    req.Email,
+                    req.SocioId
+                );
+
+                return Ok(new
+                {
+                    linkPago = resultado.linkPago,
+                    mensaje = "Link generado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = "Error al generar pago", detalle = ex.Message });
+            }
+        }
+
+        public class RenovarCuotaRequest
+        {
+            public long SocioId { get; set; }
+            public string Email { get; set; }
+        }
 
 
 
