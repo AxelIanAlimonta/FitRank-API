@@ -1,9 +1,11 @@
 ﻿using FitRank_API.Application.DTOs.ActividadDTOs;
 using FitRank_API.Domain.Entities;
+using FitRank_API.Domain.Enums;
 using FitRank_API.Domain.Strategy;
 using FitRank_API.Infrastructure.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 
 namespace FitRank_API.Application.UseCases
@@ -41,7 +43,7 @@ namespace FitRank_API.Application.UseCases
             var sesion = await _sesionRepo.ObtenerPorIdAsync(ejercicioAsignado.SesionId);
             var rutina = await _rutinaRepo.ObtenerPorIdAsync(sesion.RutinaId);
             var socio = await _entrenamientoRepo.ObtenerSocioPorIdAsync(rutina.SocioId);
-            var ultimaMedida = socio.MedidasCorporales.OrderByDescending(m => m.Fecha).First();
+            var ultimaMedida = socio.MedidasCorporales.OrderByDescending(m => m.Fecha).FirstOrDefault();
 
             // 2️⃣ Configuración del grupo muscular
             var configGrupo = await _context.ConfiguracionesGrupoMuscular
@@ -83,7 +85,7 @@ namespace FitRank_API.Application.UseCases
                 await _entrenamientoRepo.AgregarAsync(entrenamiento);
             }
 
-            // 5️⃣ Registrar actividad
+           // 5 Registrar actividad
             var actividad = new Domain.Entities.Actividad
             {
                 EntrenamientoId = entrenamiento.Id,
@@ -94,6 +96,18 @@ namespace FitRank_API.Application.UseCases
                 Duracion = dto.Duracion, // si lo tenés
                 Punto = resultado.Puntos
             };
+
+            // 6 Verificar que haya batallas activas
+            var batallas = _context.Batallas
+                //Activa es una opcion de enum
+
+                .Where(b => b.Estado == BatallaEstado.Activa && (b.SocioAId == socio.Id || b.SocioBId == socio.Id));
+
+            foreach (var b in batallas)
+            {
+                if (b.SocioAId == socio.Id) b.PuntosA += resultado.Puntos;
+                else b.PuntosB += resultado.Puntos;
+            }
 
             await _actividadRepo.AgregarAsync(actividad);
 
