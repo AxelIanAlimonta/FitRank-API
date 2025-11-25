@@ -56,6 +56,7 @@ public class FitRankDbContext : DbContext
 
     public DbSet<Valoracion> Valoraciones { get; set; }
     public DbSet<Amistad> Amistades { get; set; }
+    public DbSet<BatallaPunto> Batallas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

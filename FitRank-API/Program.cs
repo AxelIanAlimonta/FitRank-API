@@ -56,6 +56,8 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Amazon.S3;
 using Amazon.Runtime;
+using FitRank_API.Application.CasosDeUso.BatallasCasosDeUso;
+using FitRank_API.Application.UseCases.Batallas;
 
 
 
@@ -183,7 +185,17 @@ builder.Services.AddScoped<ObtenerPuntajeTotalSocioCasoDeUso>();
 builder.Services.AddScoped<ObtenerRankingSociosCasoDeUso>();
 builder.Services.AddScoped<ObtenerRankingPorFechaCasoDeUso>();
 builder.Services.AddScoped<ObtenerRankingPorGrupoMuscularCasoDeUso>();
+builder.Services.AddScoped<ObtenerRankingFiltradoCasoDeUso>();
 
+builder.Services.AddScoped<AceptarBatallaCasoDeUso>();
+builder.Services.AddScoped<CrearBatallaCasoDeUso>();
+builder.Services.AddScoped<RechazarBatallaCasoDeUso>();
+builder.Services.AddScoped<FinalizarBatallaCasoDeUso>();
+builder.Services.AddScoped<ObtenerHistorialBatallasCasoDeUso>();
+builder.Services.AddScoped<ObtenerBatallasActivasCasoDeUso>();
+builder.Services.AddScoped<ObtenerProgresoBatallaCasoDeUso>();
+builder.Services.AddScoped<ObtenerBatallasPendientesCasoDeUso>();
+builder.Services.AddScoped<ObtenerBatallaPorIdCasoDeUso>();
 
 
 builder.Services.AddScoped<ILogroRepositorio, LogroRepositorioImpl>();
