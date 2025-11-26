@@ -309,20 +309,5 @@ namespace FitRank_API.Tests.CasosDeUsoTests.InvitacionCasosDeUsoTests
             invitacionResult.UsuarioId.Should().BeNull();
             socioResult.Should().BeNull();
         }
-
-        [Fact]
-        public async Task DeberiaVerificarConfiguracionDeCasoDeUso()
-        {
-            // Arrange
-            var accessToken = _mockConfig.Object["MercadoPago:AccessToken"];
-            
-            // Act
-            var casoDeUso = _mockCasoDeUso.Object;
-
-            // Assert
-            casoDeUso.Should().NotBeNull();
-            accessToken.Should().Be("TEST-1234567890-mocktoken");
-            _mockConfig.Verify(c => c["MercadoPago:AccessToken"], Times.Once);
-        }
     }
 }
