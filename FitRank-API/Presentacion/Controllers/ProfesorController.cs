@@ -1,6 +1,7 @@
 ﻿using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.DTOs.ProfesorDTOs;
+using FitRank_API.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,25 +57,49 @@ namespace FitRank_API.Presentacion.Controllers
         [HttpPost]
         public async Task<IActionResult> AgregarAsync([FromBody] AgregarProfesorDTO profesorDTO)
         {
-            var nuevoProfesor = await _agregarProfesorCasoDeUso.Ejecutar(profesorDTO);
-            return Ok(nuevoProfesor);
+            try
+            {
+
+                var nuevoProfesor = await _agregarProfesorCasoDeUso.Ejecutar(profesorDTO);
+                return Ok(nuevoProfesor);
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "EMAIL_DUPLICADO")
+                    return BadRequest(new { mensaje = "Ya existe un profesor con este email." });
+
+                if (ex.Message == "DNI_DUPLICADO")
+                    return BadRequest(new { mensaje = "Ya existe un profesor con este DNI." });
+
+                return StatusCode(500, new { mensaje = "Error interno del servidor." });
+            }
+
         }
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> ActualizarAsync(long id, [FromBody] ActualizarProfesorDTO profesorDTO)
+        [HttpPut("actualizar/{id}")]
+        public async Task<IActionResult> Actualizar(long id, ActualizarProfesorDTO dto)
         {
-            // Validación: el id de la URL debe coincidir con el del cuerpo
-            if (id != profesorDTO.Id)
-                return BadRequest("El ID de la URL no coincide con el del cuerpo.");
+            try
+            {
+                var actualizado = await _actualizarProfesorCasoDeUso.Ejecutar(id, dto);
 
-            var profesorActualizado = await _actualizarProfesorCasoDeUso.Ejecutar(id, profesorDTO);
+                if (actualizado == null)
+                    return NotFound(new { mensaje = "Profesor no encontrado." });
 
-            if (profesorActualizado == null)
-                return NotFound();
+                return Ok(actualizado);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "EMAIL_DUPLICADO")
+                    return BadRequest(new { mensaje = "Ya existe un profesor con este email." });
 
-            return Ok(profesorActualizado);
+                if (ex.Message == "DNI_DUPLICADO")
+                    return BadRequest(new { mensaje = "Ya existe un profesor con este DNI." });
+
+                return StatusCode(500, new { mensaje = "Error interno del servidor." });
+            }
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarAsync(long id)

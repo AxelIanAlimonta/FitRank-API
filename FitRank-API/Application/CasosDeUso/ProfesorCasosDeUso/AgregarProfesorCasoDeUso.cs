@@ -14,20 +14,25 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
             _profesorRepositorio = profesorRepositorio;
             _mapper = mapper;
         }
-        public virtual async Task<ProfesorDTO> Ejecutar(AgregarProfesorDTO dto)
+        public async Task<ProfesorDTO> Ejecutar(AgregarProfesorDTO dto)
         {
+            if (await _profesorRepositorio.ExisteEmailAsync(dto.Email))
+                throw new Exception("EMAIL_DUPLICADO");
+
+            if (await _profesorRepositorio.ExisteDniAsync(dto.Dni))
+                throw new Exception("DNI_DUPLICADO");
+
             var profesor = _mapper.Map<Profesor>(dto);
 
             profesor.Rol = "Profesor";
             profesor.EsActivado = true;
             profesor.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-
-            // 🔹 Asignar el gimnasio (viene desde el DTO)
             profesor.GimnasioId = dto.GimnasioId;
 
-            var profesorCreado = await _profesorRepositorio.AgregarAsync(profesor);
-            return _mapper.Map<ProfesorDTO>(profesorCreado);
+            var creado = await _profesorRepositorio.AgregarAsync(profesor);
+            return _mapper.Map<ProfesorDTO>(creado);
         }
+
 
     }
 }

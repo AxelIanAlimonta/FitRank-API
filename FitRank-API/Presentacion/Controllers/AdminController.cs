@@ -64,13 +64,30 @@ namespace FitRank_API.Presentacion.Controllers
 
             var adminId = int.Parse(adminIdClaim);
 
-            var result = await _agregarInvitacionCasoDeUso.Ejecutar(dto, adminId);
+            try
+            {
+                var result = await _agregarInvitacionCasoDeUso.Ejecutar(dto, adminId);
 
-            if (!result.Success)
-                return BadRequest(new { Mensaje = result.Mensaje });
+                if (!result.Success)
+                    return BadRequest(new { Mensaje = result.Mensaje });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // 🔥 Validaciones nuevas
+                if (ex.Message == "EMAIL_DUPLICADO")
+                    return BadRequest(new { mensaje = "EMAIL_DUPLICADO", socioId = ex.Data["socioId"] });
+
+                if (ex.Message == "DNI_DUPLICADO")
+                    return BadRequest(new { mensaje = "DNI_DUPLICADO", socioId = ex.Data["socioId"] });
+
+
+                // ❌ Error inesperado
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
+
 
         [HttpPost("fallback-efectivo")]
         public async Task<IActionResult> FallbackEfectivo([FromBody] FallbackEfectivoDTO dto)
