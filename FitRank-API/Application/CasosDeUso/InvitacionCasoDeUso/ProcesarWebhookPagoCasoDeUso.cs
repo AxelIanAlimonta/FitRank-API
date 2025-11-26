@@ -2,10 +2,12 @@
 using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.DTOs.IngresoDTOs;
 using FitRank_API.Application.DTOs.Invitacion;
+using FitRank_API.Application.Hubs;
 using FitRank_API.Infrastructure.Interfaces;
 using MercadoPago.Client.Payment;
 using MercadoPago.Config;
 using MercadoPago.Resource.Payment;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FitRank_API.Application.CasosDeUso.MercadoPago
 {
@@ -16,20 +18,28 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
         private readonly AgregarIngresoCasoDeUso _agregarIngresoCaso;
         private readonly AgregarInvitacionCasoDeUso _agregarInvitacionCaso;
         private readonly IConfiguration _config;
+        private readonly IHubContext<NotificacionesHub> _hubContext;
+
 
         public ProcesarWebhookPagoCasoDeUso(
             IInvitacionRepositorio invitacionRepo,
             IUsuarioRepositorio usuarioRepo,
             AgregarIngresoCasoDeUso agregarIngresoCaso,
             AgregarInvitacionCasoDeUso agregarInvitacionCaso,
-            IConfiguration config)
+            IConfiguration config,
+            IHubContext<NotificacionesHub> hubContext)
         {
             _invitacionRepo = invitacionRepo;
             _usuarioRepo = usuarioRepo;
             _agregarIngresoCaso = agregarIngresoCaso;
             _agregarInvitacionCaso = agregarInvitacionCaso;
             _config = config;
+            _hubContext = hubContext;
         }
+
+
+
+
 
         // ⚠️ Ahora recibe un long, NO el body
         public virtual async Task Ejecutar(long paymentId)
@@ -97,6 +107,18 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
                 invitacion.Estado = "Pagado";
                 invitacion.MpPaymentId = paymentId.ToString();
                 await _invitacionRepo.ActualizarAsync(invitacion);
+
+                // 🔥 Notificar SOLO al usuario que pagó
+                await _hubContext.Clients.Group($"user-{socio.Id}")
+                    .SendAsync("pagoAcreditado", new
+                    {
+                        socioId = socio.Id,
+                        monto = (decimal)payment.TransactionAmount,
+                        fecha = DateTime.Now
+                    });
+
+                Console.WriteLine($"📢 Notificación enviada al usuario {socio.Id}");
+
 
                 Console.WriteLine("💚 PAGO PROCESADO OK");
             }
