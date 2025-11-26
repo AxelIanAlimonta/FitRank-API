@@ -50,6 +50,26 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 
         public virtual async Task<InvitacionResponseDTO> Ejecutar(GenerarInvitacionDTO dto, int adminId)
         {
+            if (await _usuarioRepositorio.ExisteEmailAsync(dto.Email))
+            {
+                var usuarioExistente = await _usuarioRepositorio.ObtenerPorEmailAsync(dto.Email);
+
+                var ex = new Exception("EMAIL_DUPLICADO");
+                ex.Data["socioId"] = usuarioExistente.Id;    // <-- enviamos el ID
+                throw ex;
+            }
+
+            // 🟣 Validación por DNI
+            if (await _usuarioRepositorio.ExisteDniAsync(dto.Dni))
+            {
+                var usuarioExistente = await _usuarioRepositorio.ObtenerPorDniAsync(dto.Dni);
+
+                var ex = new Exception("DNI_DUPLICADO");
+                ex.Data["socioId"] = usuarioExistente.Id;    // <-- enviamos el ID
+                throw ex;
+            }
+
+
 
             var tokenActivacion = Guid.NewGuid().ToString("N");
 
@@ -147,8 +167,7 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
             <p>Tu pase FitRank vence el <strong>{invitacion.CuotaPagadaHasta?.ToShortDateString()}</strong>.</p>
             <p>Mostrá este QR en tu gimnasio para ingresar:</p>
             <img src='data:image/png;base64,{qrImage.Split(',')[1]}' alt='QR de acceso' width='200'/>
-             <p>O abrí tu pase directamente desde este enlace:</p>
-             <a href='{qrData}' 
+           
            style='display:inline-block; background-color:#5f00ff; color:#fff; 
                   padding:10px 20px; border-radius:8px; text-decoration:none;'>
            Ver mi pase FitRank

@@ -124,5 +124,22 @@ namespace FitRank_API.Infrastructure.Repositorios
     .ToListAsync();
         }
 
+
+
+        public async Task<bool> ExisteEmailAsync(string email)
+        {
+            return await _context.Usuarios.AnyAsync(u => u.Email == email);
+        }
+
+        public async Task<bool> ExisteDniAsync(long dni)
+        {
+            return await _context.Usuarios.AnyAsync(u => u.Dni == dni);
+        }
+        public async Task<Usuario?> ObtenerPorDniAsync(long dni)
+        {
+            return await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Dni == dni);
+        }
+
     }
 }

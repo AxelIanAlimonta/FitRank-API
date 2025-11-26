@@ -20,8 +20,10 @@ namespace FitRank_API.Infrastructure.Interfaces
 
         Task<List<Socio>> ObtenerSociosActivosAsync();
 
+        Task<bool> ExisteEmailAsync(string email);
+        Task<bool> ExisteDniAsync(long dni);
 
-
+        Task<Usuario?> ObtenerPorDniAsync(long dni);
 
     }
 }

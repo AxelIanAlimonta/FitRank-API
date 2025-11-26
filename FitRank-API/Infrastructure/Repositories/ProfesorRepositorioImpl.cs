@@ -86,6 +86,15 @@ namespace FitRank_API.Infrastructure.Repositories
                 .Where(p => p.GimnasioId == gimnasioId)
                 .ToListAsync();
         }
+        public async Task<bool> ExisteEmailAsync(string email)
+        {
+            return await _context.Profesores.AnyAsync(p => p.Email == email);
+        }
+
+        public async Task<bool> ExisteDniAsync(long dni)
+        {
+            return await _context.Profesores.AnyAsync(p => p.Dni == dni);
+        }
 
     }
 }
