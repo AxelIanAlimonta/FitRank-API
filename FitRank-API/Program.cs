@@ -136,9 +136,6 @@ builder.Services.AddScoped<ActualizarMaquinaCasoDeUso>();
 builder.Services.AddScoped<EliminarMaquinaCasoDeUso>();
 builder.Services.AddScoped<ObtenerMaquinaDetalleCasoDeUso>();
 
-builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
-builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
-
 builder.Services.AddScoped<IDificultadRepositorio, DificultadRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodasLasDificultadesCasoDeUso>();
 builder.Services.AddScoped<ObtenerDificultadPorIdCasoDeUso>();
