@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.Helpers;
 using System.Text.Json;
@@ -14,18 +15,20 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
         private readonly IInvitacionRepositorio _invitacionRepo;
         private readonly IMapper _mapper;
         private readonly GenerarTokenCasoDeUso _generarToken;
-       
+        private readonly IPasswordService _passwordService;
 
         public AgregarUsuarioConInvitacionCasoDeUso(
             IUsuarioRepositorio usuarioRepo,
             IInvitacionRepositorio invitacionRepo,
             IMapper mapper,
-            GenerarTokenCasoDeUso generarToken)
+            GenerarTokenCasoDeUso generarToken,
+            IPasswordService passwordService)
         {
             _usuarioRepo = usuarioRepo;
             _invitacionRepo = invitacionRepo;
             _mapper = mapper;
             _generarToken = generarToken;
+            _passwordService = passwordService;
         }
 
         public virtual async Task<AuthResponseDTO?> Ejecutar(RegisterInvitacionDTO dto)
@@ -72,7 +75,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
                 Telefono = datosPre.GetValueOrDefault("telefono", "")?.ToString(),
                 Email = invitacion.Email,
                 NombreUsuario = dto.NombreUsuario,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                PasswordHash = _passwordService.HashPassword(dto.Password),
                 Rol = "User",
                 Estado = "Activo",
                 FechaNacimiento = dto.FechaNacimiento,
