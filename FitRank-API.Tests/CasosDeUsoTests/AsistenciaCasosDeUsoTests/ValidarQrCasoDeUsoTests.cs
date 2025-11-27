@@ -3,7 +3,7 @@ using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.Invitacion.RegistrarInvitacionCasoDeUso;
 using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;

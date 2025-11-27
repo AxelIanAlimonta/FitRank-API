@@ -1,7 +1,7 @@
 ﻿using FitRank_API.Application.CasosDeUso.Asistencia;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.DTOs.QR;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

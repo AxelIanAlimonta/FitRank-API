@@ -1,7 +1,7 @@
 ﻿using FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
 using FitRank_API.Application.DTOs.ProfesorDTOs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

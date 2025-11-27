@@ -2,7 +2,7 @@
 using FitRank_API.Domain.Entities;
 using FitRank_API.Domain.Enums;
 using FitRank_API.Domain.Strategy;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System;

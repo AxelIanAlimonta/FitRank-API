@@ -16,7 +16,7 @@ namespace FitRank_API.Tests.ControllersTests
 
         public FotoControllerTests()
         {
-            var mockRepositorio = new Mock<Infrastructure.Interfaces.IFotoRepositorio>();
+            var mockRepositorio = new Mock<Domain.Interfaces.IFotoRepositorio>();
             var mockMapper = new Mock<AutoMapper.IMapper>();
 
             _mockAgregarCaso = new Mock<AgregarFotoCasoDeUso>(mockRepositorio.Object, mockMapper.Object);

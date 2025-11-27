@@ -1,6 +1,6 @@
 ﻿using FitRank_API.Application.CasosDeUso.SolicitudCasosDeUso;
 using FitRank_API.Application.DTOs.SolicitudDTO;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

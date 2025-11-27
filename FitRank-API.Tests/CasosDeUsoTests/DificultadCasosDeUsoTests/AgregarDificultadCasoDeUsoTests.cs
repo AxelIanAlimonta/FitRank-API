@@ -1,5 +1,5 @@
 using FitRank_API.Application.Mappings;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Moq;
 using AutoMapper;
 using Xunit;

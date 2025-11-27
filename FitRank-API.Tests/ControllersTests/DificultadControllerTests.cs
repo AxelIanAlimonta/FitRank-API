@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Presentacion.Controllers;
 using FitRank_API.Application.DTOs.DificultadDTOs;
 using AutoMapper;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 
 namespace FitRank_API.tests.ControllersTests;

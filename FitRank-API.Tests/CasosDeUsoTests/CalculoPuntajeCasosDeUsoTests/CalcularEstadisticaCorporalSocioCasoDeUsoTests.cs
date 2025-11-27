@@ -1,7 +1,7 @@
 using FitRank_API.Application.DTOs.CalcularPuntajeDTOs;
 using FitRank_API.Application.UseCases;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 using Xunit;

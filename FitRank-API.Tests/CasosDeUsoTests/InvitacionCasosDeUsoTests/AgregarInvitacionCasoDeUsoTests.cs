@@ -5,7 +5,7 @@ using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.CasosDeUso.MercadoPago;
 using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;

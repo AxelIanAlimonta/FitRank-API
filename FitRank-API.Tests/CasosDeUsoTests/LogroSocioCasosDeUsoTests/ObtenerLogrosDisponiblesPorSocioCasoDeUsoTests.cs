@@ -2,7 +2,7 @@ using AutoMapper;
 using FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso;
 using FitRank_API.Application.DTOs.LogroSocioDTOs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 using Xunit;

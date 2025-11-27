@@ -2,7 +2,7 @@
 using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.ActividadDTOs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 
 namespace FitRank_API.Application.UseCases.Actividad
 {

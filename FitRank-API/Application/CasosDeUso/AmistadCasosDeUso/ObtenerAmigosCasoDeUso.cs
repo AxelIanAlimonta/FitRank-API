@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.AmistadDTOs;
 using FitRank_API.Domain.Enums;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.AmistadCasosDeUso
 {

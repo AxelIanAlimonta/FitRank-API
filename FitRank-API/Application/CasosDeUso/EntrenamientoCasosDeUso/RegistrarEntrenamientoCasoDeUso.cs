@@ -2,7 +2,7 @@
 using FitRank_API.Application.DTOs.EntrenamientoDTOs;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Domain.Strategy;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso

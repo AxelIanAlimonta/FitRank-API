@@ -1,5 +1,5 @@
 ﻿using FitRank_API.Application.DTOs.QR;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Microsoft.Extensions.Configuration;

@@ -1,5 +1,5 @@
 ﻿using FitRank_API.Application.DTOs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using AutoMapper;
 using FitRank_API.Application.DTOs.MaquinaDTOs;
 

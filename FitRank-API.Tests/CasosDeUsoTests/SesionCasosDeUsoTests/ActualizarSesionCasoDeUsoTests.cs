@@ -3,7 +3,7 @@ using FitRank_API.Application.CasosDeUso.SesionCasosDeUso;
 using FitRank_API.Application.DTOs.SesionDTOs;
 using FitRank_API.Application.Mappings;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 using Xunit;

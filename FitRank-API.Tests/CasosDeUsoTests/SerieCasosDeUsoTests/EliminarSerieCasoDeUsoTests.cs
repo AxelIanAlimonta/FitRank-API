@@ -1,5 +1,5 @@
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 
