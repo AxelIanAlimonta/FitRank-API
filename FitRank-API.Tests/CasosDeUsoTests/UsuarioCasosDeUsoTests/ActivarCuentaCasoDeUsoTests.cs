@@ -1,4 +1,5 @@
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Domain.Entities;
 using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
@@ -10,12 +11,14 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
     public class ActivarCuentaCasoDeUsoTests
     {
         private readonly Mock<IUsuarioRepositorio> _mockUsuarioRepo;
+        private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly ActivarCuentaCasoDeUso _casoDeUso;
 
         public ActivarCuentaCasoDeUsoTests()
         {
             _mockUsuarioRepo = new Mock<IUsuarioRepositorio>();
-            _casoDeUso = new ActivarCuentaCasoDeUso(_mockUsuarioRepo.Object);
+            _mockPasswordService = new Mock<IPasswordService>();
+            _casoDeUso = new ActivarCuentaCasoDeUso(_mockUsuarioRepo.Object, _mockPasswordService.Object);
         }
 
         [Fact]
@@ -39,6 +42,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.ObtenerPorCondicionAsync(It.IsAny<Expression<Func<Usuario, bool>>>()))
                 .ReturnsAsync(usuario);
             _mockUsuarioRepo.Setup(r => r.ActualizarAsync(It.IsAny<Usuario>())).ReturnsAsync((Usuario u) => u);
+            _mockPasswordService.Setup(p => p.HashPassword(nuevaPassword)).Returns("hashed_nueva_password");
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(token, nuevaPassword);
@@ -122,15 +126,15 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.ActualizarAsync(It.IsAny<Usuario>()))
                 .Callback<Usuario>(u => usuarioActualizado = u)
                 .ReturnsAsync((Usuario u) => u);
+            _mockPasswordService.Setup(p => p.HashPassword(nuevaPassword)).Returns("new_hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(token, nuevaPassword);
 
             // Assert
             usuarioActualizado.Should().NotBeNull();
-            usuarioActualizado!.PasswordHash.Should().NotBe("hash_antiguo");
-            usuarioActualizado.PasswordHash.Should().NotBe(nuevaPassword);
-            BCrypt.Net.BCrypt.Verify(nuevaPassword, usuarioActualizado.PasswordHash).Should().BeTrue();
+            usuarioActualizado!.PasswordHash.Should().Be("new_hashed_password");
+            _mockPasswordService.Verify(p => p.HashPassword(nuevaPassword), Times.Once);
         }
 
         [Fact]
@@ -157,6 +161,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.ActualizarAsync(It.IsAny<Usuario>()))
                 .Callback<Usuario>(u => usuarioActualizado = u)
                 .ReturnsAsync((Usuario u) => u);
+            _mockPasswordService.Setup(p => p.HashPassword(nuevaPassword)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(token, nuevaPassword);
@@ -191,6 +196,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.ActualizarAsync(It.IsAny<Usuario>()))
                 .Callback<Usuario>(u => usuarioActualizado = u)
                 .ReturnsAsync((Usuario u) => u);
+            _mockPasswordService.Setup(p => p.HashPassword(nuevaPassword)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(token, nuevaPassword);
@@ -224,6 +230,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.ActualizarAsync(It.IsAny<Usuario>()))
                 .Callback<Usuario>(u => usuarioActualizado = u)
                 .ReturnsAsync((Usuario u) => u);
+            _mockPasswordService.Setup(p => p.HashPassword(nuevaPassword)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(token, nuevaPassword);
@@ -257,6 +264,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.ActualizarAsync(It.IsAny<Usuario>()))
                 .Callback<Usuario>(u => usuarioActualizado = u)
                 .ReturnsAsync((Usuario u) => u);
+            _mockPasswordService.Setup(p => p.HashPassword(nuevaPassword)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(token, nuevaPassword);
@@ -287,6 +295,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.ObtenerPorCondicionAsync(It.IsAny<Expression<Func<Usuario, bool>>>()))
                 .ReturnsAsync(usuario);
             _mockUsuarioRepo.Setup(r => r.ActualizarAsync(It.IsAny<Usuario>())).ReturnsAsync((Usuario u) => u);
+            _mockPasswordService.Setup(p => p.HashPassword(nuevaPassword)).Returns("hashed_password");
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(token, nuevaPassword);

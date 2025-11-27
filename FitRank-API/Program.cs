@@ -507,6 +507,10 @@ builder.Services.AddSingleton<IAmazonS3>(provider =>
 
 // Registrar el servicio de imágenes
 builder.Services.AddScoped<IImagenService, ImagenService>();
+
+// Registrar el servicio de encriptación de contraseñas
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
