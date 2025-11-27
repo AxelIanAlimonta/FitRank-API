@@ -116,6 +116,7 @@ public class ProfesorRepositorioTests
             Matricula = "MAT456",
             Sueldo = 60000,
             Email = "elmail@gmail.com",
+            Rol = "Profesor"
         };
         // Act
         var agregado = await repo.AgregarAsync(nuevoProfesor);
