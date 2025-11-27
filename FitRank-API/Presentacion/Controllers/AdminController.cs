@@ -28,7 +28,7 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly AgregarAdministradorCasoDeUso _agregarAdministradorCasoDeUso;
         private readonly EliminarAdministradorCasoDeUso _eliminarAdministradorCasoDeUso;
         private readonly ValidarQrCasoDeUso _validarQrCasoDeUso;
-        private readonly ObtenerAdministradorCasoDeUso obtenerAdministradorCasoDeUso;
+        private readonly ObtenerAdministradorCasoDeUso _obtenerAdministradorCasoDeUso;
         private readonly BorrarSocioCompletoCasoDeUso _borrarSocioCompletoCasoDeUso;
 
         public AdminController(
@@ -48,13 +48,16 @@ namespace FitRank_API.Presentacion.Controllers
             _agregarAdministradorCasoDeUso = agregarAdministradorCasoDeUso;
             _eliminarAdministradorCasoDeUso = eliminarAdministradorCasoDeUso;
             _validarQrCasoDeUso = validarQrCasoDeUso;
-            this.obtenerAdministradorCasoDeUso = obtenerAdministradorCasoDeUso;
+            _obtenerAdministradorCasoDeUso = obtenerAdministradorCasoDeUso;
             _borrarSocioCompletoCasoDeUso = borrarSocioCompletoCasoDeUso;
         }
 
         [HttpPost("generar-invitacion")]
         public async Task<IActionResult> GenerarInvitacion([FromBody] GenerarInvitacionDTO dto)
         {
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -75,99 +78,162 @@ namespace FitRank_API.Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                // 🔥 Validaciones nuevas
                 if (ex.Message == "EMAIL_DUPLICADO")
                     return BadRequest(new { mensaje = "EMAIL_DUPLICADO", socioId = ex.Data["socioId"] });
 
                 if (ex.Message == "DNI_DUPLICADO")
                     return BadRequest(new { mensaje = "DNI_DUPLICADO", socioId = ex.Data["socioId"] });
 
-
-                // ❌ Error inesperado
                 return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
-
         [HttpPost("fallback-efectivo")]
         public async Task<IActionResult> FallbackEfectivo([FromBody] FallbackEfectivoDTO dto)
         {
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var adminIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int adminId))
                 return Unauthorized(new { Mensaje = "Admin ID no válido" });
 
-            var result = await _fallbackEfectivoCasoDeUso.Ejecutar(dto, adminId);
-            if (!result.Success)
-                return BadRequest(new { Mensaje = result.Mensaje });
+            try
+            {
+                var result = await _fallbackEfectivoCasoDeUso.Ejecutar(dto, adminId);
+                if (!result.Success)
+                    return BadRequest(new { Mensaje = result.Mensaje });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost("enviar-email-qr")]
         public async Task<IActionResult> EnviarEmailQr([FromBody] EmailDTO dto)
         {
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _enviarEmailQrCasoDeUso.Ejecutar(dto);
-            if (!result.Success)
-                return BadRequest(new { Mensaje = result.Mensaje });
+            try
+            {
+                var result = await _enviarEmailQrCasoDeUso.Ejecutar(dto);
+                if (!result.Success)
+                    return BadRequest(new { Mensaje = result.Mensaje });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost("validar-qr")]
         public async Task<IActionResult> ValidarQr([FromBody] QrValidationDTO dto)
         {
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var adminIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            int? adminId = string.IsNullOrEmpty(adminIdClaim) ? null : int.Parse(adminIdClaim);
+            try
+            {
+                var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int? adminId = string.IsNullOrEmpty(adminIdClaim) ? null : int.Parse(adminIdClaim);
 
-            var result = await _validarQrCasoDeUso.Ejecutar(dto, adminId);
-            if (!result.Valido)
-                return BadRequest(new { Mensaje = result.Mensaje });
+                var result = await _validarQrCasoDeUso.Ejecutar(dto, adminId);
+                if (!result.Valido)
+                    return BadRequest(new { Mensaje = result.Mensaje });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost("crear-admin")]
         public async Task<IActionResult> Agregar([FromBody] AgregarAdministradorDTO dto)
         {
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var admin = await _agregarAdministradorCasoDeUso.Ejecutar(dto);
-            return CreatedAtAction(nameof(Agregar), new { id = admin.Id }, admin);
+            try
+            {
+                var admin = await _agregarAdministradorCasoDeUso.Ejecutar(dto);
+                return CreatedAtAction(nameof(Agregar), new { id = admin.Id }, admin);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpDelete("eliminar-admin/{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            var result = await _eliminarAdministradorCasoDeUso.Ejecutar(id);
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
 
-            if (!result)
-                return NotFound(new { Mensaje = "Administrador no encontrado" });
+            try
+            {
+                var result = await _eliminarAdministradorCasoDeUso.Ejecutar(id);
 
-            return Ok(new { Mensaje = "Administrador eliminado correctamente" });
+                if (!result)
+                    return NotFound(new { Mensaje = "Administrador no encontrado" });
+
+                return Ok(new { Mensaje = "Administrador eliminado correctamente" });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> ObtenerTodosLosAdministradores()
         {
-            var result = await obtenerAdministradorCasoDeUso.Ejecutar();
-            return Ok(result);
+            try
+            {
+                var result = await _obtenerAdministradorCasoDeUso.Ejecutar();
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpDelete("borrar-completo/{usuarioId}")]
         public async Task<IActionResult> BorrarCompleto(long usuarioId)
         {
-            var resultado = await _borrarSocioCompletoCasoDeUso.Ejecutar(usuarioId);
-            return Ok(resultado);
+            if (usuarioId <= 0)
+                return BadRequest(new { Mensaje = "El ID del usuario debe ser mayor a cero." });
+
+            try
+            {
+                var resultado = await _borrarSocioCompletoCasoDeUso.Ejecutar(usuarioId);
+                return Ok(resultado);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
     }
 }

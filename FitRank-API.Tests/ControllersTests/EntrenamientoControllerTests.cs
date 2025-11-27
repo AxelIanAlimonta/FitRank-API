@@ -2,13 +2,9 @@ using Xunit;
 using Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using FitRank_API.Presentacion.Controllers;
-using FitRank_API.Application.DTOs;
 using AutoMapper;
 using FitRank_API.Domain.Interfaces;
-using FitRank_API.Application.DTOs;
 using FitRank_API.Controllers;
-using FitRank_API.Domain.Entities;
 using FitRank_API.Application.UseCases.Entrenamiento;
 using FitRank_API.Application.DTOs.EntrenamientoDTOs;
 using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
@@ -17,7 +13,6 @@ namespace FitRank_API.tests.ControllersTests;
 
 public class EntrenamientoControllerTests
 {
-
     private readonly EntrenamientoController _controller;
     private readonly Mock<ActualizarEntrenamientoCasoDeUso> _mockActualizar;
     private readonly Mock<AgregarEntrenamientoCasoDeUso> _mockAgregar;
@@ -51,81 +46,8 @@ public class EntrenamientoControllerTests
         );
     }
 
-    //Agregar_RetornaCreatedAtActionResult
-    [Fact]
-    public async Task Agregar_RetornaCreatedAtActionResult()
-    {
-        // Arrange
-        var nuevoEntrenamiento = new AgregarEntrenamientoDTO
-        {
-            SocioId = 1,
-            Fecha = new DateTime(2024, 6, 1)
+    #region GetAll Tests
 
-        };
-
-        var entrenamientoCreado = new ObtenerEntrenamientoDTO
-        {
-            Id = 1,
-            SocioId = 1,
-            Fecha = new DateTime(2024, 6, 1),
-        };
-
-        _mockAgregar
-            .Setup(casoDeUso => casoDeUso.Ejecutar(nuevoEntrenamiento))
-            .ReturnsAsync(entrenamientoCreado);
-
-        // Act
-        var resultado = await _controller.Crear(nuevoEntrenamiento);
-
-        // Assert
-        var createdAtActionResult = resultado as CreatedAtActionResult;
-        createdAtActionResult.Should().NotBeNull();
-        createdAtActionResult.StatusCode.Should().Be(201);
-        createdAtActionResult.Value.Should().BeEquivalentTo(entrenamientoCreado);
-    }
-
-    //Agregar_LanzaExcepcion_RetornaStatusCode500
-    [Fact]
-    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
-    {
-        // Arrange
-        var nuevoEntrenamiento = new AgregarEntrenamientoDTO
-        {
-            SocioId = 1,
-            Fecha = new DateTime(2024, 6, 1)
-        };
-
-        _mockAgregar
-            .Setup(casoDeUso => casoDeUso.Ejecutar(nuevoEntrenamiento))
-            .ThrowsAsync(new Exception("Error interno del servidor."));
-
-        // Act
-        var resultado = await _controller.Crear(nuevoEntrenamiento);
-        // Assert
-        var objectResult = resultado as ObjectResult;
-        objectResult.Should().NotBeNull();
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
-    }
-
-    //Agregar_RetornaBadRequest_CuandoDTOEsNulo
-    [Fact]
-    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
-    {
-        // Arrange
-        AgregarEntrenamientoDTO nuevoEntrenamiento = null;
-
-        // Act
-        var resultado = await _controller.Crear(nuevoEntrenamiento);
-
-        // Assert
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El cuerpo de la solicitud no puede ser nulo.");
-    }
-
-    //ObtenerTodos_RetornaOkResult_ConListaCompleta
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaCompleta()
     {
@@ -150,7 +72,6 @@ public class EntrenamientoControllerTests
         okResult.Value.Should().BeEquivalentTo(listaEntrenamientos);
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaVacia
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
     {
@@ -171,7 +92,6 @@ public class EntrenamientoControllerTests
         okResult.Value.Should().BeEquivalentTo(listaVacia);
     }
 
-    //ObtenerTodos_LanzaExcepcion_RetornaStatus500
     [Fact]
     public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
     {
@@ -187,31 +107,12 @@ public class EntrenamientoControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
     }
 
-    //ObtenerPorId_NoExiste_RetornaNotFound
-    [Fact]
-    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
-    {
-        // Arrange
-        int entrenamientoId = 99;
+    #endregion
 
-        _mockObtenerPorId
-            .Setup(casoDeUso => casoDeUso.Ejecutar(entrenamientoId))
-            .ReturnsAsync((ObtenerEntrenamientoDTO)null);
+    #region GetById Tests
 
-        // Act
-        var resultado = await _controller.GetById(entrenamientoId);
-
-        // Assert
-        var notFoundResult = resultado as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"No se encontró ningún entrenamiento con ID {entrenamientoId}.");
-    }
-
-    //ObtenerPorId_Existe_RetornaObjetoOkCreado
     [Fact]
     public async Task ObtenerPorId_Existe_RetornaObjetoOkCreado()
     {
@@ -238,7 +139,157 @@ public class EntrenamientoControllerTests
         okResult.Value.Should().BeEquivalentTo(entrenamientoExistente);
     }
 
-    //Actualizar_RetornaOkObjectResult_ConObjetoActualizado
+    [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.GetById(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.GetById(-5);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    {
+        // Arrange
+        int entrenamientoId = 99;
+
+        _mockObtenerPorId
+            .Setup(casoDeUso => casoDeUso.Ejecutar(entrenamientoId))
+            .ReturnsAsync((ObtenerEntrenamientoDTO)null);
+
+        // Act
+        var resultado = await _controller.GetById(entrenamientoId);
+
+        // Assert
+        var notFoundResult = resultado as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerPorId.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.GetById(1);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Crear Tests
+
+    [Fact]
+    public async Task Agregar_RetornaCreatedAtActionResult()
+    {
+        // Arrange
+        var nuevoEntrenamiento = new AgregarEntrenamientoDTO
+        {
+            SocioId = 1,
+            Fecha = new DateTime(2024, 6, 1)
+        };
+
+        var entrenamientoCreado = new ObtenerEntrenamientoDTO
+        {
+            Id = 1,
+            SocioId = 1,
+            Fecha = new DateTime(2024, 6, 1),
+        };
+
+        _mockAgregar
+            .Setup(casoDeUso => casoDeUso.Ejecutar(nuevoEntrenamiento))
+            .ReturnsAsync(entrenamientoCreado);
+
+        // Act
+        var resultado = await _controller.Crear(nuevoEntrenamiento);
+
+        // Assert
+        var createdAtActionResult = resultado as CreatedAtActionResult;
+        createdAtActionResult.Should().NotBeNull();
+        createdAtActionResult.StatusCode.Should().Be(201);
+        createdAtActionResult.Value.Should().BeEquivalentTo(entrenamientoCreado);
+    }
+
+    [Fact]
+    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
+    {
+        // Arrange
+        AgregarEntrenamientoDTO nuevoEntrenamiento = null;
+
+        // Act
+        var resultado = await _controller.Crear(nuevoEntrenamiento);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("SocioId", "Requerido");
+        var dto = new AgregarEntrenamientoDTO();
+
+        // Act
+        var resultado = await _controller.Crear(dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
+    {
+        // Arrange
+        var nuevoEntrenamiento = new AgregarEntrenamientoDTO
+        {
+            SocioId = 1,
+            Fecha = new DateTime(2024, 6, 1)
+        };
+
+        _mockAgregar
+            .Setup(casoDeUso => casoDeUso.Ejecutar(nuevoEntrenamiento))
+            .ThrowsAsync(new Exception("Error interno del servidor."));
+
+        // Act
+        var resultado = await _controller.Crear(nuevoEntrenamiento);
+
+        // Assert
+        var objectResult = resultado as ObjectResult;
+        objectResult.Should().NotBeNull();
+        objectResult.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Actualizar Tests
+
     [Fact]
     public async Task Actualizar_RetornaOkObjectResult_ConObjetoActualizado()
     {
@@ -272,7 +323,89 @@ public class EntrenamientoControllerTests
         okResult.Value.Should().BeEquivalentTo(entrenamientoEsperado);
     }
 
-    //Actualizar_NoEncontrado_RetornaNotFoundResult
+    [Fact]
+    public async Task Actualizar_IdCero_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarEntrenamientoDTO { Id = 0 };
+
+        // Act
+        var resultado = await _controller.Actualizar(0, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarEntrenamientoDTO { Id = -5 };
+
+        // Act
+        var resultado = await _controller.Actualizar(-5, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
+    {
+        // Arrange
+        int entrenamientoId = 1;
+        ActualizarEntrenamientoDTO entrenamientoActualizado = null;
+
+        // Act
+        var resultado = await _controller.Actualizar(entrenamientoId, entrenamientoActualizado);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("SocioId", "Requerido");
+        var dto = new ActualizarEntrenamientoDTO { Id = 1 };
+
+        // Act
+        var resultado = await _controller.Actualizar(1, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
+    {
+        // Arrange
+        int entrenamientoId = 1;
+        var entrenamientoActualizado = new ActualizarEntrenamientoDTO
+        {
+            Id = entrenamientoId,
+            SocioId = 1,
+            Fecha = new DateTime(2024, 6, 2)
+        };
+
+        // Act
+        var resultado = await _controller.Actualizar(entrenamientoId + 1, entrenamientoActualizado);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
     {
@@ -296,10 +429,8 @@ public class EntrenamientoControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"No se encontró ningún entrenamiento con ID {entrenamientoId}.");
     }
 
-    //Actualizar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
     public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
     {
@@ -323,51 +454,12 @@ public class EntrenamientoControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
     }
 
-    //Actualizar_IdNoCoincide_RetornaBadRequestResult
-    [Fact]
-    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
-    {
-        // Arrange
-        int entrenamientoId = 1;
-        var entrenamientoActualizado = new ActualizarEntrenamientoDTO
-        {
-            Id = entrenamientoId,
-            SocioId = 1,
-            Fecha = new DateTime(2024, 6, 2)
-        };
+    #endregion
 
-        // Act
-        var resultado = await _controller.Actualizar(entrenamientoId + 1, entrenamientoActualizado);
+    #region Eliminar Tests
 
-        // Assert
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ID en la URL no coincide con el ID en el cuerpo de la solicitud.");
-    }
-
-    //Actualizar_DTONulo_RetornaBadRequestResult
-    [Fact]
-    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
-    {
-        // Arrange
-        int entrenamientoId = 1;
-        ActualizarEntrenamientoDTO entrenamientoActualizado = null;
-
-        // Act
-        var resultado = await _controller.Actualizar(entrenamientoId, entrenamientoActualizado);
-
-        // Assert
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El cuerpo de la solicitud no puede ser nulo.");
-    }
-
-    //Eliminar_Existente_DeberiaRetornarNoContent
     [Fact]
     public async Task Eliminar_Existente_DeberiaRetornarNoContent()
     {
@@ -387,7 +479,30 @@ public class EntrenamientoControllerTests
         noContentResult.StatusCode.Should().Be(204);
     }
 
-    //Eliminar_NoExistente_DeberiaRetornarNotFound
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(-3);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Eliminar_NoExistente_DeberiaRetornarNotFound()
     {
@@ -405,10 +520,8 @@ public class EntrenamientoControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"No se encontró ningún entrenamiento con ID {entrenamientoId}.");
     }
 
-    //Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500
     [Fact]
     public async Task Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500()
     {
@@ -426,6 +539,139 @@ public class EntrenamientoControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
     }
+
+    #endregion
+
+    #region ObtenerHistorial Tests
+
+    [Fact]
+    public async Task ObtenerHistorial_Exitoso_RetornaOk()
+    {
+        // Arrange
+        long socioId = 1;
+        var historial = new List<EntrenamientoHistorialDTO>
+        {
+            new EntrenamientoHistorialDTO { IdEntrenamiento = 1, NombreSocio = "Socio 1" },
+            new EntrenamientoHistorialDTO { IdEntrenamiento = 2, NombreSocio = "Socio 1" }
+        };
+
+        _mockObtenerHistorial.Setup(x => x.EjecutarAsync(socioId)).ReturnsAsync(historial);
+
+        // Act
+        var resultado = await _controller.ObtenerHistorial(socioId);
+
+        // Assert
+        var okResult = resultado.Result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(historial);
+    }
+
+    [Fact]
+    public async Task ObtenerHistorial_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerHistorial(0);
+
+        // Assert
+        var badRequestResult = resultado.Result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerHistorial_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerHistorial(-5);
+
+        // Assert
+        var badRequestResult = resultado.Result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerHistorial_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerHistorial.Setup(x => x.EjecutarAsync(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.ObtenerHistorial(1);
+
+        // Assert
+        var statusCodeResult = resultado.Result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region ObtenerHistorialProfesor Tests
+
+    [Fact]
+    public async Task ObtenerHistorialProfesor_Exitoso_RetornaOk()
+    {
+        // Arrange
+        long profesorId = 1;
+        var historial = new List<EntrenamientoHistorialDTO>
+        {
+            new EntrenamientoHistorialDTO { IdEntrenamiento = 1, NombreSocio = "Socio 1" },
+            new EntrenamientoHistorialDTO { IdEntrenamiento = 2, NombreSocio = "Socio 2" }
+        };
+
+        _mockObtenerHistorialProfesor.Setup(x => x.EjecutarAsync(profesorId, null)).ReturnsAsync(historial);
+
+        // Act
+        var resultado = await _controller.ObtenerHistorialProfesor(profesorId);
+
+        // Assert
+        var okResult = resultado.Result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(historial);
+    }
+
+    [Fact]
+    public async Task ObtenerHistorialProfesor_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerHistorialProfesor(0);
+
+        // Assert
+        var badRequestResult = resultado.Result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerHistorialProfesor_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerHistorialProfesor(-5);
+
+        // Assert
+        var badRequestResult = resultado.Result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerHistorialProfesor_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerHistorialProfesor.Setup(x => x.EjecutarAsync(1, null)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.ObtenerHistorialProfesor(1);
+
+        // Assert
+        var statusCodeResult = resultado.Result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
 }

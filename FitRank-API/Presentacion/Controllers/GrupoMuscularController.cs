@@ -1,7 +1,6 @@
 ﻿using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.GrupoMuscularDTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Presentacion.Controllers;
@@ -16,17 +15,18 @@ public class GrupoMuscularController : ControllerBase
     private readonly ActualizarGrupoMuscularCasoDeUso _actualizarGrupoMuscularCasoDeUso;
     private readonly EliminarGrupoMuscularCasoDeUso _eliminarGrupoMuscularCasoDeUso;
 
-    public GrupoMuscularController(ObtenerTodosLosGruposMuscularesCasoDeUso obtenerTodosLosGruposMuscularesCasoDeUso,
-            ObtenerGrupoMuscularPorIdCasoDeUso obtenerGrupoMuscularPorIdCasoDeUso,
-            EliminarGrupoMuscularCasoDeUso eliminarGrupoMuscularCasoDeUso,
-            ActualizarGrupoMuscularCasoDeUso actualizarGrupoMuscularCasoDeUso,
-            AgregarGrupoMuscularCasoDeUso agregarGrupoMuscularCasoDeUso)
+    public GrupoMuscularController(
+        ObtenerTodosLosGruposMuscularesCasoDeUso obtenerTodosLosGruposMuscularesCasoDeUso,
+        ObtenerGrupoMuscularPorIdCasoDeUso obtenerGrupoMuscularPorIdCasoDeUso,
+        EliminarGrupoMuscularCasoDeUso eliminarGrupoMuscularCasoDeUso,
+        ActualizarGrupoMuscularCasoDeUso actualizarGrupoMuscularCasoDeUso,
+        AgregarGrupoMuscularCasoDeUso agregarGrupoMuscularCasoDeUso)
     {
-        this._obtenerTodosLosGruposMuscularesCasoDeUso = obtenerTodosLosGruposMuscularesCasoDeUso;
-        this._obtenerGrupoMuscularPorIdCasoDeUso = obtenerGrupoMuscularPorIdCasoDeUso;
-        this._eliminarGrupoMuscularCasoDeUso = eliminarGrupoMuscularCasoDeUso;
-        this._actualizarGrupoMuscularCasoDeUso = actualizarGrupoMuscularCasoDeUso;
-        this._agregarGrupoMuscularCasoDeUso = agregarGrupoMuscularCasoDeUso;
+        _obtenerTodosLosGruposMuscularesCasoDeUso = obtenerTodosLosGruposMuscularesCasoDeUso;
+        _obtenerGrupoMuscularPorIdCasoDeUso = obtenerGrupoMuscularPorIdCasoDeUso;
+        _eliminarGrupoMuscularCasoDeUso = eliminarGrupoMuscularCasoDeUso;
+        _actualizarGrupoMuscularCasoDeUso = actualizarGrupoMuscularCasoDeUso;
+        _agregarGrupoMuscularCasoDeUso = agregarGrupoMuscularCasoDeUso;
     }
 
     [HttpGet]
@@ -37,9 +37,9 @@ public class GrupoMuscularController : ControllerBase
             var gruposMusculares = await _obtenerTodosLosGruposMuscularesCasoDeUso.Ejecutar();
             return Ok(gruposMusculares);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
@@ -47,12 +47,22 @@ public class GrupoMuscularController : ControllerBase
     [Route("{id}")]
     public async Task<IActionResult> ObtenerPorId(long id)
     {
-        var grupoMuscular = await _obtenerGrupoMuscularPorIdCasoDeUso.Ejecutar(id);
-        if (grupoMuscular == null)
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+        try
         {
-            return NotFound();
+            var grupoMuscular = await _obtenerGrupoMuscularPorIdCasoDeUso.Ejecutar(id);
+            if (grupoMuscular == null)
+            {
+                return NotFound(new { Mensaje = "Grupo muscular no encontrado." });
+            }
+            return Ok(grupoMuscular);
         }
-        return Ok(grupoMuscular);
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 
     [HttpPost]
@@ -60,7 +70,7 @@ public class GrupoMuscularController : ControllerBase
     {
         if (grupoMuscular == null)
         {
-            return BadRequest("El grupo muscular no puede ser nulo.");
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
 
         if (!ModelState.IsValid)
@@ -68,15 +78,14 @@ public class GrupoMuscularController : ControllerBase
             return BadRequest(ModelState);
         }
 
-
         try
         {
             var nuevoGrupoMuscular = await _agregarGrupoMuscularCasoDeUso.Ejecutar(grupoMuscular);
             return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoGrupoMuscular.Id }, nuevoGrupoMuscular);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
@@ -84,27 +93,36 @@ public class GrupoMuscularController : ControllerBase
     [Route("{id}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarGrupoMuscularDTO grupoMuscular)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         if (grupoMuscular == null)
         {
-            return BadRequest("El grupo muscular no puede ser nulo.");
-
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
+
         if (id != grupoMuscular.Id)
         {
-            return BadRequest("El ID del grupo muscular no coincide.");
+            return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID del grupo muscular." });
         }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var grupoMuscularActualizado = await _actualizarGrupoMuscularCasoDeUso.Ejecutar(grupoMuscular);
             if (grupoMuscularActualizado == null)
             {
-                return NotFound();
+                return NotFound(new { Mensaje = "Grupo muscular no encontrado." });
             }
             return Ok(grupoMuscularActualizado);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
@@ -112,18 +130,20 @@ public class GrupoMuscularController : ControllerBase
     [Route("{id}")]
     public async Task<IActionResult> Eliminar(long id)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         try
         {
             var eliminado = await _eliminarGrupoMuscularCasoDeUso.Ejecutar(id);
             if (eliminado)
                 return NoContent();
             else
-                return NotFound();
+                return NotFound(new { Mensaje = "Grupo muscular no encontrado." });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            // Puedes loguear el error aquí si lo deseas
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 }

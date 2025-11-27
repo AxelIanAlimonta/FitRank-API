@@ -33,7 +33,6 @@ namespace FitRank_API.Controllers
             _registrar = registrar;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> ObtenerTodasLasActividades()
         {
@@ -42,86 +41,111 @@ namespace FitRank_API.Controllers
                 var actividades = await _obtenerTodas.Ejecutar();
                 return Ok(actividades);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerActividadPorId(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             try
             {
                 var act = await _obtenerPorId.Ejecutar(id);
-                return act == null ? NotFound($"La actividad con ID {id} no existe.") : Ok(act);
+                return act == null 
+                    ? NotFound(new { Mensaje = $"La actividad con ID {id} no existe." }) 
+                    : Ok(act);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AgregarActividadDTO dto)
         {
-            if (dto == null) return BadRequest("El objeto Actividad es nulo.");
-            if (!ModelState.IsValid) return BadRequest("El objeto Actividad no es válido.");
+            if (dto == null) 
+                return BadRequest(new { Mensaje = "El objeto Actividad es nulo." });
+
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
+
             try
             {
                 var nueva = await _crear.Ejecutar(dto);
                 return CreatedAtAction(nameof(ObtenerActividadPorId), new { id = nueva.Id }, nueva);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarActividadDTO dto)
         {
-            if (dto == null) return BadRequest("El objeto Actividad es nulo.");
-            if (!ModelState.IsValid) return BadRequest("El objeto Actividad no es válido.");
-            if (id != dto.Id) return BadRequest("El ID de la ruta no coincide con el ID del objeto.");
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            if (dto == null) 
+                return BadRequest(new { Mensaje = "El objeto Actividad es nulo." });
+
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
+
+            if (id != dto.Id) 
+                return BadRequest(new { Mensaje = "El ID de la ruta no coincide con el ID del objeto." });
+
             try
             {
-
                 var actividadActualizada = await _actualizar.Ejecutar(dto);
                 if (actividadActualizada == null)
                 {
-                    return NotFound($"La actividad con ID {id} no existe.");
+                    return NotFound(new { Mensaje = $"La actividad con ID {id} no existe." });
                 }
                 return Ok(actividadActualizada);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             try
             {
                 var resultado = await _eliminar.Ejecutar(id);
                 if (!resultado)
                 {
-                    return NotFound($"La actividad con ID {id} no existe.");
+                    return NotFound(new { Mensaje = $"La actividad con ID {id} no existe." });
                 }
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
-
         }
 
         [HttpPost("registrar")]
         public async Task<IActionResult> RegistrarActividad([FromBody] RegistrarActividadDTO dto)
         {
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto RegistrarActividad es nulo." });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var actividad = await _registrar.Ejecutar(dto);
@@ -139,7 +163,7 @@ namespace FitRank_API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { mensaje = ex.Message });
+                return BadRequest(new { Mensaje = ex.Message });
             }
         }
     }

@@ -1,8 +1,6 @@
 ﻿using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
-using FitRank_API.Application.DTOs.EjercicioDTOs;
 using FitRank_API.Application.DTOs.EjercicioDTOs.ActualizarEjercicioDTO;
 using FitRank_API.Application.DTOs.EjercicioDTOs.AgregarEjercicioDTO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Presentacion.Controllers;
@@ -42,22 +40,31 @@ public class EjercicioController : ControllerBase
             var ejercicios = await _obtenerEjerciciosCasoDeUso.Ejecutar();
             return Ok(ejercicios);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
-    //get id
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEjercicioPorId(long id)
     {
-        var ejercicio = await _obtenerEjercicioPorIdCasoDeUso.Ejecutar(id);
-        if (ejercicio == null)
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+        try
         {
-            return NotFound($"El ejercicio con ID {id} no fue encontrado.");
+            var ejercicio = await _obtenerEjercicioPorIdCasoDeUso.Ejecutar(id);
+            if (ejercicio == null)
+            {
+                return NotFound(new { Mensaje = "Ejercicio no encontrado." });
+            }
+            return Ok(ejercicio);
         }
-        return Ok(ejercicio);
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 
     [HttpPost]
@@ -65,66 +72,79 @@ public class EjercicioController : ControllerBase
     {
         if (ejercicio == null)
         {
-            return BadRequest("El ejercicio no puede ser nulo.");
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
         try
         {
             var nuevoEjercicio = await _agregarEjercicioCasoDeUso.Ejecutar(ejercicio);
             return CreatedAtAction(nameof(GetEjercicioPorId), new { id = nuevoEjercicio.Id }, nuevoEjercicio);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
-
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> ActualizarEjercicio(long id, [FromBody] ActualizarEjercicioDTO ejercicio)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         if (ejercicio == null)
         {
-            return BadRequest("El ejercicio no puede ser nulo.");
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        if (id != ejercicio.Id) return BadRequest("El ID del ejercicio no coincide con el ID proporcionado en la ruta.");
+
+        if (id != ejercicio.Id)
+        {
+            return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID del ejercicio." });
+        }
+
         try
         {
             var ejercicioActualizado = await _actualizarEjercicioCasoDeUso.Ejecutar(ejercicio);
             if (ejercicioActualizado == null)
             {
-                return NotFound($"El ejercicio con ID {id} no fue encontrado para actualizar.");
+                return NotFound(new { Mensaje = "Ejercicio no encontrado." });
             }
             return Ok(ejercicioActualizado);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, "Error al actualizar ejercicio");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> EliminarEjercicio(long id)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         try
         {
             var resultado = await _eliminarEjercicioCasoDeUso.Ejecutar(id);
             if (!resultado)
             {
-                return NotFound($"El ejercicio con ID {id} no fue encontrado para eliminar.");
+                return NotFound(new { Mensaje = "Ejercicio no encontrado." });
             }
             return NoContent();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, "Error al eliminar ejercicio");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
@@ -132,26 +152,16 @@ public class EjercicioController : ControllerBase
     public async Task<IActionResult> GetEjerciciosPorGrupoMuscular(long grupoMuscularId)
     {
         if (grupoMuscularId <= 0)
-            return BadRequest("El ID del grupo muscular debe ser mayor a 0.");
+            return BadRequest(new { Mensaje = "El ID del grupo muscular debe ser mayor a cero." });
 
         try
         {
-            // Necesitás un caso de uso que traiga ejercicios por grupoMuscularId
             var ejercicios = await _obtenerEjerciciosporGrupoMuscularCasoDeUso.Ejecutar(grupoMuscularId);
             return Ok(ejercicios);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
-
-    //[HttpGet("grupo/{grupoFuncionalId}")]
-    //public async Task<IActionResult> GetEjerciciosPorGrupoFuncional(long grupoFuncionalId)
-    //{
-    //    var ejercicios = await _obtenerEjerciciosPorGrupoFuncionalCasoDeUso.EjecutarAsync(grupoFuncionalId);
-    //    return Ok(ejercicios);
-    //}
-
-
 }

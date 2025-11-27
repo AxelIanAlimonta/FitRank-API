@@ -14,7 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.BatallasCasosDeUso
             _context = context;
         }
 
-        public async Task<List<HistorialBatallaDTO>> Ejecutar(long socioId)
+        public virtual async Task<List<HistorialBatallaDTO>> Ejecutar(long socioId)
         {
             var batallas = await _context.Batallas
                 .Where(b => b.SocioAId == socioId || b.SocioBId == socioId)

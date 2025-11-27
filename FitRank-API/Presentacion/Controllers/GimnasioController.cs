@@ -18,7 +18,7 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ObtenerGimnasioPorIdCasoDeUso _obtenerGimnasioPorIdCasoDeUso;
         private readonly ActualizarPersonalizacionGimnasioCasoDeUso _actualizarPersonalizacion;
 
-       public GimnasioController(
+        public GimnasioController(
             IHubContext<NotificacionesHub> hub,
             ObtenerGimnasiosCasoDeUso obtenerGimnasiosCasoDeUso,
             AgregarGimnasioCasoDeUso agregarGimnasioCasoDeUso,
@@ -36,13 +36,6 @@ namespace FitRank_API.Presentacion.Controllers
             _actualizarPersonalizacion = actualizarPersonalizacion;
         }
 
-
-
-
-
-
-
-
         [HttpGet]
         public async Task<ActionResult> ObtenerTodos()
         {
@@ -51,21 +44,31 @@ namespace FitRank_API.Presentacion.Controllers
                 var gimnasios = await _obtenerGimnasiosCasoDeUso.Ejecutar();
                 return Ok(gimnasios);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult> ObtenerPorId(long id)
         {
-            var gimnasio = await _obtenerGimnasioPorIdCasoDeUso.Ejecutar(id);
-            if (gimnasio == null)
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            try
             {
-                return NotFound();
+                var gimnasio = await _obtenerGimnasioPorIdCasoDeUso.Ejecutar(id);
+                if (gimnasio == null)
+                {
+                    return NotFound(new { Mensaje = "Gimnasio no encontrado." });
+                }
+                return Ok(gimnasio);
             }
-            return Ok(gimnasio);
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost]
@@ -73,34 +76,41 @@ namespace FitRank_API.Presentacion.Controllers
         {
             if (crearGimnasioDTO == null)
             {
-                return BadRequest("El gimnasio no puede ser nulo.");
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             try
             {
                 var gimnasioCreado = await _agregarGimnasioCasoDeUso.Ejecutar(crearGimnasioDTO);
                 return CreatedAtAction(nameof(ObtenerPorId), new { id = gimnasioCreado.Id }, gimnasioCreado);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Actualizar(long id, [FromBody] ActualizarGimnasioDTO actualizarGimnasioDTO)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             if (actualizarGimnasioDTO == null)
             {
-                return BadRequest("El gimnasio no puede ser nulo.");
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
             }
+
             if (id != actualizarGimnasioDTO.Id)
             {
-                return BadRequest("El ID del gimnasio no coincide.");
+                return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID del gimnasio." });
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -112,10 +122,9 @@ namespace FitRank_API.Presentacion.Controllers
 
                 if (gimnasioActualizado == null)
                 {
-                    return NotFound("Gimnasio no encontrado.");
+                    return NotFound(new { Mensaje = "Gimnasio no encontrado." });
                 }
 
-             
                 await _hub.Clients
                     .Group($"gimnasio-{gimnasioActualizado.Id}")
                     .SendAsync("ThemeUpdated", new
@@ -125,70 +134,90 @@ namespace FitRank_API.Presentacion.Controllers
                         logoUrl = gimnasioActualizado.LogoUrl
                     });
 
-                Console.WriteLine("🎨 ThemeUpdated enviado por SignalR ✔");
-
                 return Ok(gimnasioActualizado);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Eliminar(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             try
             {
                 var eliminado = await _eliminarGimnasioCasoDeUso.Ejecutar(id);
                 if (!eliminado)
                 {
-                    return NotFound();
+                    return NotFound(new { Mensaje = "Gimnasio no encontrado." });
                 }
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
+
         [HttpGet("mi-gimnasio")]
         public async Task<ActionResult> ObtenerMiGimnasio()
         {
-            var gimnasioId = long.Parse(User.FindFirst("groupsid")!.Value);
-            var gimnasio = await _obtenerGimnasioPorIdCasoDeUso.Ejecutar(gimnasioId);
+            try
+            {
+                var groupClaim = User.FindFirst("groupsid");
+                if (groupClaim == null || !long.TryParse(groupClaim.Value, out var gimnasioId))
+                {
+                    return BadRequest(new { Mensaje = "ID de gimnasio inválido en el token." });
+                }
 
-            if (gimnasio == null)
-                return NotFound();
+                var gimnasio = await _obtenerGimnasioPorIdCasoDeUso.Ejecutar(gimnasioId);
 
-            return Ok(gimnasio);
+                if (gimnasio == null)
+                    return NotFound(new { Mensaje = "Gimnasio no encontrado." });
+
+                return Ok(gimnasio);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
+
         [HttpPut("personalizacion")]
-        public async Task<IActionResult> ActualizarPersonalizacion(
-                   [FromBody] ActualizarPersonalizacionDTO dto)
+        public async Task<IActionResult> ActualizarPersonalizacion([FromBody] ActualizarPersonalizacionDTO dto)
         {
             if (dto == null)
-                return BadRequest(new { message = "El body no puede ser nulo." });
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
 
-            var result = await _actualizarPersonalizacion.Ejecutar(dto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (result == null)
-                return NotFound(new { message = "No se encontró el gimnasio." });
+            try
+            {
+                var result = await _actualizarPersonalizacion.Ejecutar(dto);
 
-            // 🔥 ENVIAR SIGNALR A TODO EL GIMNASIO
-            await _hub.Clients
-                .Group($"gimnasio-{result.Id}")
-                .SendAsync("ThemeUpdated", new
-                {
-                    colorPrincipal = result.ColorPrincipal,
-                    colorSecundario = result.ColorSecundario,
-                    logoUrl = result.LogoUrl
-                });
+                if (result == null)
+                    return NotFound(new { Mensaje = "Gimnasio no encontrado." });
 
-            Console.WriteLine("🎨 ThemeUpdated enviado por SignalR ✔");
+                await _hub.Clients
+                    .Group($"gimnasio-{result.Id}")
+                    .SendAsync("ThemeUpdated", new
+                    {
+                        colorPrincipal = result.ColorPrincipal,
+                        colorSecundario = result.ColorSecundario,
+                        logoUrl = result.LogoUrl
+                    });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
     }
-
 }

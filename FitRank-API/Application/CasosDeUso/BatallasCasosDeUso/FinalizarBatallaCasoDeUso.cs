@@ -15,7 +15,7 @@ namespace FitRank_API.Application.UseCases.Batallas
             _context = context;
         }
 
-        public async Task<ResultadoBatallaDTO> Ejecutar(long batallaId)
+        public virtual async Task<ResultadoBatallaDTO> Ejecutar(long batallaId)
         {
             var batalla = await _context.Batallas
                 .FirstOrDefaultAsync(b => b.Id == batallaId);

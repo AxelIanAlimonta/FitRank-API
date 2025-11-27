@@ -1,7 +1,5 @@
 ﻿using FitRank_API.Application.CasosDeUso.Ingreso;
-
 using FitRank_API.Application.DTOs.IngresoDTOs;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -10,7 +8,7 @@ namespace FitRank_API.Presentacion.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")] // 🔒 Solo administradores
+    [Authorize(Roles = "Admin")]
     public class IngresoController : ControllerBase
     {
         private readonly AgregarIngresoCasoDeUso _agregarCaso;
@@ -33,69 +31,106 @@ namespace FitRank_API.Presentacion.Controllers
             _eliminarCaso = eliminarCaso;
         }
 
-     
         [HttpGet]
         public async Task<IActionResult> ObtenerTodosLosIngresos()
         {
-            var ingresos = await _obtenerTodosCaso.Ejecutar();
-            return Ok(ingresos);
+            try
+            {
+                var ingresos = await _obtenerTodosCaso.Ejecutar();
+                return Ok(ingresos);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
-        
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerIngresoPorId(long id)
         {
-            var ingreso = await _obtenerPorIdCaso.Ejecutar(id);
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
 
-            if (ingreso == null)
-                return NotFound(new { mensaje = "Ingreso no encontrado" });
+            try
+            {
+                var ingreso = await _obtenerPorIdCaso.Ejecutar(id);
 
-            return Ok(ingreso);
+                if (ingreso == null)
+                    return NotFound(new { Mensaje = "Ingreso no encontrado." });
+
+                return Ok(ingreso);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
+
         [HttpGet("gimnasio")]
         public async Task<IActionResult> ObtenerIngresoPorGimnasio()
         {
-            var adminIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                var adminIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (adminIdString == null)
-                throw new Exception("No se encontró el UserId en el token.");
+                if (string.IsNullOrWhiteSpace(adminIdString) || !long.TryParse(adminIdString, out var adminId))
+                {
+                    return BadRequest(new { Mensaje = "ID de administrador inválido en el token." });
+                }
 
-            var adminId = long.Parse(adminIdString);
-
-            var ingresos = await _obtenerPorGimnasioCaso.Ejecutar(adminId);
-            return Ok(ingresos);
+                var ingresos = await _obtenerPorGimnasioCaso.Ejecutar(adminId);
+                return Ok(ingresos);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AgregarIngresoDTO dto)
         {
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-           
-            var adminId = long.Parse(User.FindFirstValue("id"));
-
-            var nuevo = await _agregarCaso.Ejecutar(dto);
-
-            return Ok(new
+            try
             {
-                mensaje = "Ingreso registrado correctamente",
-                ingreso = nuevo
-            });
+                var nuevo = await _agregarCaso.Ejecutar(dto);
+
+                return Ok(new
+                {
+                    Mensaje = "Ingreso registrado correctamente.",
+                    Ingreso = nuevo
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
-      
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            var eliminado = await _eliminarCaso.Ejecutar(id);
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
 
-            if (!eliminado)
-                return NotFound(new { mensaje = "Ingreso no encontrado" });
+            try
+            {
+                var eliminado = await _eliminarCaso.Ejecutar(id);
 
-            return Ok(new { mensaje = "Ingreso eliminado correctamente" });
+                if (!eliminado)
+                    return NotFound(new { Mensaje = "Ingreso no encontrado." });
+
+                return Ok(new { Mensaje = "Ingreso eliminado correctamente." });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
     }
 }

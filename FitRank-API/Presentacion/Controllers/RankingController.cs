@@ -1,5 +1,4 @@
 ﻿using FitRank_API.Application.CasosDeUso.RankingCasosDeUso;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Presentacion.Controllers
@@ -21,32 +20,41 @@ namespace FitRank_API.Presentacion.Controllers
         public async Task<IActionResult> ObtenerRankingGeneral(int cantidad)
         {
             if (cantidad <= 0)
-            {
-                return BadRequest("El parámetro 'top' debe ser un número positivo.");
-            }
+                return BadRequest(new { Mensaje = "El parámetro 'cantidad' debe ser un número positivo mayor que cero." });
 
-            var ranking = await _obtenerRankingGeneralCasoDeUso.Ejecutar(cantidad);
-
-            if (ranking == null || !ranking.Any())
+            try
             {
-                return NotFound("No se encontraron datos para el ranking.");
+                var ranking = await _obtenerRankingGeneralCasoDeUso.Ejecutar(cantidad);
+
+                if (ranking == null || !ranking.Any())
+                    return NotFound(new { Mensaje = "No se encontraron datos para el ranking." });
+
+                return Ok(ranking);
             }
-            return Ok(ranking);
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpGet("{id}/puntaje")]
         public async Task<IActionResult> ObtenerPosicionSocio(long id)
         {
             if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
+
+            try
             {
-                return BadRequest("El parámetro 'socioId' debe ser un número positivo.");
+                var posicion = await _obtenerPosicionPorIdCasoDeUso.Ejecutar(id);
+                if (posicion == null)
+                    return NotFound(new { Mensaje = $"No se encontró al socio con ID {id}." });
+
+                return Ok(posicion);
             }
-            var posicion = await _obtenerPosicionPorIdCasoDeUso.Ejecutar(id);
-            if (posicion == null)
+            catch (Exception)
             {
-                return NotFound("No se encontró al socio con el ID proporcionado.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
-            return Ok(posicion);
         }
     }
 }

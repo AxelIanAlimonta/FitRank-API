@@ -14,7 +14,7 @@ namespace FitRank_API.Application.CasosDeUso.BatallasCasosDeUso
             _context = context;
         }
 
-        public async Task<BatallaPunto> Ejecutar(CrearBatallaDTO dto)
+        public virtual async Task<BatallaPunto> Ejecutar(CrearBatallaDTO dto)
         {
             var batalla = new BatallaPunto
             {

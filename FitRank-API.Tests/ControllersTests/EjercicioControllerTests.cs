@@ -3,12 +3,8 @@ using Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Presentacion.Controllers;
-using FitRank_API.Application.DTOs;
 using AutoMapper;
 using FitRank_API.Domain.Interfaces;
-using FitRank_API.Application.DTOs;
-using FitRank_API.Controllers;
-using FitRank_API.Domain.Entities;
 using FitRank_API.Application.CasosDeUso.EjercicioCasosDeUso;
 using FitRank_API.Application.DTOs.EjercicioDTOs.AgregarEjercicioDTO;
 using FitRank_API.Application.DTOs.EjercicioDTOs.ObtenerEjercicioDTO;
@@ -18,7 +14,6 @@ namespace FitRank_API.tests.ControllersTests;
 
 public class EjercicioControllerTests
 {
-
     private readonly EjercicioController _controller;
     private readonly Mock<ActualizarEjercicioCasoDeUso> _mockActualizar;
     private readonly Mock<AgregarEjercicioCasoDeUso> _mockAgregar;
@@ -47,67 +42,10 @@ public class EjercicioControllerTests
             _mockEliminar.Object,
             _mockObtenerEjerciciosPorGrupoMuscularCasoDeUso.Object
         );
-
     }
 
-    //Agregar_RetornaCreatedAtActionResult
-    [Fact]
-    public async Task Agregar_RetornaCreatedAtActionResult()
-    {
-        // Arrange
-        var nuevoEjercicioDTO = new AgregarEjercicioDTO { Nombre = "Ejercicio de prueba", ContraIndicaciones = new List<string>(), Tags = new List<string>() };
-        var ejercicioDevuelto = new ObtenerEjercicioDTO { Id = 1, Nombre = "Ejercicio de prueba" };
-        _mockAgregar.Setup(caso => caso.Ejecutar(It.IsAny<AgregarEjercicioDTO>()))
-            .ReturnsAsync(ejercicioDevuelto);
+    #region GetEjercicios Tests
 
-        // Act
-        var resultado = await _controller.AgregarEjercicio(nuevoEjercicioDTO);
-
-        // Assert
-        var createdAtActionResult = resultado as CreatedAtActionResult;
-        createdAtActionResult.Should().NotBeNull();
-        createdAtActionResult.StatusCode.Should().Be(201);
-        createdAtActionResult.Value.Should().BeEquivalentTo(ejercicioDevuelto);
-
-    }
-
-    //Agregar_LanzaExcepcion_RetornaStatusCode500
-    [Fact]
-    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
-    {
-        // Arrange
-        var nuevoEjercicioDTO = new AgregarEjercicioDTO { Nombre = "Ejercicio de prueba" };
-        _mockAgregar.Setup(caso => caso.Ejecutar(It.IsAny<AgregarEjercicioDTO>()))
-            .ThrowsAsync(new Exception("Error al agregar ejercicio"));
-
-        // Act
-        var resultado = await _controller.AgregarEjercicio(nuevoEjercicioDTO);
-
-        // Assert
-        var objectResult = resultado as ObjectResult;
-        objectResult.Should().NotBeNull();
-        objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error al agregar ejercicio");
-    }
-
-    //Agregar_RetornaBadRequest_CuandoDTOEsNulo
-    [Fact]
-    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
-    {
-        // Arrange
-        AgregarEjercicioDTO nuevoEjercicioDTO = null;
-
-        // Act
-        var resultado = await _controller.AgregarEjercicio(nuevoEjercicioDTO);
-
-        // Assert
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ejercicio no puede ser nulo.");
-    }
-
-    //ObtenerTodos_RetornaOkResult_ConListaCompleta
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaCompleta()
     {
@@ -131,7 +69,6 @@ public class EjercicioControllerTests
         okResult.Value.Should().BeEquivalentTo(listaEjerciciosDTO);
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaVacia
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
     {
@@ -151,7 +88,6 @@ public class EjercicioControllerTests
         okResult.Value.Should().BeEquivalentTo(listaEjerciciosDTO);
     }
 
-    //ObtenerTodos_LanzaExcepcion_RetornaStatus500
     [Fact]
     public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
     {
@@ -166,29 +102,12 @@ public class EjercicioControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error al obtener ejercicios");
     }
 
-    //ObtenerPorId_NoExiste_RetornaNotFound
-    [Fact]
-    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
-    {
-        // Arrange
-        int ejercicioId = 99;
-        _mockObtenerPorId.Setup(caso => caso.Ejecutar(ejercicioId))
-            .ReturnsAsync((ObtenerEjercicioDTO)null);
+    #endregion
 
-        // Act
-        var resultado = await _controller.GetEjercicioPorId(ejercicioId);
+    #region GetEjercicioPorId Tests
 
-        // Assert
-        var notFoundResult = resultado as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"El ejercicio con ID {ejercicioId} no fue encontrado.");
-    }
-
-    //ObtenerPorId_Existe_RetornaObjetoOkCreado
     [Fact]
     public async Task ObtenerPorId_Existe_RetornaObjetoOkCreado()
     {
@@ -208,7 +127,137 @@ public class EjercicioControllerTests
         okResult.Value.Should().BeEquivalentTo(ejercicioDTO);
     }
 
-    //Actualizar_RetornaOkObjectResult_ConObjetoActualizado
+    [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.GetEjercicioPorId(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.GetEjercicioPorId(-5);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    {
+        // Arrange
+        int ejercicioId = 99;
+        _mockObtenerPorId.Setup(caso => caso.Ejecutar(ejercicioId))
+            .ReturnsAsync((ObtenerEjercicioDTO)null);
+
+        // Act
+        var resultado = await _controller.GetEjercicioPorId(ejercicioId);
+
+        // Assert
+        var notFoundResult = resultado as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerPorId.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.GetEjercicioPorId(1);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region AgregarEjercicio Tests
+
+    [Fact]
+    public async Task Agregar_RetornaCreatedAtActionResult()
+    {
+        // Arrange
+        var nuevoEjercicioDTO = new AgregarEjercicioDTO { Nombre = "Ejercicio de prueba", ContraIndicaciones = new List<string>(), Tags = new List<string>() };
+        var ejercicioDevuelto = new ObtenerEjercicioDTO { Id = 1, Nombre = "Ejercicio de prueba" };
+        _mockAgregar.Setup(caso => caso.Ejecutar(It.IsAny<AgregarEjercicioDTO>()))
+            .ReturnsAsync(ejercicioDevuelto);
+
+        // Act
+        var resultado = await _controller.AgregarEjercicio(nuevoEjercicioDTO);
+
+        // Assert
+        var createdAtActionResult = resultado as CreatedAtActionResult;
+        createdAtActionResult.Should().NotBeNull();
+        createdAtActionResult.StatusCode.Should().Be(201);
+        createdAtActionResult.Value.Should().BeEquivalentTo(ejercicioDevuelto);
+    }
+
+    [Fact]
+    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
+    {
+        // Arrange
+        AgregarEjercicioDTO nuevoEjercicioDTO = null;
+
+        // Act
+        var resultado = await _controller.AgregarEjercicio(nuevoEjercicioDTO);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("Nombre", "Requerido");
+        var dto = new AgregarEjercicioDTO();
+
+        // Act
+        var resultado = await _controller.AgregarEjercicio(dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
+    {
+        // Arrange
+        var nuevoEjercicioDTO = new AgregarEjercicioDTO { Nombre = "Ejercicio de prueba" };
+        _mockAgregar.Setup(caso => caso.Ejecutar(It.IsAny<AgregarEjercicioDTO>()))
+            .ThrowsAsync(new Exception("Error al agregar ejercicio"));
+
+        // Act
+        var resultado = await _controller.AgregarEjercicio(nuevoEjercicioDTO);
+
+        // Assert
+        var objectResult = resultado as ObjectResult;
+        objectResult.Should().NotBeNull();
+        objectResult.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region ActualizarEjercicio Tests
+
     [Fact]
     public async Task Actualizar_RetornaOkObjectResult_ConObjetoActualizado()
     {
@@ -229,7 +278,82 @@ public class EjercicioControllerTests
         okResult.Value.Should().BeEquivalentTo(ejercicioActualizadoDTO);
     }
 
-    //Actualizar_NoEncontrado_RetornaNotFoundResult
+    [Fact]
+    public async Task Actualizar_IdCero_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarEjercicioDTO { Id = 0 };
+
+        // Act
+        var resultado = await _controller.ActualizarEjercicio(0, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarEjercicioDTO { Id = -5 };
+
+        // Act
+        var resultado = await _controller.ActualizarEjercicio(-5, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
+    {
+        // Arrange
+        ActualizarEjercicioDTO ejercicioActualizarDTO = null;
+
+        // Act
+        var resultado = await _controller.ActualizarEjercicio(1, ejercicioActualizarDTO);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("Nombre", "Requerido");
+        var dto = new ActualizarEjercicioDTO { Id = 1 };
+
+        // Act
+        var resultado = await _controller.ActualizarEjercicio(1, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
+    {
+        // Arrange
+        var ejercicioActualizarDTO = new ActualizarEjercicioDTO { Id = 2, Nombre = "Ejercicio Actualizado" };
+
+        // Act
+        var resultado = await _controller.ActualizarEjercicio(1, ejercicioActualizarDTO);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
     {
@@ -246,10 +370,8 @@ public class EjercicioControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be("El ejercicio con ID 99 no fue encontrado para actualizar.");
     }
 
-    //Actualizar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
     public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
     {
@@ -266,45 +388,12 @@ public class EjercicioControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error al actualizar ejercicio");
     }
 
-    //Actualizar_IdNoCoincide_RetornaBadRequestResult
-    [Fact]
-    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
-    {
-        // Arrange
-        var ejercicioActualizarDTO = new ActualizarEjercicioDTO { Id = 2, Nombre = "Ejercicio Actualizado" };
+    #endregion
 
-        // Act
-        var resultado = await _controller.ActualizarEjercicio(1, ejercicioActualizarDTO);
+    #region EliminarEjercicio Tests
 
-        // Assert
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ID del ejercicio no coincide con el ID proporcionado en la ruta.");
-    }
-
-    //Actualizar_DTONulo_RetornaBadRequestResult
-    [Fact]
-    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
-    {
-        // Arrange
-        ActualizarEjercicioDTO ejercicioActualizarDTO = null;
-
-        // Act
-        var resultado = await _controller.ActualizarEjercicio(1, ejercicioActualizarDTO);
-
-        // Assert
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ejercicio no puede ser nulo.");
-    }
-
-
-    //Eliminar_Existente_DeberiaRetornarNoContent
     [Fact]
     public async Task Eliminar_Existente_DeberiaRetornarNoContent()
     {
@@ -322,7 +411,30 @@ public class EjercicioControllerTests
         noContentResult.StatusCode.Should().Be(204);
     }
 
-    //Eliminar_NoExistente_DeberiaRetornarNotFound
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.EliminarEjercicio(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.EliminarEjercicio(-3);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Eliminar_NoExistente_DeberiaRetornarNotFound()
     {
@@ -338,10 +450,8 @@ public class EjercicioControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"El ejercicio con ID {ejercicioId} no fue encontrado para eliminar.");
     }
 
-    //Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500
     [Fact]
     public async Task Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500()
     {
@@ -357,7 +467,71 @@ public class EjercicioControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error al eliminar ejercicio");
     }
 
+    #endregion
+
+    #region GetEjerciciosPorGrupoMuscular Tests
+
+    [Fact]
+    public async Task GetEjerciciosPorGrupoMuscular_Exitoso_RetornaOk()
+    {
+        // Arrange
+        var ejercicios = new List<ObtenerEjercicioDTO>
+        {
+            new ObtenerEjercicioDTO { Id = 1, Nombre = "Ejercicio 1", GrupoMuscularId = 1 },
+            new ObtenerEjercicioDTO { Id = 2, Nombre = "Ejercicio 2", GrupoMuscularId = 1 }
+        };
+        _mockObtenerEjerciciosPorGrupoMuscularCasoDeUso.Setup(x => x.Ejecutar(1)).ReturnsAsync(ejercicios);
+
+        // Act
+        var resultado = await _controller.GetEjerciciosPorGrupoMuscular(1);
+
+        // Assert
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(ejercicios);
+    }
+
+    [Fact]
+    public async Task GetEjerciciosPorGrupoMuscular_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.GetEjerciciosPorGrupoMuscular(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task GetEjerciciosPorGrupoMuscular_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.GetEjerciciosPorGrupoMuscular(-5);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task GetEjerciciosPorGrupoMuscular_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerEjerciciosPorGrupoMuscularCasoDeUso.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.GetEjerciciosPorGrupoMuscular(1);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
 }

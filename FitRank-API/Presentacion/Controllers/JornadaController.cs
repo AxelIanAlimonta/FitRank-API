@@ -1,6 +1,5 @@
 ﻿using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
 using FitRank_API.Application.DTOs.JornadaDTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Presentacion.Controllers
@@ -37,21 +36,31 @@ namespace FitRank_API.Presentacion.Controllers
                 var jornadas = await _obtenerTodasLasJornadaCasoDeUso.Ejecutar();
                 return Ok(jornadas);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error al obtener las jornadas");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(long id)
         {
-            var jornada = await _obtenerJornadaPorIdCasoDeUso.Ejecutar(id);
-            if (jornada == null)
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            try
             {
-                return NotFound($"La jornada con ID {id} no fue encontrada.");
+                var jornada = await _obtenerJornadaPorIdCasoDeUso.Ejecutar(id);
+                if (jornada == null)
+                {
+                    return NotFound(new { Mensaje = "Jornada no encontrada." });
+                }
+                return Ok(jornada);
             }
-            return Ok(jornada);
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost]
@@ -59,63 +68,80 @@ namespace FitRank_API.Presentacion.Controllers
         {
             if (agregarJornadaDTO == null)
             {
-                return BadRequest("El objeto JornadaDTO no puede ser nulo.");
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             try
             {
                 var nuevaJornada = await _agregarJornadaCasoDeUso.Ejecutar(agregarJornadaDTO);
                 return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaJornada.Id }, nuevaJornada);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error al agregar la jornada");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarJornadaDTO actualizarJornadaDTO)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             if (actualizarJornadaDTO == null)
             {
-                return BadRequest("El objeto ActualizarJornadaDTO no puede ser nulo.");
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
             }
+
             if (id != actualizarJornadaDTO.Id)
             {
-                return BadRequest("El ID de la jornada no coincide con el ID proporcionado en la ruta.");
+                return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID de la jornada." });
             }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 var jornadaActualizada = await _actualizarJornadaCasoDeUso.Ejecutar(actualizarJornadaDTO);
                 if (jornadaActualizada == null)
                 {
-                    return NotFound($"La jornada con ID {id} no fue encontrada para actualizar.");
+                    return NotFound(new { Mensaje = "Jornada no encontrada." });
                 }
                 return Ok(jornadaActualizada);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error al actualizar la jornada");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
-            try{var eliminado = await _eliminarJornadaCasoDeUso.Ejecutar(id);
-            if (!eliminado)
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            try
             {
-                return NotFound($"La jornada con ID {id} no fue encontrada para eliminar.");
+                var eliminado = await _eliminarJornadaCasoDeUso.Ejecutar(id);
+                if (!eliminado)
+                {
+                    return NotFound(new { Mensaje = "Jornada no encontrada." });
+                }
+                return NoContent();
             }
-            return NoContent();}catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error al eliminar la jornada");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
-
-
     }
 }
