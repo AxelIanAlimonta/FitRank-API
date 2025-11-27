@@ -5,7 +5,7 @@ using FitRank_API.Application.DTOs.IngresoDTOs;
 using global::FitRank_API.Application.CasosDeUso.Invitacion;
 using global::FitRank_API.Application.DTOs.Invitacion;
 using global::FitRank_API.Domain.Entities;
-using global::FitRank_API.Infrastructure.Interfaces;
+using global::FitRank_API.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SendGrid;

@@ -39,7 +39,7 @@ using FitRank_API.Application.Services;
 using FitRank_API.Application.UseCases;
 using FitRank_API.Application.UseCases.Actividad;
 using FitRank_API.Application.UseCases.Entrenamiento;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Infrastructure.Repositories;
 using FitRank_API.Infrastructure.Repositorios;

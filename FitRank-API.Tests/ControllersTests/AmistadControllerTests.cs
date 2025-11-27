@@ -7,7 +7,7 @@ using FitRank_API.Application.DTOs.AmistadDTOs;
 using FitRank_API.Application.UseCases;
 using FitRank_API.Controllers;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Presentacion.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

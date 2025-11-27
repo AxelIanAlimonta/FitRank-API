@@ -4,7 +4,7 @@ using System.Text;
 using AutoMapper;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso

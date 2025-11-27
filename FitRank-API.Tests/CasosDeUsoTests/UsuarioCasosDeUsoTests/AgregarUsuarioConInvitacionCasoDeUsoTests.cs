@@ -4,7 +4,7 @@ using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
 using FitRank_API.Application.Helpers;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Moq;

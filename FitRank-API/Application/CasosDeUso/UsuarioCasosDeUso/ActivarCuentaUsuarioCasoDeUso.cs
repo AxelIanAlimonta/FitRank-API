@@ -1,4 +1,4 @@
-﻿using FitRank_API.Infrastructure.Interfaces;
+﻿using FitRank_API.Domain.Interfaces;
 using BCrypt.Net;
 
 namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso

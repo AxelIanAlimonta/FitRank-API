@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Application.DTOs.CalcularPuntajeDTOs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 
 namespace FitRank_API.Application.UseCases
 {

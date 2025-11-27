@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.Helpers;
 using System.Text.Json;
 using FitRank_API.Domain.Entities;

@@ -3,7 +3,7 @@ using FitRank_API.Application.CasosDeUso.Asistencia;
 using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Application.Hubs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Moq;

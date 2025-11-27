@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.Asistencia;
 using FitRank_API.Application.DTOs.SocioDTOs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso

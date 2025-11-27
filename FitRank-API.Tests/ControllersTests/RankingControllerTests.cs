@@ -15,7 +15,7 @@ namespace FitRank_API.Tests.ControllersTests
 
         public RankingControllerTests()
         {
-            var mockRepositorio = new Mock<Infrastructure.Interfaces.IRankingRepositorio>();
+            var mockRepositorio = new Mock<Domain.Interfaces.IRankingRepositorio>();
             var mockMapper = new Mock<AutoMapper.IMapper>();
 
             _mockObtenerRankingCaso = new Mock<ObtenerRankingGeneralCasoDeUso>(mockRepositorio.Object, mockMapper.Object);

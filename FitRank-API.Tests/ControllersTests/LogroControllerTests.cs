@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Presentacion.Controllers;
 using FitRank_API.Application.DTOs;
 using AutoMapper;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.DTOs;
 using FitRank_API.Controllers;
 using FitRank_API.Application.CasosDeUso.JornadaCasosDeUso;
