@@ -1,6 +1,5 @@
 ﻿using FitRank_API.Application.CasosDeUso.LogroCasosDeUso;
 using FitRank_API.Application.DTOs.LogroDTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitRank_API.Presentacion.Controllers;
@@ -15,7 +14,9 @@ public class LogroController : ControllerBase
     private readonly EliminarLogroCasoDeUso _eliminarLogroCasoDeUso;
     private readonly ObtenerLogroPorIdCasoDeUso _obtenerLogroPorIdCasoDeUso;
     private readonly OtorgarLogroPorNombreClaveCasoDeUso _otorgarLogroPorNombreClaveCasoDeUso;
-    public LogroController(ObtenerLogrosCasoDeUso obtenerLogrosCasoDeUso,
+
+    public LogroController(
+        ObtenerLogrosCasoDeUso obtenerLogrosCasoDeUso,
         AgregarLogroCasoDeUso agregarLogroCasoDeUso,
         ActualizarLogroCasoDeUso actualizarLogroCasoDeUso,
         EliminarLogroCasoDeUso eliminarLogroCasoDeUso,
@@ -38,27 +39,30 @@ public class LogroController : ControllerBase
             var logros = await _obtenerLogrosCasoDeUso.Ejecutar();
             return Ok(logros);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> ObtenerPorId(long id)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         try
         {
             var logro = await _obtenerLogroPorIdCasoDeUso.Ejecutar(id);
             if (logro == null)
             {
-                return NotFound($"No se encontró ningún logro con ID {id}.");
+                return NotFound(new { Mensaje = "Logro no encontrado." });
             }
             return Ok(logro);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
@@ -67,37 +71,44 @@ public class LogroController : ControllerBase
     {
         if (crearLogroDTO == null)
         {
-            return BadRequest("El logro proporcionado es nulo.");
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
         try
         {
             var logroCreado = await _agregarLogroCasoDeUso.Ejecutar(crearLogroDTO);
             return CreatedAtAction(nameof(ObtenerPorId), new { id = logroCreado.Id }, logroCreado);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarLogroDTO actualizarLogroDTO)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         if (actualizarLogroDTO == null)
         {
-            return BadRequest("El logro proporcionado es nulo.");
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
         if (id != actualizarLogroDTO.Id)
         {
-            return BadRequest("El ID del logro no coincide con el ID proporcionado en la ruta.");
+            return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID del logro." });
         }
 
         try
@@ -105,44 +116,62 @@ public class LogroController : ControllerBase
             var logroActualizado = await _actualizarLogroCasoDeUso.Ejecutar(actualizarLogroDTO);
             if (logroActualizado == null)
             {
-                return NotFound($"No se encontró ningún logro con ID {id} para actualizar.");
+                return NotFound(new { Mensaje = "Logro no encontrado." });
             }
 
             return Ok(logroActualizado);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
-
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Eliminar(long id)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         try
         {
             var exito = await _eliminarLogroCasoDeUso.Ejecutar(id);
             if (!exito)
             {
-                return NotFound("No se encontró ningún logro con el ID proporcionado para eliminar.");
+                return NotFound(new { Mensaje = "Logro no encontrado." });
             }
             return NoContent();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Ocurrió un error en el servidor.");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
-    //Para debug
     [HttpPost("otorgar")]
     public async Task<ActionResult<LogroOtorgadoDTO>> Otorgar([FromBody] OtorgarLogroPorNombreClaveDTO dto)
     {
-        var resultado = await _otorgarLogroPorNombreClaveCasoDeUso.Ejecutar(dto);
-        if (!resultado.Otorgado)
-            return BadRequest(resultado);
+        if (dto == null)
+        {
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+        }
 
-        return Ok(resultado);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var resultado = await _otorgarLogroPorNombreClaveCasoDeUso.Ejecutar(dto);
+            if (!resultado.Otorgado)
+                return BadRequest(resultado);
+
+            return Ok(resultado);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 }

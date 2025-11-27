@@ -12,24 +12,30 @@ namespace FitRank_API.Presentacion.Controllers
     {
         private readonly ObtenerInvitacionesCasoDeUso _obtenerInvitacionesCasoDeUso;
 
-
-        public InvitacionController(
-            ObtenerInvitacionesCasoDeUso obtenerInvitacionesCasoDeUso
-            )
+        public InvitacionController(ObtenerInvitacionesCasoDeUso obtenerInvitacionesCasoDeUso)
         {
             _obtenerInvitacionesCasoDeUso = obtenerInvitacionesCasoDeUso;
-            
         }
 
-       
         [HttpGet("todas")]
         public async Task<IActionResult> ObtenerTodas()
         {
-            var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var invitaciones = await _obtenerInvitacionesCasoDeUso.Ejecutar(adminId);
-            return Ok(invitaciones);
-        }
+            try
+            {
+                var adminIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        
+                if (string.IsNullOrWhiteSpace(adminIdString) || !int.TryParse(adminIdString, out var adminId) || adminId <= 0)
+                {
+                    return BadRequest(new { Mensaje = "ID de administrador inválido en el token." });
+                }
+
+                var invitaciones = await _obtenerInvitacionesCasoDeUso.Ejecutar(adminId);
+                return Ok(invitaciones);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
+        }
     }
 }

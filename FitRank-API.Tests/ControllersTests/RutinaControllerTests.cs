@@ -1,411 +1,580 @@
-//using Xunit;
-//using Moq;
-//using FluentAssertions;
-//using Microsoft.AspNetCore.Mvc;
-//using FitRank_API.Presentacion.Controllers;
-//using FitRank_API.Application.DTOs.GrupoMuscularDTOs;
-//using AutoMapper;
-//using FitRank_API.Domain.Interfaces;
-//using FitRank_API.Application.DTOs;
-//using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
-//using FitRank_API.Application.DTOs.RutinaDTOs;
-//using FitRank.API.Application.Rutinas.Abstractions;
-
-//namespace FitRank_API.tests.ControllersTests;
-
-//public class RutinaControllerTests
-//{
-//    private readonly RutinaController _controller;
-//    private readonly Mock<ActualizarRutinaCasoDeUso> _mockActualizar;
-//    private readonly Mock<AgregarRutinaCasoDeUso> _mockAgregar;
-//    private readonly Mock<EliminarRutinaCasoDeUso> _mockEliminar;
-//    private readonly Mock<ObtenerRutinaPorIdCasoDeUso> _mockObtenerPorId;
-//    private readonly Mock<ObtenerTodasLasRutinasCasoDeUso> _mockObtenerTodos;
-//    private readonly Mock<ObtenerRutinaCompletaCasoDeUso> _mockObtenerCompleta;
-//    private readonly Mock<GenerarRutinaIACasoDeUso> _mockGenerarRutinaIA;
-//    private readonly Mock<ConfirmarRutinaIACasoDeUso> _mockConfirmarRutinaIA;
-//    private readonly Mock<CambiarEstadoRutinaCasoDeUso> _mockCambiarEstadorutina;
-//    private readonly Mock<MarcarDesmarcarRutinaFavoritaCasoDeUso> _mockMarcarDesmarcarRutinaFavoritaCasoDeUso;
-//    private readonly Mock<ObtenerRutinasFavoritasCasoDeUso> _mockObtenerRutinasFavoritasCasoDeUso;
-
-
-//    public RutinaControllerTests()
-//    {
-//        var mockRepositorio = new Mock<IRutinaRepositorio>();
-//        var mockMapper = new Mock<IMapper>();
-//        var mockRulesRunner = new Mock<IRoutineRulesRunner>();
-//        var mockRoutineBuilder = new Mock<IRoutineBuilder>();
-
-//        _mockActualizar = new Mock<ActualizarRutinaCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-//        _mockAgregar = new Mock<AgregarRutinaCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-//        _mockEliminar = new Mock<EliminarRutinaCasoDeUso>(mockRepositorio.Object);
-//        _mockObtenerPorId = new Mock<ObtenerRutinaPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-//        _mockObtenerTodos = new Mock<ObtenerTodasLasRutinasCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-//        _mockGenerarRutinaIA = new Mock<GenerarRutinaIACasoDeUso>(mockRulesRunner.Object, mockRoutineBuilder.Object);
-//        _mockConfirmarRutinaIA = new Mock<ConfirmarRutinaIACasoDeUso>(mockRepositorio.Object);
-
-//        _mockObtenerCompleta = new Mock<ObtenerRutinaCompletaCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-//        _mockCambiarEstadorutina = new Mock<CambiarEstadoRutinaCasoDeUso>(mockRepositorio.Object);
-//        _mockMarcarDesmarcarRutinaFavoritaCasoDeUso = new Mock<MarcarDesmarcarRutinaFavoritaCasoDeUso>(mockRepositorio.Object);
-//        _mockObtenerRutinasFavoritasCasoDeUso = new Mock<ObtenerRutinasFavoritasCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-
-
-//        _controller = new RutinaController(
-//            _mockAgregar.Object,
-//            _mockObtenerPorId.Object,
-//            _mockActualizar.Object,
-//            _mockObtenerTodos.Object,
-//            _mockEliminar.Object,
-//            _mockGenerarRutinaIA.Object,
-//            _mockConfirmarRutinaIA.Object,
-//            _mockObtenerCompleta.Object,
-//            _mockMarcarDesmarcarRutinaFavoritaCasoDeUso.Object,
-//            _mockCambiarEstadorutina.Object,
-//            _mockObtenerRutinasFavoritasCasoDeUso.Object
-//        );
-//    }
-
-//    [Fact]
-//    public async Task AgregarRutina_Retorna_CreatedAtActionResult()
-//    {
-//        // Arrange
-//        var nuevaRutinaDTO = new AgregarRutinaDTO { Nombre = "Rutina A" };
-//        var obtenerRutina = new ObtenerRutinaDTO { Id = 1, Nombre = "Rutina A" };
-
-//        _mockAgregar
-//            .Setup(c => c.Ejecutar(nuevaRutinaDTO))
-//            .ReturnsAsync(obtenerRutina);
-
-//        // Act
-//        var resultado = await _controller.Agregar(nuevaRutinaDTO);
-
-//        // Assert
-//        var createdAtActionResult = resultado as CreatedAtActionResult;
-//        createdAtActionResult.Should().NotBeNull();
-//        createdAtActionResult!.StatusCode.Should().Be(201);
-//        createdAtActionResult.Value.Should().BeEquivalentTo(obtenerRutina);
-
-//    }
-
-//    [Fact]
-//    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
-//    {
-//        // Arrange
-//        var nuevaRutinaDTO = new AgregarRutinaDTO { Nombre = "Rutina A" };
-
-//        _mockAgregar
-//            .Setup(c => c.Ejecutar(nuevaRutinaDTO))
-//            .ThrowsAsync(new Exception("Error al agregar rutina"));
-
-//        // Act
-//        var resultado = await _controller.Agregar(nuevaRutinaDTO);
-
-//        // Assert
-//        var objectResult = resultado as ObjectResult;
-//        objectResult.Should().NotBeNull();
-//        objectResult!.StatusCode.Should().Be(500);
-//        objectResult.Value.Should().Be("Error al agregar rutina");
-//    }
-
-//    [Fact]
-//    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
-//    {
-//        // Act
-//        var resultado = await _controller.Agregar(null);
-
-//        // Assert
-//        var badRequestResult = resultado as BadRequestObjectResult;
-//        badRequestResult.Should().NotBeNull();
-//        badRequestResult!.StatusCode.Should().Be(400);
-//        badRequestResult.Value.Should().Be("El objeto rutina no puede ser nulo.");
-//    }
-
-//    [Fact]
-//    public async Task ObtenerTodos_RetornaOkResult_ConListaDeRutinas()
-//    {
-//        // Arrange
-//        var listaRutinas = new List<ObtenerRutinaDTO>
-//        {
-//            new ObtenerRutinaDTO { Id = 1, Nombre = "Rutina A" },
-//            new ObtenerRutinaDTO { Id = 2, Nombre = "Rutina B" }
-//        };
-
-//        _mockObtenerTodos
-//            .Setup(c => c.Ejecutar())
-//            .ReturnsAsync(listaRutinas);
-
-//        // Act
-//        var resultado = await _controller.ObtenerTodo();
-
-//        // Assert
-//        var okResult = resultado as OkObjectResult;
-//        okResult.Should().NotBeNull();
-//        okResult!.StatusCode.Should().Be(200);
-//        okResult.Value.Should().BeEquivalentTo(listaRutinas);
-//    }
-
-//    [Fact]
-//    public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
-//    {
-//        // Arrange
-//        var listaRutinas = new List<ObtenerRutinaDTO>();
-
-//        _mockObtenerTodos
-//            .Setup(c => c.Ejecutar())
-//            .ReturnsAsync(listaRutinas);
-
-//        // Act
-//        var resultado = await _controller.ObtenerTodo();
-
-//        // Assert
-//        var okResult = resultado as OkObjectResult;
-//        okResult.Should().NotBeNull();
-//        okResult!.StatusCode.Should().Be(200);
-//        okResult.Value.Should().BeEquivalentTo(listaRutinas);
-//    }
-
-//    //ObtenerTodos_LanzaExcepcion_RetornaStatus500
-//    [Fact]
-//    public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
-//    {
-//        // Arrange
-//        _mockObtenerTodos
-//            .Setup(c => c.Ejecutar())
-//            .ThrowsAsync(new Exception("Error al obtener rutinas"));
-
-//        // Act
-//        var resultado = await _controller.ObtenerTodo();
-
-//        // Assert
-//        var objectResult = resultado as ObjectResult;
-//        objectResult.Should().NotBeNull();
-//        objectResult!.StatusCode.Should().Be(500);
-//        objectResult.Value.Should().Be("Error al obtener rutinas");
-//    }
-
-//    [Fact]
-//    public async Task ObtenerPorId_LanzaExcepcion_RetornaStatusCode500()
-//    {
-//        // Arrange
-//        int rutinaId = 1;
-
-//        _mockObtenerPorId
-//            .Setup(c => c.Ejecutar(rutinaId))
-//            .ThrowsAsync(new Exception("Error al obtener rutina"));
-
-//        // Act
-//        var resultado = await _controller.ObtenerPorId(rutinaId);
-
-//        // Assert
-//        var objectResult = resultado as ObjectResult;
-//        objectResult.Should().NotBeNull();
-//        objectResult!.StatusCode.Should().Be(500);
-//        objectResult.Value.Should().Be("Error al obtener rutina");
-//    }
-
-
-//    [Fact]
-//    public async Task ObtenerPorId_RutinaNoExiste_RetornaNotFound()
-//    {
-//        // Arrange
-//        int rutinaId = 1;
-
-//        _mockObtenerPorId
-//            .Setup(c => c.Ejecutar(rutinaId))
-//            .ReturnsAsync((ObtenerRutinaDTO?)null);
-
-//        // Act
-//        var resultado = await _controller.ObtenerPorId(rutinaId);
-
-//        // Assert
-//        var notFoundResult = resultado as NotFoundObjectResult;
-//        notFoundResult.Should().NotBeNull();
-//        notFoundResult!.StatusCode.Should().Be(404);
-//        notFoundResult.Value.Should().Be($"La rutina con ID {rutinaId} no fue encontrada.");
-//    }
-
-
-
-//    [Fact]
-//    public async Task ObtenerPorId_RutinaExiste_RetornaOkConRutina()
-//    {
-//        // Arrange
-//        int rutinaId = 1;
-//        var rutinaDTO = new ObtenerRutinaDTO { Id = rutinaId, Nombre = "Rutina A" };
-
-//        _mockObtenerPorId
-//            .Setup(c => c.Ejecutar(rutinaId))
-//            .ReturnsAsync(rutinaDTO);
-
-//        // Act
-//        var resultado = await _controller.ObtenerPorId(rutinaId);
-
-//        // Assert
-//        var okResult = resultado as OkObjectResult;
-//        okResult.Should().NotBeNull();
-//        okResult!.StatusCode.Should().Be(200);
-//        okResult.Value.Should().BeEquivalentTo(rutinaDTO);
-//    }
-
-//    [Fact]
-//    public async Task Actualizar_RetornaOkObjectResult_ConRutinaActualizada()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-//        var actualizarRutinaDTO = new ActualizarRutinaDTO { Id = rutinaId, Nombre = "Rutina Actualizada" };
-//        var rutinaActualizadaDTO = new ObtenerRutinaDTO { Id = rutinaId, Nombre = "Rutina Actualizada" };
-
-//        _mockActualizar
-//            .Setup(c => c.Ejecutar(actualizarRutinaDTO))
-//            .ReturnsAsync(rutinaActualizadaDTO);
-
-//        // Act
-//        var resultado = await _controller.Actualizar(rutinaId, actualizarRutinaDTO);
-
-//        // Assert
-//        var okResult = resultado as OkObjectResult;
-//        okResult.Should().NotBeNull();
-//        okResult!.StatusCode.Should().Be(200);
-//        okResult.Value.Should().BeEquivalentTo(rutinaActualizadaDTO);
-//    }
-
-//    //Actualizar_GrupoMuscularNoEncontrado_RetornaNotFoundResult
-//    [Fact]
-//    public async Task Actualizar_RutinaNoEncontrada_RetornaNotFoundResult()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-//        var actualizarRutinaDTO = new ActualizarRutinaDTO { Id = rutinaId, Nombre = "Rutina Actualizada" };
-
-//        _mockActualizar
-//            .Setup(c => c.Ejecutar(actualizarRutinaDTO))
-//            .ReturnsAsync((ObtenerRutinaDTO?)null);
-
-//        // Act
-//        var resultado = await _controller.Actualizar(rutinaId, actualizarRutinaDTO);
-
-//        // Assert
-//        var notFoundResult = resultado as NotFoundObjectResult;
-//        notFoundResult.Should().NotBeNull();
-//        notFoundResult!.StatusCode.Should().Be(404);
-//        notFoundResult.Value.Should().Be($"La rutina con ID {rutinaId} no fue encontrada.");
-//    }
-
-
-//    [Fact]
-//    public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-//        var actualizarRutinaDTO = new ActualizarRutinaDTO { Id = rutinaId, Nombre = "Rutina Actualizada" };
-
-//        _mockActualizar
-//            .Setup(c => c.Ejecutar(actualizarRutinaDTO))
-//            .ThrowsAsync(new Exception("Error al actualizar rutina"));
-
-//        // Act
-//        var resultado = await _controller.Actualizar(rutinaId, actualizarRutinaDTO);
-
-//        // Assert
-//        var objectResult = resultado as ObjectResult;
-//        objectResult.Should().NotBeNull();
-//        objectResult!.StatusCode.Should().Be(500);
-//        objectResult.Value.Should().Be("Error al actualizar rutina");
-//    }
-
-//    //Actualizar_IdNoCoincide_RetornaBadRequestResult
-//    [Fact]
-//    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-//        var actualizarRutinaDTO = new ActualizarRutinaDTO { Id = rutinaId, Nombre = "Rutina Actualizada" };
-
-//        // Act
-//        var resultado = await _controller.Actualizar(999, actualizarRutinaDTO);
-
-//        // Assert
-//        var badRequestResult = resultado as BadRequestObjectResult;
-//        badRequestResult.Should().NotBeNull();
-//        badRequestResult!.StatusCode.Should().Be(400);
-//        badRequestResult.Value.Should().Be("El ID de la ruta no coincide con el ID del objeto rutina.");
-//    }
-
-//    //Actualizar_DTONulo_RetornaBadRequestResult
-//    [Fact]
-//    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-
-//        // Act
-//        var resultado = await _controller.Actualizar(rutinaId, null);
-
-//        // Assert
-//        var badRequestResult = resultado as BadRequestObjectResult;
-//        badRequestResult.Should().NotBeNull();
-//        badRequestResult!.StatusCode.Should().Be(400);
-//        badRequestResult.Value.Should().Be("El objeto rutina no puede ser nulo.");
-//    }
-
-
-//    [Fact]
-//    public async Task Eliminar_Rutina_Existente_Deberia_Retornar_NoContent()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-
-//        _mockEliminar
-//            .Setup(c => c.Ejecutar(rutinaId))
-//            .ReturnsAsync(true);
-
-//        // Act
-//        var resultado = await _controller.Eliminar(rutinaId);
-
-//        // Assert
-//        var noContentResult = resultado as NoContentResult;
-//        noContentResult.Should().NotBeNull();
-//        noContentResult!.StatusCode.Should().Be(204);
-//    }
-
-//    //Eliminar_GrupoMuscular_NoExistente_Deberia_Retornar_NotFound
-//    [Fact]
-//    public async Task Eliminar_Rutina_NoExistente_Deberia_Retornar_NotFound()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-
-//        _mockEliminar
-//            .Setup(c => c.Ejecutar(rutinaId))
-//            .ReturnsAsync(false);
-
-//        // Act
-//        var resultado = await _controller.Eliminar(rutinaId);
-
-//        // Assert
-//        var notFoundResult = resultado as NotFoundObjectResult;
-//        notFoundResult.Should().NotBeNull();
-//        notFoundResult!.StatusCode.Should().Be(404);
-//        notFoundResult.Value.Should().Be($"La rutina con ID {rutinaId} no fue encontrada.");
-//    }
-
-//    [Fact]
-//    public async Task Eliminar_Cuando_Ocurre_Error_Deberia_Retornar_StatusCode500()
-//    {
-//        // Arrange
-//        var rutinaId = 1;
-
-//        _mockEliminar
-//            .Setup(c => c.Ejecutar(rutinaId))
-//            .ThrowsAsync(new Exception("Error al eliminar rutina"));
-
-//        // Act
-//        var resultado = await _controller.Eliminar(rutinaId);
-
-//        // Assert
-//        var objectResult = resultado as ObjectResult;
-//        objectResult.Should().NotBeNull();
-//        objectResult!.StatusCode.Should().Be(500);
-//        objectResult.Value.Should().Be("Error al eliminar rutina");
-//    }
-//}
+using Xunit;
+using Moq;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using FitRank_API.Presentacion.Controllers;
+using FitRank_API.Application.CasosDeUso.RutinaCasosDeUso;
+using FitRank_API.Application.DTOs.RutinaDTOs;
+using FitRank_API.Domain.Interfaces;
+using FitRank_API.Domain.Entities;
+using AutoMapper;
+using FitRank_API.Application.Mappings;
+using FitRank.API.Application.Rutinas.Abstractions;
+
+namespace FitRank_API.tests.ControllersTests;
+
+public class RutinaControllerTests
+{
+    private readonly RutinaController _controller;
+    private readonly Mock<IRutinaRepositorio> _mockRepo;
+    private readonly IMapper _mapper;
+    private readonly Mock<IRoutineRulesRunner> _mockRulesRunner;
+    private readonly Mock<IRoutineBuilder> _mockRoutineBuilder;
+
+    public RutinaControllerTests()
+    {
+        _mockRepo = new Mock<IRutinaRepositorio>();
+        _mockRulesRunner = new Mock<IRoutineRulesRunner>();
+        _mockRoutineBuilder = new Mock<IRoutineBuilder>();
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<RutinaProfile>();
+        });
+        _mapper = config.CreateMapper();
+
+        var agregar = new AgregarRutinaCasoDeUso(_mockRepo.Object, _mapper);
+        var obtenerPorId = new ObtenerRutinaPorIdCasoDeUso(_mockRepo.Object, _mapper);
+        var actualizar = new ActualizarRutinaCasoDeUso(_mockRepo.Object, _mapper);
+        var eliminar = new EliminarRutinaCasoDeUso(_mockRepo.Object);
+        var obtenerTodos = new ObtenerTodasLasRutinasCasoDeUso(_mockRepo.Object, _mapper);
+        var generarIA = new GenerarRutinaIACasoDeUso(_mockRulesRunner.Object, _mockRoutineBuilder.Object);
+        var confirmarIA = new ConfirmarRutinaIACasoDeUso(_mockRepo.Object);
+        var obtenerCompleta = new ObtenerRutinaCompletaCasoDeUso(_mockRepo.Object, _mapper);
+        var obtenerFavoritas = new ObtenerRutinasFavoritasCasoDeUso(_mockRepo.Object);
+        var marcarFavorita = new MarcarDesmarcarRutinaFavoritaCasoDeUso(_mockRepo.Object);
+        var cambiarEstado = new CambiarEstadoRutinaCasoDeUso(_mockRepo.Object);
+
+        _controller = new RutinaController(
+            agregar,
+            obtenerPorId,
+            actualizar,
+            eliminar,
+            obtenerTodos,
+            generarIA,
+            confirmarIA,
+            obtenerCompleta,
+            obtenerFavoritas,
+            marcarFavorita,
+            cambiarEstado
+        );
+    }
+
+    #region Agregar Tests
+
+    [Fact]
+    public async Task Agregar_DtoNulo_RetornaBadRequest()
+    {
+        var result = await _controller.Agregar(null!);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_Exitoso_RetornaCreatedAtAction()
+    {
+        var dto = new AgregarRutinaDTO { Nombre = "Nueva Rutina" };
+        var rutina = new Rutina { Id = 1, Nombre = "Nueva Rutina" };
+        _mockRepo.Setup(x => x.AgregarAsync(It.IsAny<Rutina>())).ReturnsAsync(rutina);
+
+        var result = await _controller.Agregar(dto);
+
+        var createdResult = result as CreatedAtActionResult;
+        createdResult.Should().NotBeNull();
+        createdResult!.StatusCode.Should().Be(201);
+    }
+
+    [Fact]
+    public async Task Agregar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        var dto = new AgregarRutinaDTO();
+        _mockRepo.Setup(x => x.AgregarAsync(It.IsAny<Rutina>())).ThrowsAsync(new Exception());
+
+        var result = await _controller.Agregar(dto);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region ObtenerPorId Tests
+
+    [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        var result = await _controller.ObtenerPorId(0);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        var result = await _controller.ObtenerPorId(-5);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_Exitoso_RetornaOk()
+    {
+        var rutina = new Rutina { Id = 1, Nombre = "Test" };
+        _mockRepo.Setup(x => x.ObtenerPorIdAsync(1)).ReturnsAsync(rutina);
+
+        var result = await _controller.ObtenerPorId(1);
+
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_NoEncontrado_RetornaNotFound()
+    {
+        _mockRepo.Setup(x => x.ObtenerPorIdAsync(999)).ReturnsAsync((Rutina?)null);
+
+        var result = await _controller.ObtenerPorId(999);
+
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockRepo.Setup(x => x.ObtenerPorIdAsync(1)).ThrowsAsync(new Exception());
+
+        var result = await _controller.ObtenerPorId(1);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Actualizar Tests
+
+    [Fact]
+    public async Task Actualizar_IdCero_RetornaBadRequest()
+    {
+        var dto = new ActualizarRutinaDTO { Id = 0 };
+
+        var result = await _controller.Actualizar(0, dto);
+
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        var dto = new ActualizarRutinaDTO { Id = -3 };
+
+        var result = await _controller.Actualizar(-3, dto);
+
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_DtoNulo_RetornaBadRequest()
+    {
+        var result = await _controller.Actualizar(1, null!);
+
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNoCoincide_RetornaBadRequest()
+    {
+        var dto = new ActualizarRutinaDTO { Id = 1 };
+
+        var result = await _controller.Actualizar(2, dto);
+
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_Exitoso_RetornaOk()
+    {
+        var dto = new ActualizarRutinaDTO { Id = 1, Nombre = "Actualizada" };
+        var rutina = new Rutina { Id = 1, Nombre = "Original" };
+        _mockRepo.Setup(x => x.ObtenerPorIdAsync(1)).ReturnsAsync(rutina);
+        _mockRepo.Setup(x => x.ActualizarAsync(It.IsAny<Rutina>())).ReturnsAsync(rutina);
+
+        var result = await _controller.Actualizar(1, dto);
+
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task Actualizar_NoEncontrado_RetornaNotFound()
+    {
+        var dto = new ActualizarRutinaDTO { Id = 999 };
+        _mockRepo.Setup(x => x.ObtenerPorIdAsync(999)).ReturnsAsync((Rutina?)null);
+
+        var result = await _controller.Actualizar(999, dto);
+
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task Actualizar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        var dto = new ActualizarRutinaDTO { Id = 1 };
+        var rutina = new Rutina { Id = 1, Nombre = "Test" };
+        _mockRepo.Setup(x => x.ObtenerPorIdAsync(1)).ReturnsAsync(rutina);
+        _mockRepo.Setup(x => x.ActualizarAsync(It.IsAny<Rutina>())).ThrowsAsync(new Exception());
+
+        var result = await _controller.Actualizar(1, dto);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Eliminar Tests
+
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        var result = await _controller.Eliminar(0);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        var result = await _controller.Eliminar(-7);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_Exitoso_RetornaNoContent()
+    {
+        _mockRepo.Setup(x => x.EliminarAsync(1)).ReturnsAsync(true);
+
+        var result = await _controller.Eliminar(1);
+
+        var noContentResult = result as NoContentResult;
+        noContentResult.Should().NotBeNull();
+        noContentResult!.StatusCode.Should().Be(204);
+    }
+
+    [Fact]
+    public async Task Eliminar_NoEncontrado_RetornaNotFound()
+    {
+        _mockRepo.Setup(x => x.EliminarAsync(999)).ReturnsAsync(false);
+
+        var result = await _controller.Eliminar(999);
+
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task Eliminar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockRepo.Setup(x => x.EliminarAsync(1)).ThrowsAsync(new Exception());
+
+        var result = await _controller.Eliminar(1);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region ObtenerRutinaCompletaPorSocio Tests
+
+    [Fact]
+    public async Task ObtenerRutinaCompletaPorSocio_SocioIdCero_RetornaBadRequest()
+    {
+        var result = await _controller.ObtenerRutinaCompletaPorSocio(0);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerRutinaCompletaPorSocio_SocioIdNegativo_RetornaBadRequest()
+    {
+        var result = await _controller.ObtenerRutinaCompletaPorSocio(-3);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerRutinaCompletaPorSocio_Exitoso_RetornaOk()
+    {
+        var rutinas = new List<Rutina> { new Rutina { Id = 1, Nombre = "Test", Sesiones = new List<Sesion>() } };
+        _mockRepo.Setup(x => x.ObtenerRutinasPorSocioAsync(1)).ReturnsAsync(rutinas);
+
+        var result = await _controller.ObtenerRutinaCompletaPorSocio(1);
+
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task ObtenerRutinaCompletaPorSocio_SinRutinas_RetornaNotFound()
+    {
+        _mockRepo.Setup(x => x.ObtenerRutinasPorSocioAsync(1)).ReturnsAsync(new List<Rutina>());
+
+        var result = await _controller.ObtenerRutinaCompletaPorSocio(1);
+
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task ObtenerRutinaCompletaPorSocio_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockRepo.Setup(x => x.ObtenerRutinasPorSocioAsync(1)).ThrowsAsync(new Exception());
+
+        var result = await _controller.ObtenerRutinaCompletaPorSocio(1);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region CambiarFavorita Tests
+
+    [Fact]
+    public async Task CambiarFavorita_RutinaIdCero_RetornaBadRequest()
+    {
+        var result = await _controller.CambiarFavorita(0, true);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task CambiarFavorita_RutinaIdNegativo_RetornaBadRequest()
+    {
+        var result = await _controller.CambiarFavorita(-4, true);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task CambiarFavorita_Exitoso_RetornaOk()
+    {
+        _mockRepo.Setup(x => x.MarcarFavoritaAsync(1, true)).ReturnsAsync(true);
+
+        var result = await _controller.CambiarFavorita(1, true);
+
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task CambiarFavorita_NoEncontrada_RetornaNotFound()
+    {
+        _mockRepo.Setup(x => x.MarcarFavoritaAsync(999, true)).ReturnsAsync(false);
+
+        var result = await _controller.CambiarFavorita(999, true);
+
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task CambiarFavorita_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockRepo.Setup(x => x.MarcarFavoritaAsync(1, true)).ThrowsAsync(new Exception());
+
+        var result = await _controller.CambiarFavorita(1, true);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region CambiarEstado Tests
+
+    [Fact]
+    public async Task CambiarEstado_RutinaIdCero_RetornaBadRequest()
+    {
+        var result = await _controller.CambiarEstado(0, true);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task CambiarEstado_RutinaIdNegativo_RetornaBadRequest()
+    {
+        var result = await _controller.CambiarEstado(-6, true);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task CambiarEstado_Exitoso_RetornaOk()
+    {
+        _mockRepo.Setup(x => x.CambiarEstadoRutinaAsync(1, true)).ReturnsAsync(true);
+
+        var result = await _controller.CambiarEstado(1, true);
+
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task CambiarEstado_NoEncontrada_RetornaNotFound()
+    {
+        _mockRepo.Setup(x => x.CambiarEstadoRutinaAsync(999, true)).ReturnsAsync(false);
+
+        var result = await _controller.CambiarEstado(999, true);
+
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task CambiarEstado_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockRepo.Setup(x => x.CambiarEstadoRutinaAsync(1, true)).ThrowsAsync(new Exception());
+
+        var result = await _controller.CambiarEstado(1, true);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region GetFavoritas Tests
+
+    [Fact]
+    public async Task GetFavoritas_SocioIdCero_RetornaBadRequest()
+    {
+        var result = await _controller.GetFavoritas(0);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task GetFavoritas_SocioIdNegativo_RetornaBadRequest()
+    {
+        var result = await _controller.GetFavoritas(-2);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task GetFavoritas_Exitoso_RetornaOk()
+    {
+        var rutinas = new List<Rutina> { new Rutina { Id = 1, Favorita = true } };
+        _mockRepo.Setup(x => x.ObtenerFavoritasPorSocioAsync(1)).ReturnsAsync(rutinas);
+
+        var result = await _controller.GetFavoritas(1);
+
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task GetFavoritas_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockRepo.Setup(x => x.ObtenerFavoritasPorSocioAsync(1)).ThrowsAsync(new Exception());
+
+        var result = await _controller.GetFavoritas(1);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region GetFavoritasGimnasio Tests
+
+    [Fact]
+    public async Task GetFavoritasGimnasio_GimnasioIdCero_RetornaBadRequest()
+    {
+        var result = await _controller.GetFavoritasGimnasio(0);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task GetFavoritasGimnasio_GimnasioIdNegativo_RetornaBadRequest()
+    {
+        var result = await _controller.GetFavoritasGimnasio(-8);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task GetFavoritasGimnasio_Exitoso_RetornaOk()
+    {
+        var rutinas = new List<Rutina> { new Rutina { Id = 1, Favorita = true } };
+        _mockRepo.Setup(x => x.ObtenerFavoritasPorSocioAsync(1)).ReturnsAsync(rutinas);
+
+        var result = await _controller.GetFavoritasGimnasio(1);
+
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task GetFavoritasGimnasio_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockRepo.Setup(x => x.ObtenerFavoritasPorSocioAsync(1)).ThrowsAsync(new Exception());
+
+        var result = await _controller.GetFavoritasGimnasio(1);
+
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+}

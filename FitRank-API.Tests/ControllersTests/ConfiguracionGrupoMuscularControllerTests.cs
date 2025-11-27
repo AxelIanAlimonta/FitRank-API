@@ -39,29 +39,8 @@ public class ConfiguracionGrupoMuscularControllerTests
         );
     }
 
-    //Agregar_RetornaCreatedAtActionResult
-    [Fact]
-    public async Task Agregar_RetornaCreatedAtActionResult()
-    {
-        // Arrange
-        var nuevaConfiguracionDTO = new AgregarConfiguracionGrupoMuscularDTO { GrupoMuscularId = 1, MultiplicadorPeso = 1.5, MultiplicadorRepeticiones = 1.2, FactorProgresion = 0.05 };
-        var configuracionCreada = new ConfiguracionGrupoMuscularDTO { Id = 1, GrupoMuscularId = 1, MultiplicadorPeso = 1.5, MultiplicadorRepeticiones = 1.2, FactorProgresion = 0.05 };
+    #region ObtenerTodos Tests
 
-        _mockAgregar
-            .Setup(caso => caso.Ejecutar(nuevaConfiguracionDTO))
-            .ReturnsAsync(configuracionCreada);
-
-        // Act
-        var resultado = await _controller.Agregar(nuevaConfiguracionDTO);
-
-        // Assert
-        var createdAtActionResult = resultado as CreatedAtActionResult;
-        createdAtActionResult.Should().NotBeNull();
-        createdAtActionResult!.StatusCode.Should().Be(201);
-        createdAtActionResult.Value.Should().BeEquivalentTo(configuracionCreada);
-    }
-
-    //ObtenerTodos_RetornaOkResult_ConListaCompleta
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaCompleta()
     {
@@ -86,7 +65,6 @@ public class ConfiguracionGrupoMuscularControllerTests
         okResult.Value.Should().BeEquivalentTo(listaConfiguraciones);
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaVacia
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
     {
@@ -107,27 +85,25 @@ public class ConfiguracionGrupoMuscularControllerTests
         okResult.Value.Should().BeEquivalentTo(listaConfiguraciones);
     }
 
-    //ObtenerPorId_NoExiste_RetornaNotFound
     [Fact]
-    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    public async Task ObtenerTodos_ExcepcionGenerica_RetornaInternalServerError()
     {
         // Arrange
-        long configuracionId = 999;
-
-        _mockObtenerPorId
-            .Setup(caso => caso.Ejecutar(configuracionId))
-            .ReturnsAsync((ConfiguracionGrupoMuscularDTO?)null);
+        _mockObtenerTodos.Setup(x => x.Ejecutar()).ThrowsAsync(new Exception());
 
         // Act
-        var resultado = await _controller.ObtenerPorId(configuracionId);
+        var resultado = await _controller.ObtenerTodos();
 
         // Assert
-        var notFoundResult = resultado as NotFoundResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(404);
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
     }
 
-    //ObtenerPorId_Existe_RetornaObjetoOkCreado
+    #endregion
+
+    #region ObtenerPorId Tests
+
     [Fact]
     public async Task ObtenerPorId_Existe_RetornaObjetoOkCreado()
     {
@@ -149,7 +125,137 @@ public class ConfiguracionGrupoMuscularControllerTests
         okResult.Value.Should().BeEquivalentTo(configuracionDTO);
     }
 
-    //Actualizar_RetornaOkObjectResult_ConObjetoActualizado
+    [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerPorId(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerPorId(-5);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    {
+        // Arrange
+        long configuracionId = 999;
+
+        _mockObtenerPorId
+            .Setup(caso => caso.Ejecutar(configuracionId))
+            .ReturnsAsync((ConfiguracionGrupoMuscularDTO?)null);
+
+        // Act
+        var resultado = await _controller.ObtenerPorId(configuracionId);
+
+        // Assert
+        var notFoundResult = resultado as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerPorId.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.ObtenerPorId(1);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Agregar Tests
+
+    [Fact]
+    public async Task Agregar_RetornaCreatedAtActionResult()
+    {
+        // Arrange
+        var nuevaConfiguracionDTO = new AgregarConfiguracionGrupoMuscularDTO { GrupoMuscularId = 1, MultiplicadorPeso = 1.5, MultiplicadorRepeticiones = 1.2, FactorProgresion = 0.05 };
+        var configuracionCreada = new ConfiguracionGrupoMuscularDTO { Id = 1, GrupoMuscularId = 1, MultiplicadorPeso = 1.5, MultiplicadorRepeticiones = 1.2, FactorProgresion = 0.05 };
+
+        _mockAgregar
+            .Setup(caso => caso.Ejecutar(nuevaConfiguracionDTO))
+            .ReturnsAsync(configuracionCreada);
+
+        // Act
+        var resultado = await _controller.Agregar(nuevaConfiguracionDTO);
+
+        // Assert
+        var createdAtActionResult = resultado as CreatedAtActionResult;
+        createdAtActionResult.Should().NotBeNull();
+        createdAtActionResult!.StatusCode.Should().Be(201);
+        createdAtActionResult.Value.Should().BeEquivalentTo(configuracionCreada);
+    }
+
+    [Fact]
+    public async Task Agregar_DtoNulo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Agregar(null);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("GrupoMuscularId", "Requerido");
+        var dto = new AgregarConfiguracionGrupoMuscularDTO();
+
+        // Act
+        var resultado = await _controller.Agregar(dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        var dto = new AgregarConfiguracionGrupoMuscularDTO { GrupoMuscularId = 1 };
+        _mockAgregar.Setup(x => x.Ejecutar(dto)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.Agregar(dto);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Actualizar Tests
+
     [Fact]
     public async Task Actualizar_RetornaOkObjectResult_ConObjetoActualizado()
     {
@@ -172,7 +278,80 @@ public class ConfiguracionGrupoMuscularControllerTests
         okResult.Value.Should().BeEquivalentTo(configuracionActualizada);
     }
 
-    //Actualizar_NoEncontrado_RetornaNotFoundResult
+    [Fact]
+    public async Task Actualizar_IdCero_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ConfiguracionGrupoMuscularDTO { Id = 0 };
+
+        // Act
+        var resultado = await _controller.Actualizar(0, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ConfiguracionGrupoMuscularDTO { Id = -5 };
+
+        // Act
+        var resultado = await _controller.Actualizar(-5, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_DtoNulo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Actualizar(1, null);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("GrupoMuscularId", "Requerido");
+        var dto = new ConfiguracionGrupoMuscularDTO { Id = 1 };
+
+        // Act
+        var resultado = await _controller.Actualizar(1, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
+    {
+        // Arrange
+        long configuracionIdRuta = 1;
+        var configuracionActualizarDTO = new ConfiguracionGrupoMuscularDTO { Id = 2, GrupoMuscularId = 1, MultiplicadorPeso = 1.5, MultiplicadorRepeticiones = 1.2, FactorProgresion = 0.05 };
+
+        // Act
+        var resultado = await _controller.Actualizar(configuracionIdRuta, configuracionActualizarDTO);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
     {
@@ -188,29 +367,31 @@ public class ConfiguracionGrupoMuscularControllerTests
         var resultado = await _controller.Actualizar(configuracionId, configuracionActualizarDTO);
 
         // Assert
-        var notFoundResult = resultado as NotFoundResult;
+        var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult!.StatusCode.Should().Be(404);
     }
 
-    //Actualizar_IdNoCoincide_RetornaBadRequestResult
     [Fact]
-    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
+    public async Task Actualizar_ExcepcionGenerica_RetornaInternalServerError()
     {
         // Arrange
-        long configuracionIdRuta = 1;
-        var configuracionActualizarDTO = new ConfiguracionGrupoMuscularDTO { Id = 2, GrupoMuscularId = 1, MultiplicadorPeso = 1.5, MultiplicadorRepeticiones = 1.2, FactorProgresion = 0.05 };
+        var dto = new ConfiguracionGrupoMuscularDTO { Id = 1, GrupoMuscularId = 1 };
+        _mockActualizar.Setup(x => x.Ejecutar(dto)).ThrowsAsync(new Exception());
 
         // Act
-        var resultado = await _controller.Actualizar(configuracionIdRuta, configuracionActualizarDTO);
+        var resultado = await _controller.Actualizar(1, dto);
 
         // Assert
-        var badRequestResult = resultado as BadRequestResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult!.StatusCode.Should().Be(400);
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
     }
 
-    //Eliminar_Existente_DeberiaRetornarNoContent
+    #endregion
+
+    #region Eliminar Tests
+
     [Fact]
     public async Task Eliminar_Existente_DeberiaRetornarNoContent()
     {
@@ -229,4 +410,45 @@ public class ConfiguracionGrupoMuscularControllerTests
         noContentResult.Should().NotBeNull();
         noContentResult!.StatusCode.Should().Be(204);
     }
+
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(-3);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockEliminar.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.Eliminar(1);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
 }

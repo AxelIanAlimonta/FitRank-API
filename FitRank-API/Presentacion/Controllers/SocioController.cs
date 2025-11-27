@@ -1,9 +1,7 @@
-ï»¿using Microsoft.AspNetCore.Mvc;
-//using casos de uso
+using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.DTOs.SocioDTOs;
 using FitRank_API.Application.CasosDeUso.SocioCasosDeUso;
-
 
 namespace FitRank_API.Presentacion.Controllers;
 
@@ -11,7 +9,6 @@ namespace FitRank_API.Presentacion.Controllers;
 [ApiController]
 public class SocioController : ControllerBase
 {
-    //traeme todos los casos de uso de socio
     private readonly ObtenerSociosCasoDeUso _obtenerSociosCasoDeUso;
     private readonly ObtenerSocioPorIdCasoDeUso _obtenerSocioPorIdCasoDeUso;
     private readonly AgregarSocioCasoDeUso _agregarSocioCasoDeUso;
@@ -21,7 +18,6 @@ public class SocioController : ControllerBase
     private readonly ObtenerSocioConMedidasCasoDeUso _obtenerSocioConMedidasCasoDeUso;
     private readonly EditarPerfilSocioCasoDeUso _editarPerfilCasoDeUso;
 
- 
     public SocioController(
         ObtenerSociosCasoDeUso obtenerSociosCasoDeUso,
         ObtenerSocioPorIdCasoDeUso obtenerSocioPorIdCasoDeUso,
@@ -30,8 +26,7 @@ public class SocioController : ControllerBase
         EliminarSocioCasoDeUso eliminarSocioCasoDeUso,
         CambiarParticipacionRankingCasoDeUso cambiarParticipacionRankingCasoDeUso,
         ObtenerSocioConMedidasCasoDeUso obtenerSocioConMedidasCasoDeUso,
-        EditarPerfilSocioCasoDeUso editarPerfilCasoDeUso
-        )
+        EditarPerfilSocioCasoDeUso editarPerfilCasoDeUso)
     {
         _obtenerSociosCasoDeUso = obtenerSociosCasoDeUso;
         _obtenerSocioPorIdCasoDeUso = obtenerSocioPorIdCasoDeUso;
@@ -43,91 +38,178 @@ public class SocioController : ControllerBase
         _editarPerfilCasoDeUso = editarPerfilCasoDeUso;
     }
 
-
-
     [HttpGet]
-    public async Task<IActionResult> obtenerTodos()
+    public async Task<IActionResult> ObtenerTodos()
     {
-        var socios = await _obtenerSociosCasoDeUso.Ejecutar();
-        return Ok(socios);
+        try
+        {
+            var socios = await _obtenerSociosCasoDeUso.Ejecutar();
+            return Ok(socios);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> obtenerPorId(long id)
+    public async Task<IActionResult> ObtenerPorId(long id)
     {
-        var socio = await _obtenerSocioPorIdCasoDeUso.Ejecutar(id);
-        if (socio == null)
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
+
+        try
         {
-            return NotFound();
+            var socio = await _obtenerSocioPorIdCasoDeUso.Ejecutar(id);
+            if (socio == null)
+                return NotFound(new { Mensaje = $"El socio con ID {id} no fue encontrado." });
+
+            return Ok(socio);
         }
-        return Ok(socio);
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> agregar([FromBody] AgregarSocioDTO socio)
+    public async Task<IActionResult> Agregar([FromBody] AgregarSocioDTO socio)
     {
-        var nuevoSocio = await _agregarSocioCasoDeUso.Ejecutar(socio);
-        return CreatedAtAction(nameof(obtenerPorId), new { id = nuevoSocio.Id }, nuevoSocio);
+        if (socio == null)
+            return BadRequest(new { Mensaje = "El objeto socio no puede ser nulo." });
 
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
+        try
+        {
+            var nuevoSocio = await _agregarSocioCasoDeUso.Ejecutar(socio);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoSocio.Id }, nuevoSocio);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> actualizar(long id, [FromBody] SocioDTO socio)
+    public async Task<IActionResult> Actualizar(long id, [FromBody] SocioDTO socio)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
+
+        if (socio == null)
+            return BadRequest(new { Mensaje = "El objeto socio no puede ser nulo." });
+
         if (id != socio.Id)
+            return BadRequest(new { Mensaje = "El ID del socio no coincide con el ID del objeto." });
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
         {
-            return BadRequest();
+            var socioActualizado = await _actualizarSocioCasoDeUso.Ejecutar(socio);
+            if (socioActualizado == null)
+                return NotFound(new { Mensaje = $"El socio con ID {id} no fue encontrado." });
+
+            return Ok(socioActualizado);
         }
-        var socioActualizado = await _actualizarSocioCasoDeUso.Ejecutar(socio);
-        if (socioActualizado == null)
+        catch (Exception)
         {
-            return NotFound();
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
-        return Ok(socioActualizado);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> eliminar(long id)
+    public async Task<IActionResult> Eliminar(long id)
     {
-        var resultado = await _eliminarSocioCasoDeUso.Ejecutar(id);
-        if (!resultado)
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
+
+        try
         {
-            return NotFound();
+            var resultado = await _eliminarSocioCasoDeUso.Ejecutar(id);
+            if (!resultado)
+                return NotFound(new { Mensaje = $"El socio con ID {id} no fue encontrado." });
+
+            return NoContent();
         }
-        return NoContent();
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 
     [HttpPut("socio/{socioId}/participacion-ranking")]
     public async Task<IActionResult> CambiarParticipacionRanking(long socioId, [FromBody] CambiarParticipacionRankingDTO body)
     {
-        var ok = await _cambiarParticipacionRankingCasoDeUso.Ejecutar(socioId, body.ParticipaEnRanking);
+        if (socioId <= 0)
+            return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
 
-        if (!ok)
-            return NotFound(new { mensaje = "Socio no encontrado" });
+        if (body == null)
+            return BadRequest(new { Mensaje = "El objeto de participación no puede ser nulo." });
 
-        return Ok(new { mensaje = "ParticipaciÃ³n actualizada", participa = body.ParticipaEnRanking });
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var ok = await _cambiarParticipacionRankingCasoDeUso.Ejecutar(socioId, body.ParticipaEnRanking);
+            if (!ok)
+                return NotFound(new { Mensaje = $"El socio con ID {socioId} no fue encontrado." });
+
+            return Ok(new { Mensaje = "Participación actualizada correctamente.", participa = body.ParticipaEnRanking });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
+
     [HttpGet("completo/{id}")]
     public async Task<IActionResult> ObtenerSocioCompleto(long id)
     {
-        var result = await _obtenerSocioConMedidasCasoDeUso.Ejecutar(id);
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
 
-        if (result == null)
-            return NotFound("No existe el socio");
+        try
+        {
+            var result = await _obtenerSocioConMedidasCasoDeUso.Ejecutar(id);
+            if (result == null)
+                return NotFound(new { Mensaje = $"El socio con ID {id} no fue encontrado." });
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
 
     [HttpPut("editar-perfil/{socioId}")]
     public async Task<IActionResult> EditarPerfil(long socioId, [FromBody] EditarPerfilSocioDTO dto)
     {
-        var ok = await _editarPerfilCasoDeUso.Ejecutar(socioId, dto);
+        if (socioId <= 0)
+            return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
 
-        if (!ok)
-            return NotFound(new { mensaje = "Socio no encontrado" });
+        if (dto == null)
+            return BadRequest(new { Mensaje = "El objeto de perfil no puede ser nulo." });
 
-        return Ok(new { mensaje = "Perfil actualizado correctamente" });
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var ok = await _editarPerfilCasoDeUso.Ejecutar(socioId, dto);
+            if (!ok)
+                return NotFound(new { Mensaje = $"El socio con ID {socioId} no fue encontrado." });
+
+            return Ok(new { Mensaje = "Perfil actualizado correctamente." });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+        }
     }
-
 }

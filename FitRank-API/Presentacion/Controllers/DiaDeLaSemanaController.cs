@@ -37,22 +37,31 @@ namespace FitRank_API.Presentacion.Controllers
                 var result = await _obtenerTodosLosDiasDeLaSemanaCasoDeUso.Ejecutar();
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
-
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(long id)
         {
-            var DiaObtenido = await _obtenerDiaDeLaSemanaPorIdCasoDeUso.Ejecutar(id);
-            if (DiaObtenido == null)
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            try
             {
-                return NotFound();
+                var DiaObtenido = await _obtenerDiaDeLaSemanaPorIdCasoDeUso.Ejecutar(id);
+                if (DiaObtenido == null)
+                {
+                    return NotFound(new { Mensaje = "Día de la semana no encontrado." });
+                }
+                return Ok(DiaObtenido);
             }
-            return Ok(DiaObtenido);
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost]
@@ -60,68 +69,79 @@ namespace FitRank_API.Presentacion.Controllers
         {
             if (diaDeLaSemanaDTO == null)
             {
-                return BadRequest("El DTO de entrada no puede ser nulo.");
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             try
             {
                 var nuevoDia = await _agregarDiaDeLaSemanaCasoDeUso.Ejecutar(diaDeLaSemanaDTO);
                 return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoDia.Id }, nuevoDia);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarAsync(long id, [FromBody] ActualizarDiaDeLaSemanaDTO diaDeLaSemanaDTO)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             if (diaDeLaSemanaDTO == null)
             {
-                return BadRequest("El DTO de entrada no puede ser nulo.");
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             if (id != diaDeLaSemanaDTO.Id)
             {
-                return BadRequest("El ID en la ruta no coincide con el ID en el cuerpo de la solicitud.");
+                return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID del objeto." });
             }
+
             try
             {
                 var diaActualizado = await _actualizarDiaDeLaSemanaCasoDeUso.Ejecutar(diaDeLaSemanaDTO);
                 if (diaActualizado == null)
                 {
-                    return NotFound("Día de la semana no encontrado.");
+                    return NotFound(new { Mensaje = "Día de la semana no encontrado." });
                 }
                 return Ok(diaActualizado);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarAsync(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             try
             {
                 var eliminado = await _eliminarDiaDeLaSemanaCasoDeUso.Ejecutar(id);
                 if (!eliminado)
                 {
-                    return NotFound();
+                    return NotFound(new { Mensaje = "Día de la semana no encontrado." });
                 }
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error inesperado");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
     }

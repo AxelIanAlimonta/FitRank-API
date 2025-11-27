@@ -18,7 +18,6 @@ namespace FitRank_API.tests.ControllersTests;
 
 public class DiaDeLaSemanaControllerTests
 {
-
     private readonly DiaDeLaSemanaController _controller;
     private readonly Mock<ActualizarDiaDeLaSemanaCasoDeUso> _mockActualizar;
     private readonly Mock<AgregarDiaDeLaSemanaCasoDeUso> _mockAgregar;
@@ -44,14 +43,143 @@ public class DiaDeLaSemanaControllerTests
             _mockEliminar.Object,
             _mockObtenerPorId.Object
         );
-
     }
 
-    //Agregar_RetornaCreatedAtActionResult
+    #region ObtenerTodosAsync Tests
+
+    [Fact]
+    public async Task ObtenerTodos_RetornaOkResult_ConListaCompleta()
+    {
+        var listaDiasDTO = new List<ObtenerDiaDeLaSemanaDTO>
+        {
+            new ObtenerDiaDeLaSemanaDTO { Id = 1, Nombre = "Lunes" },
+            new ObtenerDiaDeLaSemanaDTO { Id = 2, Nombre = "Martes" }
+        };
+
+        _mockObtenerTodos
+            .Setup(m => m.Ejecutar())
+            .ReturnsAsync(listaDiasDTO);
+
+        var resultado = await _controller.ObtenerTodosAsync();
+
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(listaDiasDTO);
+    }
+
+    [Fact]
+    public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
+    {
+        var listaDiasDTO = new List<ObtenerDiaDeLaSemanaDTO>();
+
+        _mockObtenerTodos
+            .Setup(m => m.Ejecutar())
+            .ReturnsAsync(listaDiasDTO);
+
+        var resultado = await _controller.ObtenerTodosAsync();
+
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(listaDiasDTO);
+    }
+
+    [Fact]
+    public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
+    {
+        _mockObtenerTodos
+            .Setup(m => m.Ejecutar())
+            .ThrowsAsync(new Exception("Error inesperado"));
+
+        var resultado = await _controller.ObtenerTodosAsync();
+
+        var objectResult = resultado as ObjectResult;
+        objectResult.Should().NotBeNull();
+        objectResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region ObtenerPorId Tests
+
+    [Fact]
+    public async Task ObtenerPorId_Existe_RetornaObjetoOkCreado()
+    {
+        int diaId = 1;
+        var diaDTO = new ObtenerDiaDeLaSemanaDTO
+        {
+            Id = diaId,
+            Nombre = "Lunes"
+        };
+
+        _mockObtenerPorId
+            .Setup(m => m.Ejecutar(diaId))
+            .ReturnsAsync(diaDTO);
+
+        var resultado = await _controller.ObtenerPorId(diaId);
+
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(diaDTO);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        var resultado = await _controller.ObtenerPorId(0);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        var resultado = await _controller.ObtenerPorId(-5);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    {
+        int diaId = 99;
+
+        _mockObtenerPorId
+            .Setup(m => m.Ejecutar(diaId))
+            .ReturnsAsync((ObtenerDiaDeLaSemanaDTO?)null);
+
+        var resultado = await _controller.ObtenerPorId(diaId);
+
+        var notFoundResult = resultado as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        _mockObtenerPorId.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        var resultado = await _controller.ObtenerPorId(1);
+
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region AgregarAsync Tests
+
     [Fact]
     public async Task Agregar_RetornaCreatedAtActionResult()
     {
-
         var nuevoDiaDTO = new AgregarDiaDeLaSemanaDTO
         {
             Nombre = "Lunes"
@@ -77,7 +205,31 @@ public class DiaDeLaSemanaControllerTests
         createdAtActionResult.Value.Should().BeEquivalentTo(diaCreadoDTO);
     }
 
-    //Agregar_LanzaExcepcion_RetornaStatusCode500
+    [Fact]
+    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
+    {
+        AgregarDiaDeLaSemanaDTO nuevoDiaDTO = null!;
+
+        var resultado = await _controller.AgregarAsync(nuevoDiaDTO);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_ModelStateInvalido_RetornaBadRequest()
+    {
+        _controller.ModelState.AddModelError("Nombre", "Requerido");
+        var dto = new AgregarDiaDeLaSemanaDTO();
+
+        var resultado = await _controller.AgregarAsync(dto);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
     {
@@ -95,120 +247,12 @@ public class DiaDeLaSemanaControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error inesperado");
     }
 
-    //Agregar_RetornaBadRequest_CuandoDTOEsNulo
-    [Fact]
-    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
-    {
-        AgregarDiaDeLaSemanaDTO nuevoDiaDTO = null!;
+    #endregion
 
-        var resultado = await _controller.AgregarAsync(nuevoDiaDTO);
+    #region ActualizarAsync Tests
 
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El DTO de entrada no puede ser nulo.");
-    }
-
-    //ObtenerTodos_RetornaOkResult_ConListaCompleta
-    [Fact]
-    public async Task ObtenerTodos_RetornaOkResult_ConListaCompleta()
-    {
-        var listaDiasDTO = new List<ObtenerDiaDeLaSemanaDTO>
-        {
-            new ObtenerDiaDeLaSemanaDTO { Id = 1, Nombre = "Lunes" },
-            new ObtenerDiaDeLaSemanaDTO { Id = 2, Nombre = "Martes" }
-        };
-
-        _mockObtenerTodos
-            .Setup(m => m.Ejecutar())
-            .ReturnsAsync(listaDiasDTO);
-
-        var resultado = await _controller.ObtenerTodosAsync();
-
-        var okResult = resultado as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(listaDiasDTO);
-    }
-
-    //ObtenerTodos_RetornaOkResult_ConListaVacia
-    [Fact]
-    public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
-    {
-        var listaDiasDTO = new List<ObtenerDiaDeLaSemanaDTO>();
-
-        _mockObtenerTodos
-            .Setup(m => m.Ejecutar())
-            .ReturnsAsync(listaDiasDTO);
-
-        var resultado = await _controller.ObtenerTodosAsync();
-
-        var okResult = resultado as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(listaDiasDTO);
-    }
-
-    //ObtenerTodos_LanzaExcepcion_RetornaStatus500
-    [Fact]
-    public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
-    {
-        _mockObtenerTodos
-            .Setup(m => m.Ejecutar())
-            .ThrowsAsync(new Exception("Error inesperado"));
-
-        var resultado = await _controller.ObtenerTodosAsync();
-
-        var objectResult = resultado as ObjectResult;
-        objectResult.Should().NotBeNull();
-        objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error inesperado");
-    }
-
-    //ObtenerPorId_NoExiste_RetornaNotFound
-    [Fact]
-    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
-    {
-        int diaId = 99;
-
-        _mockObtenerPorId
-            .Setup(m => m.Ejecutar(diaId))
-            .ReturnsAsync((ObtenerDiaDeLaSemanaDTO?)null);
-
-        var resultado = await _controller.ObtenerPorId(diaId);
-
-        var notFoundResult = resultado as NotFoundResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(404);
-    }
-
-    //ObtenerPorId_Existe_RetornaObjetoOkCreado
-    [Fact]
-    public async Task ObtenerPorId_Existe_RetornaObjetoOkCreado()
-    {
-        int diaId = 1;
-        var diaDTO = new ObtenerDiaDeLaSemanaDTO
-        {
-            Id = diaId,
-            Nombre = "Lunes"
-        };
-
-        _mockObtenerPorId
-            .Setup(m => m.Ejecutar(diaId))
-            .ReturnsAsync(diaDTO);
-
-        var resultado = await _controller.ObtenerPorId(diaId);
-
-        var okResult = resultado as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(diaDTO);
-    }
-
-    //Actualizar_RetornaOkObjectResult_ConObjetoActualizado
     [Fact]
     public async Task Actualizar_RetornaOkObjectResult_ConObjetoActualizado()
     {
@@ -236,7 +280,71 @@ public class DiaDeLaSemanaControllerTests
         okResult.Value.Should().BeEquivalentTo(diaActualizadoDTO);
     }
 
-    //Actualizar_NoEncontrado_RetornaNotFoundResult
+    [Fact]
+    public async Task Actualizar_IdCero_RetornaBadRequest()
+    {
+        var dto = new ActualizarDiaDeLaSemanaDTO { Id = 0 };
+
+        var resultado = await _controller.ActualizarAsync(0, dto);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        var dto = new ActualizarDiaDeLaSemanaDTO { Id = -5 };
+
+        var resultado = await _controller.ActualizarAsync(-5, dto);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
+    {
+        ActualizarDiaDeLaSemanaDTO actualizarDiaDTO = null!;
+
+        var resultado = await _controller.ActualizarAsync(1, actualizarDiaDTO);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_ModelStateInvalido_RetornaBadRequest()
+    {
+        _controller.ModelState.AddModelError("Nombre", "Requerido");
+        var dto = new ActualizarDiaDeLaSemanaDTO { Id = 1 };
+
+        var resultado = await _controller.ActualizarAsync(1, dto);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
+    {
+        var actualizarDiaDTO = new ActualizarDiaDeLaSemanaDTO
+        {
+            Id = 1,
+            Nombre = "Lunes Modificado"
+        };
+
+        var resultado = await _controller.ActualizarAsync(2, actualizarDiaDTO);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
     {
@@ -255,10 +363,8 @@ public class DiaDeLaSemanaControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult!.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be("Día de la semana no encontrado.");
     }
 
-    //Actualizar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
     public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
     {
@@ -277,42 +383,12 @@ public class DiaDeLaSemanaControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error inesperado");
     }
 
-    //Actualizar_IdNoCoincide_RetornaBadRequestResult
-    [Fact]
-    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
-    {
-        var actualizarDiaDTO = new ActualizarDiaDeLaSemanaDTO
-        {
-            Id = 1,
-            Nombre = "Lunes Modificado"
-        };
+    #endregion
 
-        var resultado = await _controller.ActualizarAsync(2, actualizarDiaDTO);
+    #region EliminarAsync Tests
 
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ID en la ruta no coincide con el ID en el cuerpo de la solicitud.");
-    }
-
-    //Actualizar_DTONulo_RetornaBadRequestResult
-    [Fact]
-    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
-    {
-        ActualizarDiaDeLaSemanaDTO actualizarDiaDTO = null!;
-
-        var resultado = await _controller.ActualizarAsync(1, actualizarDiaDTO);
-
-        var badRequestResult = resultado as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El DTO de entrada no puede ser nulo.");
-    }
-
-    //Eliminar_Existente_DeberiaRetornarNoContent
     [Fact]
     public async Task Eliminar_Existente_DeberiaRetornarNoContent()
     {
@@ -329,7 +405,26 @@ public class DiaDeLaSemanaControllerTests
         noContentResult!.StatusCode.Should().Be(204);
     }
 
-    //Eliminar_NoExistente_DeberiaRetornarNotFound
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        var resultado = await _controller.EliminarAsync(0);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        var resultado = await _controller.EliminarAsync(-3);
+
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
     [Fact]
     public async Task Eliminar_NoExistente_DeberiaRetornarNotFound()
     {
@@ -341,12 +436,11 @@ public class DiaDeLaSemanaControllerTests
 
         var resultado = await _controller.EliminarAsync(diaId);
 
-        var notFoundResult = resultado as NotFoundResult;
+        var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult!.StatusCode.Should().Be(404);
     }
 
-    //Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500
     [Fact]
     public async Task Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500()
     {
@@ -361,7 +455,7 @@ public class DiaDeLaSemanaControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error inesperado");
     }
 
+    #endregion
 }

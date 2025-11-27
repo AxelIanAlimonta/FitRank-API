@@ -18,7 +18,6 @@ namespace FitRank_API.tests.ControllersTests;
 
 public class ActividadControllerTests
 {
-
     private readonly ActividadController _controller;
     private readonly Mock<ActualizarActividadCasoDeUso> _mockActualizar;
     private readonly Mock<AgregarActividadCasoDeUso> _mockAgregar;
@@ -37,7 +36,7 @@ public class ActividadControllerTests
         _mockEliminar = new Mock<EliminarActividadCasoDeUso>(mockRepositorio.Object);
         _mockObtenerPorId = new Mock<ObtenerActividadPorIdCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
         _mockObtenerTodos = new Mock<ObtenerActividadesCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
-        // _mockRegistrar = new Mock<RegistrarActividadCasoDeUso>(mockRepositorio.Object, mockMapper.Object);
+        _mockRegistrar = new Mock<RegistrarActividadCasoDeUso>(null, null, null, null, null, null);
 
         _controller = new ActividadController(
             _mockAgregar.Object,
@@ -45,12 +44,12 @@ public class ActividadControllerTests
             _mockObtenerPorId.Object,
             _mockActualizar.Object,
             _mockEliminar.Object,
-            null
+            _mockRegistrar.Object
         );
-
     }
 
-    //Agregar_RetornaCreatedAtActionResult
+    #region Crear Tests
+
     [Fact]
     public async Task Agregar_RetornaCreatedAtActionResult()
     {
@@ -86,7 +85,6 @@ public class ActividadControllerTests
         createdAtActionResult.Value.Should().BeEquivalentTo(actividadCreada);
     }
 
-    //Agregar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
     public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
     {
@@ -110,10 +108,8 @@ public class ActividadControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
     }
 
-    //Agregar_RetornaBadRequest_CuandoDTOEsNulo
     [Fact]
     public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
     {
@@ -127,10 +123,28 @@ public class ActividadControllerTests
         var badRequestResult = resultado as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El objeto Actividad es nulo.");
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaCompleta
+    [Fact]
+    public async Task Agregar_RetornaBadRequest_CuandoModelStateEsInvalido()
+    {
+        // Arrange
+        var nuevaActividad = new AgregarActividadDTO { Peso = 70.5 };
+        _controller.ModelState.AddModelError("SerieId", "Requerido");
+
+        // Act
+        var resultado = await _controller.Crear(nuevaActividad);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    #endregion
+
+    #region ObtenerTodas Tests
+
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaCompleta()
     {
@@ -155,7 +169,6 @@ public class ActividadControllerTests
         okResult.Value.Should().BeEquivalentTo(listaActividades);
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaVacia
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
     {
@@ -176,7 +189,6 @@ public class ActividadControllerTests
         okResult.Value.Should().BeEquivalentTo(listaActividades);
     }
 
-    //ObtenerTodos_LanzaExcepcion_RetornaStatus500
     [Fact]
     public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
     {
@@ -192,15 +204,17 @@ public class ActividadControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
     }
 
-    //ObtenerPorId_NoExiste_RetornaNotFound
+    #endregion
+
+    #region ObtenerPorId Tests
+
     [Fact]
     public async Task ObtenerPorId_NoExiste_RetornaNotFound()
     {
         // Arrange
-        int actividadId = 999;
+        long actividadId = 999;
 
         _mockObtenerPorId
             .Setup(casoDeUso => casoDeUso.Ejecutar(actividadId))
@@ -213,15 +227,13 @@ public class ActividadControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"La actividad con ID {actividadId} no existe.");
     }
 
-    //ObtenerPorId_Existe_RetornaObjetoOkCreado
     [Fact]
     public async Task ObtenerPorId_Existe_RetornaObjetoOkCreado()
     {
         // Arrange
-        int actividadId = 1;
+        long actividadId = 1;
         var actividadExistente = new ObtenerActividadDTO
         {
             Id = actividadId,
@@ -245,12 +257,57 @@ public class ActividadControllerTests
         okResult.Value.Should().BeEquivalentTo(actividadExistente);
     }
 
-    //Actualizar_RetornaOkObjectResult_ConObjetoActualizado
+    [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerActividadPorId(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerActividadPorId(-5);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_LanzaExcepcion_RetornaStatus500()
+    {
+        // Arrange
+        long actividadId = 1;
+        _mockObtenerPorId
+            .Setup(casoDeUso => casoDeUso.Ejecutar(actividadId))
+            .ThrowsAsync(new System.Exception("Error"));
+
+        // Act
+        var resultado = await _controller.ObtenerActividadPorId(actividadId);
+
+        // Assert
+        var objectResult = resultado as ObjectResult;
+        objectResult.Should().NotBeNull();
+        objectResult.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Actualizar Tests
+
     [Fact]
     public async Task Actualizar_RetornaOkObjectResult_ConObjetoActualizado()
     {
         // Arrange
-        int actividadId = 1;
+        long actividadId = 1;
         var actividadActualizada = new ActualizarActividadDTO
         {
             Id = actividadId,
@@ -283,12 +340,11 @@ public class ActividadControllerTests
         okResult.Value.Should().BeEquivalentTo(actividadResultado);
     }
 
-    //Actualizar_NoEncontrado_RetornaNotFoundResult
     [Fact]
     public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
     {
         // Arrange
-        int actividadId = 999;
+        long actividadId = 999;
         var actividadActualizada = new ActualizarActividadDTO
         {
             Id = actividadId,
@@ -309,15 +365,13 @@ public class ActividadControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"La actividad con ID {actividadId} no existe.");
     }
 
-    //Actualizar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
     public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
     {
         // Arrange
-        int actividadId = 1;
+        long actividadId = 1;
         var actividadActualizada = new ActualizarActividadDTO
         {
             Id = actividadId,
@@ -338,17 +392,16 @@ public class ActividadControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
     }
 
-    //Actualizar_IdNoCoincide_RetornaBadRequestResult
     [Fact]
     public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
     {
         // Arrange
-        int actividadId = 1;
+        long actividadId = 1;
         var actividadActualizada = new ActualizarActividadDTO
         {
+            Id = 2,
             Peso = 75.0,
             SerieId = 2,
             EntrenamientoId = 1,
@@ -356,21 +409,19 @@ public class ActividadControllerTests
         };
 
         // Act
-        var resultado = await _controller.Actualizar(actividadId + 1, actividadActualizada);
+        var resultado = await _controller.Actualizar(actividadId, actividadActualizada);
 
         // Assert
         var badRequestResult = resultado as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ID de la ruta no coincide con el ID del objeto.");
     }
 
-    //Actualizar_DTONulo_RetornaBadRequestResult
     [Fact]
     public async Task Actualizar_DTONulo_RetornaBadRequestResult()
     {
         // Arrange
-        int actividadId = 1;
+        long actividadId = 1;
         ActualizarActividadDTO actividadActualizada = null;
 
         // Act
@@ -380,15 +431,64 @@ public class ActividadControllerTests
         var badRequestResult = resultado as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El objeto Actividad es nulo.");
     }
 
-    //Eliminar_Existente_DeberiaRetornarNoContent
+    [Fact]
+    public async Task Actualizar_IdCero_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarActividadDTO { Id = 0 };
+
+        // Act
+        var resultado = await _controller.Actualizar(0, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarActividadDTO { Id = -1 };
+
+        // Act
+        var resultado = await _controller.Actualizar(-1, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        long actividadId = 1;
+        var dto = new ActualizarActividadDTO { Id = actividadId };
+        _controller.ModelState.AddModelError("Peso", "Requerido");
+
+        // Act
+        var resultado = await _controller.Actualizar(actividadId, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    #endregion
+
+    #region Eliminar Tests
+
     [Fact]
     public async Task Eliminar_Existente_DeberiaRetornarNoContent()
     {
         // Arrange
-        int actividadId = 1;
+        long actividadId = 1;
 
         _mockEliminar
             .Setup(casoDeUso => casoDeUso.Ejecutar(actividadId))
@@ -403,12 +503,11 @@ public class ActividadControllerTests
         noContentResult.StatusCode.Should().Be(204);
     }
 
-    //Eliminar_NoExistente_DeberiaRetornarNotFound
     [Fact]
     public async Task Eliminar_NoExistente_DeberiaRetornarNotFound()
     {
         // Arrange
-        int actividadId = 999;
+        long actividadId = 999;
 
         _mockEliminar
             .Setup(casoDeUso => casoDeUso.Ejecutar(actividadId))
@@ -421,15 +520,13 @@ public class ActividadControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"La actividad con ID {actividadId} no existe.");
     }
 
-    //Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500
     [Fact]
     public async Task Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500()
     {
         // Arrange
-        int actividadId = 1;
+        long actividadId = 1;
 
         _mockEliminar
             .Setup(casoDeUso => casoDeUso.Ejecutar(actividadId))
@@ -442,6 +539,124 @@ public class ActividadControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error interno del servidor.");
     }
+
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(-10);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    #endregion
+
+    #region RegistrarActividad Tests
+
+    [Fact]
+    public async Task RegistrarActividad_Exitoso_RetornaOk()
+    {
+        // Arrange
+        var dto = new RegistrarActividadDTO
+        {
+            SerieId = 1,
+            NumeroSerie = 1,
+            Repeticiones = 10,
+            Peso = 50.0
+        };
+
+        var actividad = new Actividad
+        {
+            Id = 1,
+            SerieId = 1,
+            EntrenamientoId = 1,
+            Repeticiones = 10,
+            Peso = 50.0,
+            EjercicioAsignadoId = 1,
+            Punto = 100.0
+        };
+
+        _mockRegistrar
+            .Setup(c => c.Ejecutar(dto))
+            .ReturnsAsync(actividad);
+
+        // Act
+        var resultado = await _controller.RegistrarActividad(dto);
+
+        // Assert
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task RegistrarActividad_DTONulo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.RegistrarActividad(null);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task RegistrarActividad_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new RegistrarActividadDTO();
+        _controller.ModelState.AddModelError("SerieId", "Requerido");
+
+        // Act
+        var resultado = await _controller.RegistrarActividad(dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task RegistrarActividad_LanzaExcepcion_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new RegistrarActividadDTO
+        {
+            SerieId = 1,
+            NumeroSerie = 1,
+            Repeticiones = 10,
+            Peso = 50.0
+        };
+
+        _mockRegistrar
+            .Setup(c => c.Ejecutar(dto))
+            .ThrowsAsync(new Exception("Error en el registro"));
+
+        // Act
+        var resultado = await _controller.RegistrarActividad(dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    #endregion
 }

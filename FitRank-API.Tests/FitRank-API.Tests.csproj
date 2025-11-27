@@ -27,4 +27,8 @@
     <ProjectReference Include="..\FitRank-API\FitRank-API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Presentacion\Controllers\" />
+  </ItemGroup>
+
 </Project>
