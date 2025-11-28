@@ -9,14 +9,14 @@ namespace FitRank_API.Application.Hubs
     {
         public override async Task OnConnectedAsync()
         {
-            Console.WriteLine("======== SIGNALR: CLAIMS RECIBIDOS ========");
+            
 
             foreach (var c in Context.User.Claims)
             {
                 Console.WriteLine($"{c.Type} = {c.Value}");
             }
 
-            Console.WriteLine("===========================================");
+            
 
             var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var gimnasioId = Context.User?.FindFirst(ClaimTypes.GroupSid)?.Value;
@@ -24,7 +24,7 @@ namespace FitRank_API.Application.Hubs
             if (!string.IsNullOrEmpty(userId))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{userId}");
-                Console.WriteLine($"🟣 Conectado a grupo user-{userId}");
+                
             }
             else
             {

@@ -104,15 +104,15 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
 );
 
 
-                // 5️⃣ Devolver el link de pago al frontend (sin enviar QR aún)
+                
                 return new InvitacionResponseDTO
                 {
                     Success = true,
                     InvitacionId = (int)invitacion.Id,
                     Mensaje = "Invitación creada. Esperando pago vía Mercado Pago.",
                     TokenInvitacion = null,
-                    QrImage = qrImagePago, // QR dinámico de Mercado Pago
-                    LinkPago = linkPago    // Link para pagar online
+                    QrImage = qrImagePago, 
+                    LinkPago = linkPago    
                 };
 
             }
@@ -165,8 +165,8 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
         <div style='font-family: Arial, sans-serif; color:#222; text-align:center;'>
             <h2>¡Hola {dto.Nombre}!</h2>
             <p>Tu pase FitRank vence el <strong>{invitacion.CuotaPagadaHasta?.ToShortDateString()}</strong>.</p>
-            <p>Mostrá este QR en tu gimnasio para ingresar:</p>
-            <img src='data:image/png;base64,{qrImage.Split(',')[1]}' alt='QR de acceso' width='200'/>
+            <p>Te adjuntamos el QR para que puedas ingresar al gimnasio:</p>
+            
            
            style='display:inline-block; background-color:#5f00ff; color:#fff; 
                   padding:10px 20px; border-radius:8px; text-decoration:none;'>

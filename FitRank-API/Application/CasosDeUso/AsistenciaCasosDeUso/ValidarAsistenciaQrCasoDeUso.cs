@@ -97,7 +97,7 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
         tipo = "entrada",
         usuarioId = user.Id,
         nombre = $"{user.Nombre} {user.Apellido}",
-        foto = user.FotoDePerfil,  // solo si lo tenés
+        foto = user.FotoDePerfil,  
         fecha = DateTime.Now
     });
 
@@ -137,12 +137,12 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                     return new QrValidationResponseDTO
                     {
                         Valido = true,
-                        Mensaje = "👋 Salida registrada correctamente",
+                        Mensaje = " Salida registrada correctamente",
                         AsistenciaId = (int)asistenciaHoy.Id
                     };
                 }
 
-                return new QrValidationResponseDTO { Valido = false, Mensaje = "⚠️ Ya registraste tu salida hoy." };
+                return new QrValidationResponseDTO { Valido = false, Mensaje = " Ya registraste tu salida hoy." };
             }
             catch (Exception ex)
             {

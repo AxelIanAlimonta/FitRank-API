@@ -24,7 +24,7 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
                 return null;
 
             // 🟣 Validación EMAIL
-            if (profesor.Email != dto.Email) // solo validar si lo cambió
+            if (profesor.Email != dto.Email) 
             {
                 if (await _profesorRepositorio.ExisteEmailAsync(dto.Email))
                     throw new Exception("EMAIL_DUPLICADO");

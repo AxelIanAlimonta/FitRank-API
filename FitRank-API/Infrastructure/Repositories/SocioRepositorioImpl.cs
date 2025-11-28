@@ -19,7 +19,7 @@ public class SocioRepositorioImpl : ISocioRepositorio
         return await _context.Socios.ToListAsync();
     }
 
-    // ObtenerSocioPorIdAsync
+    
     public async Task<Socio?> ObtenerPorIdAsync(long id)
     {
         return await _context.Socios.FindAsync(id);
