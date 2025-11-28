@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Application\Servicio\" />
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>
