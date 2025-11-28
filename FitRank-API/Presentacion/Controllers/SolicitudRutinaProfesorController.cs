@@ -78,7 +78,7 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         [HttpGet("pendientes")]
-        [Authorize(Roles = "Profesor")]
+        [Authorize(Roles = "Admin,Profesor")]
         public async Task<ActionResult<List<SolicitudRutinaProfesorDTO>>> ObtenerPendientes()
         {
             try
