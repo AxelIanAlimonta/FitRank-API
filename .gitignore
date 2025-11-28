@@ -408,3 +408,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/FitRank-API/Migrations/20251126195542_PersonaEliminado.cs
+/FitRank-API/Migrations/20251126195542_PersonaEliminado.Designer.cs
+/FitRank-API/Migrations/20251127230957_MigrationASD.cs
+/FitRank-API/Migrations/20251127230957_MigrationASD.Designer.cs
+/FitRank-API/appsettings.json
