@@ -26,6 +26,7 @@ public class ObtenerRutinaCompletaCasoDeUso
             Id = r.Id,
             Nombre = r.Nombre,
             Descripcion = r.Descripcion ?? "",
+            FechaCreacion = r.FechaCreacion,
             Favorita = r.Favorita,
             Activa = r.Activa,
             Sesiones = r.Sesiones?.Select(s => new SesionDTO

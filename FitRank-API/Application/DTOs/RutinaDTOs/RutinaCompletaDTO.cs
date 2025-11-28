@@ -44,6 +44,7 @@
         public long Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
+        public DateTime FechaCreacion { get; set; }
         public bool Activa { get; set; }
         public bool Favorita { get; set; }
         public List<SesionDTO> Sesiones { get; set; } = new();
