@@ -75,7 +75,8 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
                 if (user.CuotaPagadaHasta < DateTime.Now)
                     return new QrValidationResponseDTO { Valido = false, Mensaje = "Cuota expirada" };
 
-                var asistenciaHoy = await _asistenciaRepositorio.ObtenerUltimaAsistenciaHoyAsync(user.Id, qrGymId);
+                var asistenciaHoy = await _asistenciaRepositorio.ObtenerUltimaAsistenciaAbiertaAsync(user.Id, qrGymId);
+
 
 
                 if (asistenciaHoy == null)

@@ -24,5 +24,7 @@ namespace FitRank_API.Domain.Interfaces
 
         Task<Asistencia?> ObtenerUltimaAsistenciaHoyAsync(long usuarioId, long gimnasioId);
 
+        Task<Asistencia?> ObtenerUltimaAsistenciaAbiertaAsync(long usuarioId, long gimnasioId);
+
     }
 }
