@@ -149,14 +149,10 @@ namespace FitRank_API.Presentacion.Controllers
         }
 
         [HttpPost("validar-qr")]
-        [Authorize(Roles = "Admin,Profesor")]
+        [Authorize]
         public async Task<IActionResult> ValidarQr([FromBody] QrValidationDTO dto)
         {
-            if (dto == null)
-                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+          
 
             try
             {

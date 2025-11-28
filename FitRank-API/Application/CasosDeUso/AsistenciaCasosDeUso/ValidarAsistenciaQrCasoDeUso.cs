@@ -1,12 +1,15 @@
-﻿using FitRank_API.Application.DTOs.Asistencia;
+﻿
+using FitRank_API.Application.DTOs.Asistencia;
 using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
-using FitRank_API.Domain.Interfaces;
+using FitRank_API.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using FitRank_API.Application.Hubs;
+using Amazon.S3.Model;
+
 
 namespace FitRank_API.Application.CasosDeUso.Asistencia
 {
@@ -32,11 +35,11 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
             _hub = hub;
         }
 
-        public async Task<QrValidationResponseDTO> Ejecutar(QrValidationDTO dto, int? adminId)
+
+        public virtual async Task<QrValidationResponseDTO> Ejecutar(QrValidationDTO dto, int? adminId)
         {
             try
             {
-               
                 var tokenStr = dto.QrData.Contains("token=")
                     ? dto.QrData.Split("token=")[1].Split('&')[0]
                     : dto.QrData;
@@ -53,12 +56,19 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                     ValidateLifetime = true
                 };
 
-                var principal = tokenHandler.ValidateToken(tokenStr, validationParams, out var validatedToken);
+                var principal = tokenHandler.ValidateToken(tokenStr, validationParams, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
-                var userId = int.Parse(jwtToken.Claims.First(c => c.Type == "userId").Value);
-                var qrGymId = int.Parse(jwtToken.Claims.First(c => c.Type == "gymId").Value);
-                var validoHasta = DateTime.Parse(jwtToken.Claims.First(c => c.Type == "validoHasta").Value);
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId");
+                var validoHastaClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "validoHasta");
+                var gymIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "gymId");
+
+                if (userIdClaim == null)
+                    return new QrValidationResponseDTO { Valido = false, Mensaje = "QR inválido." };
+
+                var userId = int.Parse(userIdClaim.Value);
+                var validoHasta = DateTime.Parse(validoHastaClaim!.Value);
+                var qrGymId = int.Parse(gymIdClaim!.Value);
 
                 var user = await _usuarioRepositorio.ObtenerPorIdAsync(userId);
                 if (user == null)
@@ -67,91 +77,109 @@ namespace FitRank_API.Application.CasosDeUso.Asistencia
                 if (user.CuotaPagadaHasta < DateTime.Now)
                     return new QrValidationResponseDTO { Valido = false, Mensaje = "Cuota expirada" };
 
-                
-                var ultimaHoy = await _asistenciaRepositorio.ObtenerUltimaAsistenciaHoyAsync(user.Id, qrGymId);
+                var asistenciaHoy = await _asistenciaRepositorio.ObtenerPorUsuarioYFechaAsync(user.Id, DateTime.Today);
 
-         
-                if (ultimaHoy == null)
+                if (asistenciaHoy == null)
                 {
                     var nueva = new FitRank_API.Domain.Entities.Asistencia
+                    {
+                        UsuarioId = user.Id,
+                        Fecha = DateTime.Today,
+                        Presente = true,
+                        HoraEntrada = DateTime.Now,
+                        GimnasioId = qrGymId,
+                        Observaciones = "Ingreso por QR"
+                    };
+
+                    await _asistenciaRepositorio.AgregarAsync(nueva);
+                    await _hub.Clients.Group($"gimnasio-{qrGymId}")
+    .SendAsync("OcupacionActualizada", new
+    {
+        tipo = "entrada",
+        usuarioId = user.Id,
+        nombre = $"{user.Nombre} {user.Apellido}",
+        foto = user.FotoDePerfil,  // solo s
+        fecha = DateTime.Now
+    });
+
+
+                    return new QrValidationResponseDTO
+                    {
+                        Valido = true,
+                        Mensaje = "✅ Acceso permitido — entrada registrada",
+                        AsistenciaId = (int)nueva.Id,
+                        UsuarioId = userId,
+                        User = new UsuarioAuthDTO
+                        {
+                            Id = user.Id,
+                            Nombre = user.Nombre,
+                            Apellidos = user.Apellido,
+                            Email = user.Email,
+                            Rol = user.Rol
+                        }
+
+                    };
+                }
+                else if (asistenciaHoy.Presente && asistenciaHoy.HoraSalida == null)
+                {
+                    asistenciaHoy.Presente = false;
+                    asistenciaHoy.HoraSalida = DateTime.Now;
+                    await _asistenciaRepositorio.ActualizarAsync(asistenciaHoy);
+                    await _hub.Clients.Group($"gimnasio-{qrGymId}")
+    .SendAsync("OcupacionActualizada", new
+    {
+        tipo = "salida",
+        usuarioId = user.Id,
+        nombre = $"{user.Nombre} {user.Apellido}",
+        foto = user.FotoDePerfil,
+        fecha = DateTime.Now
+    });
+
+                    return new QrValidationResponseDTO
+                    {
+                        Valido = true,
+                        Mensaje = "👋 Salida registrada correctamente",
+                        AsistenciaId = (int)asistenciaHoy.Id
+                    };
+                }
+                if (!asistenciaHoy.Presente && asistenciaHoy.HoraSalida != null)
+                {
+                    var nuevaEntrada = new FitRank_API.Domain.Entities.Asistencia
                     {
                         UsuarioId = user.Id,
                         GimnasioId = qrGymId,
                         Fecha = DateTime.Today,
                         HoraEntrada = DateTime.Now,
                         Presente = true,
-                        Observaciones = "Ingreso por QR"
+                        Observaciones = "Re-ingreso por QR"
                     };
 
-                    await _asistenciaRepositorio.AgregarAsync(nueva);
+                    await _asistenciaRepositorio.AgregarAsync(nuevaEntrada);
 
-                    await EnviarSignalREvento("entrada", user, qrGymId);
+                    await _hub.Clients.Group($"gimnasio-{qrGymId}").SendAsync("OcupacionActualizada", new
+                    {
+                        tipo = "entrada",
+                        usuarioId = user.Id,
+                        nombre = $"{user.Nombre} {user.Apellido}",
+                        foto = user.FotoDePerfil,
+                        fecha = DateTime.Now
+                    });
 
                     return new QrValidationResponseDTO
                     {
                         Valido = true,
-                        Mensaje = "Entrada registrada",
-                        AsistenciaId = (int)nueva.Id
+                        Mensaje = "Nueva entrada registrada",
+                        AsistenciaId = (int)nuevaEntrada.Id
                     };
                 }
 
-                if (ultimaHoy.HoraSalida == null)
-                {
-                    ultimaHoy.HoraSalida = DateTime.Now;
-                    ultimaHoy.Presente = false;
-
-                    await _asistenciaRepositorio.ActualizarAsync(ultimaHoy);
-                    await EnviarSignalREvento("salida", user, qrGymId);
-
-                    return new QrValidationResponseDTO
-                    {
-                        Valido = true,
-                        Mensaje = "Salida registrada",
-                        AsistenciaId = (int)ultimaHoy.Id
-                    };
-                }
-
-             
-                var nuevaEntrada = new FitRank_API.Domain.Entities.Asistencia
-                {
-                    UsuarioId = user.Id,
-                    GimnasioId = qrGymId,
-                    Fecha = DateTime.Today,
-                    HoraEntrada = DateTime.Now,
-                    Presente = true,
-                    Observaciones = "Re-ingreso por QR"
-                };
-
-                await _asistenciaRepositorio.AgregarAsync(nuevaEntrada);
-                await EnviarSignalREvento("entrada", user, qrGymId);
-
-                return new QrValidationResponseDTO
-                {
-                    Valido = true,
-                    Mensaje = "Nueva entrada registrada",
-                    AsistenciaId = (int)nuevaEntrada.Id
-                };
+                return new QrValidationResponseDTO { Valido = false, Mensaje = "Ya registraste tu salida hoy." };
             }
             catch (Exception ex)
             {
-                return new QrValidationResponseDTO
-                {
-                    Valido = false,
-                    Mensaje = "Error QR: " + ex.Message
-                };
+                return new QrValidationResponseDTO { Valido = false, Mensaje = "Error: " + ex.Message };
             }
         }
-
-        private async Task EnviarSignalREvento(string tipo, dynamic user, long gymId)
-        {
-            await _hub.Clients.Group($"gimnasio-{gymId}").SendAsync("OcupacionActualizada", new
-            {
-                tipo = tipo,
-                usuarioId = user.Id,
-                nombre = $"{user.Nombre} {user.Apellido}",
-                foto = user.FotoDePerfil,
-                fecha = DateTime.Now
-            });
-        }
     }
-}
+    }
+
