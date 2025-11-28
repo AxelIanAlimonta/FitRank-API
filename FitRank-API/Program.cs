@@ -2,7 +2,7 @@ using FitRank.API.Application.Rutinas.Abstractions;
 using FitRank.API.Infrastructure.RulesEngineImpl;
 using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.AmistadCasosDeUso;
-using FitRank_API.Application.CasosDeUso.Asistencia;
+
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso;
 using FitRank_API.Application.CasosDeUso.ConfiguracionGrupoMuscular;

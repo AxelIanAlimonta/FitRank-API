@@ -1,17 +1,15 @@
-﻿
+﻿using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.DTOs.Asistencia;
-using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Application.DTOs.QR;
+using FitRank_API.Application.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using FitRank_API.Application.Hubs;
-using Amazon.S3.Model;
 
 
-namespace FitRank_API.Application.CasosDeUso.Asistencia
+namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
 {
     public class ValidarAsistenciaQrCasoDeUso
     {

@@ -1,4 +1,4 @@
-﻿using FitRank_API.Application.CasosDeUso.Asistencia;
+﻿
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Domain.Interfaces;
