@@ -18,6 +18,9 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ValidarAsistenciaQrCasoDeUso _validarAsistenciaQrCasoDeUso;
         private readonly ObtenerTodasLasAsistenciasCasoDeUso _obtenerTodasLasAsistenciasCasoDeUso;
         private readonly DetectarSociosInactivosCasoDeUso _detectarSociosInactivosCasoDeUso;
+        private readonly ObtenerOcupacionActualCasoDeUso _obtenerOcupacionActualCasoDeUso;
+
+
 
         public AsistenciaController(
             ObtenerAsistenciasPorUsuarioCasoDeUso obtenerAsistenciasPorUsuarioCasoDeUso,
@@ -25,7 +28,8 @@ namespace FitRank_API.Presentacion.Controllers
             ObtenerAsistenciasDetalladasPorUsuarioCasoDeUso obtenerAsistenciasDetalladasPorUsuarioCasoDeUso,
             ValidarAsistenciaQrCasoDeUso validarAsistenciaQrCasoDeUso,
             ObtenerTodasLasAsistenciasCasoDeUso obtenerTodasLasAsistenciasCasoDeUso,
-            DetectarSociosInactivosCasoDeUso detectarSociosInactivosCasoDeUso)
+            DetectarSociosInactivosCasoDeUso detectarSociosInactivosCasoDeUso,
+            ObtenerOcupacionActualCasoDeUso obtenerOcupacionActualCasoDeUso)
         {
             _obtenerAsistenciasPorUsuarioCasoDeUso = obtenerAsistenciasPorUsuarioCasoDeUso;
             _obtenerAsistenciasPorDiaCasoDeUso = obtenerAsistenciasPorDiaCasoDeUso;
@@ -33,7 +37,11 @@ namespace FitRank_API.Presentacion.Controllers
             _validarAsistenciaQrCasoDeUso = validarAsistenciaQrCasoDeUso;
             _obtenerTodasLasAsistenciasCasoDeUso = obtenerTodasLasAsistenciasCasoDeUso;
             _detectarSociosInactivosCasoDeUso = detectarSociosInactivosCasoDeUso;
+            _obtenerOcupacionActualCasoDeUso = obtenerOcupacionActualCasoDeUso;
         }
+
+
+
 
         [HttpGet("mias")]
         [Authorize(Roles = "Socio")]
@@ -186,5 +194,23 @@ namespace FitRank_API.Presentacion.Controllers
                 return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
+
+
+        [HttpGet("ocupacion-actual")]
+        [Authorize(Roles = "Admin,Profesor,Socio")]
+        public async Task<IActionResult> ObtenerOcupacionActual()
+        {
+            var gimnasioIdClaim = User.FindFirst(ClaimTypes.GroupSid)?.Value;
+
+            if (string.IsNullOrEmpty(gimnasioIdClaim) || !long.TryParse(gimnasioIdClaim, out long gimnasioId))
+                return Unauthorized("No se pudo determinar el gimnasio.");
+
+            var cantidad = await _obtenerOcupacionActualCasoDeUso.Ejecutar(gimnasioId);
+
+            return Ok(new { personasDentro = cantidad });
+        }
+
+
+
     }
 }

@@ -106,4 +106,12 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
             .FirstOrDefaultAsync();
     }
 
+    public async Task<int> ObtenerOcupacionActualAsync(long gimnasioId)
+    {
+        return await _context.Asistencias
+            .Where(a => a.GimnasioId == gimnasioId && a.HoraSalida == null)
+            .CountAsync();
+    }
+
+
 }

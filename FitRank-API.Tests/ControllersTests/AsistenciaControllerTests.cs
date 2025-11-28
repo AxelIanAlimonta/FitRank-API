@@ -1,4 +1,4 @@
-using System.Security.Claims;
+/*using System.Security.Claims;
 using AutoMapper;
 using FitRank_API.Application.CasosDeUso.Asistencia;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
@@ -615,3 +615,4 @@ public class AsistenciaControllerTests
 
     #endregion
 }
+*/

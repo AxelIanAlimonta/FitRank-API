@@ -273,6 +273,10 @@ builder.Services.AddScoped<AgregarAsistenciaCasoDeUso>();
 builder.Services.AddScoped<ValidarAsistenciaQrCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodasLasAsistenciasCasoDeUso>();
 builder.Services.AddScoped<DetectarSociosInactivosCasoDeUso>();
+builder.Services.AddScoped<ObtenerOcupacionActualCasoDeUso>();
+
+
+
 
 builder.Services.AddScoped<IProfesorRepositorio, ProfesorRepositorioImpl>();
 builder.Services.AddScoped<AgregarProfesorCasoDeUso>();
