@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using FitRank_API.Application.Hubs;
 
-
 namespace FitRank_API.Presentacion.Controllers
 {
     [ApiController]
@@ -25,7 +24,6 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly EnviarNotificacionIndividualCasoDeUso _enviarIndividual;
         private readonly IHubContext<NotificacionesHub> _notiHub;
 
-
         public NotificacionController(
             AgregarNotificacionCasoDeUso agregarCaso,
             ObtenerNotificacionPorUsuarioCasoDeUso obtenerCaso,
@@ -35,8 +33,7 @@ namespace FitRank_API.Presentacion.Controllers
             ObtenerHistorialNotificacionesCasoDeUso obtenerHistorialNoti,
             ObtenerUsuariosParaNotificacionCasoDeUso obtenerUsuariosParaNotificacion,
             EnviarNotificacionIndividualCasoDeUso enviarIndividual,
-            IHubContext<NotificacionesHub> notiHub
-        )
+            IHubContext<NotificacionesHub> notiHub)
         {
             _agregarCaso = agregarCaso;
             _obtenerCaso = obtenerCaso;
@@ -53,144 +50,252 @@ namespace FitRank_API.Presentacion.Controllers
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> EnviarIndividual([FromBody] EnviarIndividualDTO dto)
         {
-            if (dto == null || dto.UsuarioReceptorId <= 0)
-                return BadRequest(new { exito = false, mensaje = "Datos inválidos." });
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
 
-            long emisorId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (dto.UsuarioReceptorId <= 0)
+                return BadRequest(new { Mensaje = "El ID del usuario receptor debe ser mayor a cero." });
 
-            var notificacion = await _enviarIndividual.Ejecutar(
-                emisorId,
-                dto.UsuarioReceptorId,
-                dto.Titulo,
-                dto.Mensaje
-            );
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            await _notiHub.Clients
-                .Group($"user-{dto.UsuarioReceptorId}")
-                .SendAsync("NotificacionRecibida", new
-                {
-                    id = notificacion.Id,
-                    titulo = notificacion.Titulo,
-                    mensaje = notificacion.Mensaje,
-                    fechaCreacion = notificacion.FechaEnvio
-                });
-            return Ok(new
+            try
             {
-                exito = true,
-                mensaje = "📩 Notificación enviada correctamente.",
-                notificacion
-            });
+                var emisorIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrWhiteSpace(emisorIdClaim))
+                    return Unauthorized(new { Mensaje = "No se encontró el ID del usuario en el token." });
+
+                if (!long.TryParse(emisorIdClaim, out var emisorId) || emisorId <= 0)
+                    return BadRequest(new { Mensaje = "El ID del usuario en el token es inválido." });
+
+                var notificacion = await _enviarIndividual.Ejecutar(
+                    emisorId,
+                    dto.UsuarioReceptorId,
+                    dto.Titulo,
+                    dto.Mensaje
+                );
+
+                try
+                {
+                    await _notiHub.Clients
+                        .Group($"user-{dto.UsuarioReceptorId}")
+                        .SendAsync("NotificacionRecibida", new
+                        {
+                            id = notificacion.Id,
+                            titulo = notificacion.Titulo,
+                            mensaje = notificacion.Mensaje,
+                            fechaCreacion = notificacion.FechaEnvio
+                        });
+                }
+                catch
+                {
+                    // Silenciar errores de SignalR para no afectar la respuesta
+                }
+
+                return Ok(new
+                {
+                    Mensaje = "Notificación enviada correctamente.",
+                    Notificacion = notificacion
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
-
-        // 🔹 Crear una notificación manual (por ejemplo, mensaje directo)
         [HttpPost]
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> Crear([FromBody] AgregarNotificacionDTO dto)
         {
             if (dto == null)
-                return BadRequest(new { exito = false, mensaje = "Datos de notificación inválidos." });
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
 
-            var notificacionCreada = await _agregarCaso.Ejecutar(dto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return CreatedAtAction(nameof(Crear),
-                new { id = notificacionCreada.Id },
-                new
-                {
-                    exito = true,
-                    mensaje = "✅ Notificación creada correctamente.",
-                    notificacion = notificacionCreada
-                });
+            try
+            {
+                var notificacionCreada = await _agregarCaso.Ejecutar(dto);
+
+                return CreatedAtAction(nameof(Crear),
+                    new { id = notificacionCreada.Id },
+                    new
+                    {
+                        Mensaje = "Notificación creada correctamente.",
+                        Notificacion = notificacionCreada
+                    });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
-        // 🔹 Obtener todas las notificaciones del usuario logueado
         [HttpGet("usuario")]
         public async Task<IActionResult> ObtenerPorUsuario()
         {
-            var usuarioId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var notificaciones = await _obtenerCaso.Ejecutar(usuarioId);
-
-            return Ok(new
+            try
             {
-                exito = true,
-                mensaje = notificaciones.Any()
-                    ? "Notificaciones obtenidas correctamente."
-                    : "No hay notificaciones disponibles.",
-                notificaciones
-            });
+                var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (usuarioIdClaim == null || string.IsNullOrWhiteSpace(usuarioIdClaim.Value))
+                    return Unauthorized(new { Mensaje = "No se encontró el ID del usuario en el token." });
+
+                if (!long.TryParse(usuarioIdClaim.Value, out var usuarioId) || usuarioId <= 0)
+                    return BadRequest(new { Mensaje = "El ID del usuario en el token es inválido." });
+
+                var notificaciones = await _obtenerCaso.Ejecutar(usuarioId);
+
+                return Ok(new
+                {
+                    Mensaje = notificaciones.Any()
+                        ? "Notificaciones obtenidas correctamente."
+                        : "No hay notificaciones disponibles.",
+                    Notificaciones = notificaciones
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
-        // 🔹 Enviar una notificación de retención (cuando un socio lleva días sin asistir)
         [HttpPost("retener/{socioId}")]
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> RetenerSocio(long socioId)
         {
-            var adminId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            if (socioId <= 0)
+                return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
 
-            var resultado = await _retenerSocioCasoDeUso.Ejecutar(adminId, socioId);
-
-            if (!resultado)
-                return BadRequest(new { exito = false, mensaje = "No se pudo enviar la notificación de retención." });
-
-            return Ok(new
+            try
             {
-                exito = true,
-                mensaje = "📩 Notificación de retención enviada al socio correctamente."
-            });
+                var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (adminIdClaim == null || string.IsNullOrWhiteSpace(adminIdClaim.Value))
+                    return Unauthorized(new { Mensaje = "No se encontró el ID del usuario en el token." });
+
+                if (!long.TryParse(adminIdClaim.Value, out var adminId) || adminId <= 0)
+                    return BadRequest(new { Mensaje = "El ID del usuario en el token es inválido." });
+
+                var resultado = await _retenerSocioCasoDeUso.Ejecutar(adminId, socioId);
+
+                if (!resultado)
+                    return BadRequest(new { Mensaje = "No se pudo enviar la notificación de retención." });
+
+                return Ok(new
+                {
+                    Mensaje = "Notificación de retención enviada al socio correctamente."
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
-        // 🔹 Marcar una notificación como leída
         [HttpPut("marcar-leida/{id}")]
         public async Task<IActionResult> MarcarLeida(long id)
         {
-            var usuarioId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var resultado = await _marcarNotificacionLeidaCasoDeUso.Ejecutar(usuarioId, id);
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
 
-            if (!resultado)
-                return BadRequest(new { exito = false, mensaje = "No se pudo marcar como leída." });
-
-            return Ok(new
+            try
             {
-                exito = true,
-                mensaje = "✅ Notificación marcada como leída correctamente."
-            });
+                var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (usuarioIdClaim == null || string.IsNullOrWhiteSpace(usuarioIdClaim.Value))
+                    return Unauthorized(new { Mensaje = "No se encontró el ID del usuario en el token." });
+
+                if (!long.TryParse(usuarioIdClaim.Value, out var usuarioId) || usuarioId <= 0)
+                    return BadRequest(new { Mensaje = "El ID del usuario en el token es inválido." });
+
+                var resultado = await _marcarNotificacionLeidaCasoDeUso.Ejecutar(usuarioId, id);
+
+                if (!resultado)
+                    return BadRequest(new { Mensaje = "No se pudo marcar como leída." });
+
+                return Ok(new
+                {
+                    Mensaje = "Notificación marcada como leída correctamente."
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost("masiva")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EnviarMasiva([FromBody] EnviarMasivaDTO dto)
         {
-            long emisorId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
 
-            int cantidad = await _enviarMasiva.Ejecutar(emisorId, dto.Titulo, dto.Mensaje);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return Ok(new
+            try
             {
-                exito = true,
-                mensaje = "Notificaciones enviadas correctamente",
-                cantidad
-            });
+                var emisorIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrWhiteSpace(emisorIdClaim))
+                    return Unauthorized(new { Mensaje = "No se encontró el ID del usuario en el token." });
+
+                if (!long.TryParse(emisorIdClaim, out var emisorId) || emisorId <= 0)
+                    return BadRequest(new { Mensaje = "El ID del usuario en el token es inválido." });
+
+                int cantidad = await _enviarMasiva.Ejecutar(emisorId, dto.Titulo, dto.Mensaje);
+
+                return Ok(new
+                {
+                    Mensaje = "Notificaciones enviadas correctamente.",
+                    Cantidad = cantidad
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpGet("historial")]
         public async Task<IActionResult> ObtenerHistorial()
         {
-            long userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            var data = await _obtenerHistorialNoti.Ejecutar(userId);
-            return Ok(data);
+                if (userIdClaim == null || string.IsNullOrWhiteSpace(userIdClaim.Value))
+                    return Unauthorized(new { Mensaje = "No se encontró el ID del usuario en el token." });
+
+                if (!long.TryParse(userIdClaim.Value, out var userId) || userId <= 0)
+                    return BadRequest(new { Mensaje = "El ID del usuario en el token es inválido." });
+
+                var data = await _obtenerHistorialNoti.Ejecutar(userId);
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
-
-
 
         [HttpGet("usuarios")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ObtenerUsuarios()
         {
-            var lista = await _obtenerUsuariosParaNotificacion.Ejecutar();
-            return Ok(lista);
+            try
+            {
+                var lista = await _obtenerUsuariosParaNotificacion.Ejecutar();
+                return Ok(lista);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
-
-
     }
 }

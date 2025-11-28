@@ -4,7 +4,7 @@ using FitRank_API.Application.DTOs.QR;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
 using FitRank_API.Application.Helpers;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;

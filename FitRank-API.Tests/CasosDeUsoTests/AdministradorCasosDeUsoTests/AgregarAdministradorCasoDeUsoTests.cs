@@ -1,8 +1,9 @@
 using AutoMapper;
 using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.DTOs.AdministradorDTOs;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 
@@ -11,12 +12,14 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AdministradorCasosDeUsoTests
     public class AgregarAdministradorCasoDeUsoTests
     {
         private readonly Mock<IAdministradorRepositorio> _mockRepo;
+        private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly IMapper _mapper;
         private readonly AgregarAdministradorCasoDeUso _casoDeUso;
 
         public AgregarAdministradorCasoDeUsoTests()
         {
             _mockRepo = new Mock<IAdministradorRepositorio>();
+            _mockPasswordService = new Mock<IPasswordService>();
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -24,7 +27,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AdministradorCasosDeUsoTests
             });
             _mapper = config.CreateMapper();
 
-            _casoDeUso = new AgregarAdministradorCasoDeUso(_mockRepo.Object, _mapper);
+            _casoDeUso = new AgregarAdministradorCasoDeUso(_mockRepo.Object, _mapper, _mockPasswordService.Object);
         }
 
         [Fact]
@@ -41,6 +44,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AdministradorCasosDeUsoTests
             };
 
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Administrador>())).ReturnsAsync((Administrador a) => a);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);
@@ -61,6 +65,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AdministradorCasosDeUsoTests
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Administrador>()))
                 .Callback<Administrador>(a => adminGuardado = a)
                 .ReturnsAsync((Administrador a) => a);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
@@ -80,6 +85,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AdministradorCasosDeUsoTests
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Administrador>()))
                 .Callback<Administrador>(a => adminGuardado = a)
                 .ReturnsAsync((Administrador a) => a);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
@@ -102,14 +108,15 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AdministradorCasosDeUsoTests
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Administrador>()))
                 .Callback<Administrador>(a => adminGuardado = a)
                 .ReturnsAsync((Administrador a) => a);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_admin_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
 
             // Assert
             adminGuardado.Should().NotBeNull();
-            adminGuardado!.PasswordHash.Should().NotBe(dto.Password);
-            BCrypt.Net.BCrypt.Verify(dto.Password, adminGuardado.PasswordHash).Should().BeTrue();
+            adminGuardado!.PasswordHash.Should().Be("hashed_admin_password");
+            _mockPasswordService.Verify(p => p.HashPassword(dto.Password), Times.Once);
         }
 
         [Fact]
@@ -118,6 +125,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.AdministradorCasosDeUsoTests
             // Arrange
             var dto = new AgregarAdministradorDTO { Email = "test@test.com", Password = "Pass123!" };
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Administrador>())).ReturnsAsync((Administrador a) => a);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);

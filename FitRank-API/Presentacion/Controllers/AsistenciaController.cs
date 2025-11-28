@@ -1,7 +1,7 @@
 ﻿using FitRank_API.Application.CasosDeUso.Asistencia;
 using FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso;
 using FitRank_API.Application.DTOs.QR;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -35,17 +35,24 @@ namespace FitRank_API.Presentacion.Controllers
             _detectarSociosInactivosCasoDeUso = detectarSociosInactivosCasoDeUso;
         }
 
-
-
-
-
         [HttpGet("mias")]
         [Authorize(Roles = "Socio")]
         public async Task<IActionResult> ObtenerMias()
         {
-            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var asistencias = await _obtenerAsistenciasPorUsuarioCasoDeUso.Ejecutar(usuarioId);
-            return Ok(asistencias);
+            try
+            {
+                var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(usuarioIdClaim))
+                    return Unauthorized(new { Mensaje = "No se pudo obtener el ID del usuario." });
+
+                var usuarioId = int.Parse(usuarioIdClaim);
+                var asistencias = await _obtenerAsistenciasPorUsuarioCasoDeUso.Ejecutar(usuarioId);
+                return Ok(asistencias);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpGet("por-dia")]
@@ -54,76 +61,130 @@ namespace FitRank_API.Presentacion.Controllers
             [FromQuery] DateTime? desde = null,
             [FromQuery] DateTime? hasta = null)
         {
-            var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int gimnasioId))
-                return Unauthorized(new { Mensaje = "Admin ID no válido" });
+            try
+            {
+                if (desde.HasValue && hasta.HasValue && desde.Value > hasta.Value)
+                    return BadRequest(new { Mensaje = "La fecha 'desde' no puede ser mayor que 'hasta'." });
 
-            var resultado = await _obtenerAsistenciasPorDiaCasoDeUso.Ejecutar(gimnasioId, desde, hasta);
-            return Ok(resultado);
+                var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int gimnasioId))
+                    return Unauthorized(new { Mensaje = "Admin ID no válido" });
+
+                var resultado = await _obtenerAsistenciasPorDiaCasoDeUso.Ejecutar(gimnasioId, desde, hasta);
+                return Ok(resultado);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
+
         [HttpGet("todas")]
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> ObtenerTodasLasAsistencias()
         {
-            var asistencias = await _obtenerTodasLasAsistenciasCasoDeUso.Ejecutar();
-            return Ok(asistencias);
+            try
+            {
+                var asistencias = await _obtenerTodasLasAsistenciasCasoDeUso.Ejecutar();
+                return Ok(asistencias);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
-
-
 
         [HttpGet("por-usuario/{usuarioId}")]
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> ObtenerPorUsuario(long usuarioId)
         {
-            var asistencias = await _obtenerAsistenciasPorUsuarioCasoDeUso.Ejecutar((int)usuarioId);
-            return Ok(asistencias);
-        }
+            if (usuarioId <= 0)
+                return BadRequest(new { Mensaje = "El ID del usuario debe ser mayor a cero." });
 
+            try
+            {
+                var asistencias = await _obtenerAsistenciasPorUsuarioCasoDeUso.Ejecutar((int)usuarioId);
+                return Ok(asistencias);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
+        }
 
         [HttpGet("detalle-usuarioAsistencia/{usuarioId}")]
         [Authorize(Roles = "Admin,Profesor,Socio")]
         public async Task<IActionResult> ObtenerAsistenciasDetalladasPorUsuario(long usuarioId)
         {
+            if (usuarioId <= 0)
+                return BadRequest(new { Mensaje = "El ID del usuario debe ser mayor a cero." });
 
-            var currentUserId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var isSocio = User.IsInRole("Socio");
+            try
+            {
+                var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(currentUserIdClaim))
+                    return Unauthorized(new { Mensaje = "No se pudo obtener el ID del usuario." });
 
-            if (isSocio && currentUserId != usuarioId)
-                return Forbid("No puedes acceder al historial de otro usuario.");
+                var currentUserId = long.Parse(currentUserIdClaim);
+                var isSocio = User.IsInRole("Socio");
 
-            var resultado = await _obtenerAsistenciasDetalladasPorUsuarioCasoDeUso.Ejecutar((int)usuarioId);
-            return Ok(resultado);
+                if (isSocio && currentUserId != usuarioId)
+                    return Forbid("No puedes acceder al historial de otro usuario.");
+
+                var resultado = await _obtenerAsistenciasDetalladasPorUsuarioCasoDeUso.Ejecutar((int)usuarioId);
+                return Ok(resultado);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
-
 
         [HttpPost("validar-qr")]
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> ValidarQr([FromBody] QrValidationDTO dto)
         {
-            
-            var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
 
-            
-            if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int usuarioId))
-                return Unauthorized(new { Mensaje = "Usuario no válido" });
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-          
-            var result = await _validarAsistenciaQrCasoDeUso.Ejecutar(dto, usuarioId);
+            try
+            {
+                var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(adminIdClaim) || !int.TryParse(adminIdClaim, out int usuarioId))
+                    return Unauthorized(new { Mensaje = "Usuario no válido" });
 
-            if (!result.Valido)
-                return BadRequest(result);
+                var result = await _validarAsistenciaQrCasoDeUso.Ejecutar(dto, usuarioId);
 
-            return Ok(result);
+                if (!result.Valido)
+                    return BadRequest(result);
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
-
 
         [HttpGet("socios-inactivos/{dias?}")]
         [Authorize(Roles = "Admin,Profesor")]
         public async Task<IActionResult> ObtenerSociosInactivos(int dias = 5)
         {
-            var resultado = await _detectarSociosInactivosCasoDeUso.Ejecutar(dias);
-            return Ok(resultado);
-        }
+            if (dias <= 0)
+                return BadRequest(new { Mensaje = "Los días deben ser mayor a cero." });
 
+            try
+            {
+                var resultado = await _detectarSociosInactivosCasoDeUso.Ejecutar(dias);
+                return Ok(resultado);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
+        }
     }
 }

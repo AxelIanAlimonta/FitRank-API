@@ -1,5 +1,5 @@
 ﻿using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +25,6 @@ namespace FitRank_API.Infrastructure.Repositories
         }
         public async Task<Profesor> AgregarAsync(Profesor profesor)
         {
-            profesor.Rol = "Profesor";
             _context.Profesores.Add(profesor);
             await _context.SaveChangesAsync();
             return profesor;

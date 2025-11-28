@@ -1,6 +1,6 @@
 using FluentAssertions;
 using FitRank_API.Application.CasosDeUso.Invitacion;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Moq;
 
 namespace FitRank_API.Tests.CasosDeUsoTests.InvitacionCasosDeUsoTests

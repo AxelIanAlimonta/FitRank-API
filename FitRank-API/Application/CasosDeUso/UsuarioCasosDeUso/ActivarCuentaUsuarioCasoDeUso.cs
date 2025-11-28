@@ -1,15 +1,17 @@
-﻿using FitRank_API.Infrastructure.Interfaces;
-using BCrypt.Net;
+﻿using FitRank_API.Application.Interfaces;
+using FitRank_API.Domain.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
 {
     public class ActivarCuentaCasoDeUso
     {
         private readonly IUsuarioRepositorio _usuarioRepositorio;
+        private readonly IPasswordService _passwordService;
 
-        public ActivarCuentaCasoDeUso(IUsuarioRepositorio usuarioRepositorio)
+        public ActivarCuentaCasoDeUso(IUsuarioRepositorio usuarioRepositorio, IPasswordService passwordService)
         {
             _usuarioRepositorio = usuarioRepositorio;
+            _passwordService = passwordService;
         }
 
         public virtual async Task<string?> Ejecutar(string token, string nuevaPassword)
@@ -25,7 +27,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
                 return null; 
 
            
-            usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuevaPassword);
+            usuario.PasswordHash = _passwordService.HashPassword(nuevaPassword);
             usuario.EsActivado = true;
             usuario.TokenRecuperacion = null;
             usuario.TokenExpira = null;

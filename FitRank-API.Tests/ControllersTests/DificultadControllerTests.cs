@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Presentacion.Controllers;
 using FitRank_API.Application.DTOs.DificultadDTOs;
 using AutoMapper;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.CasosDeUso.DificultadCasosDeUso;
 
 namespace FitRank_API.tests.ControllersTests;
@@ -39,27 +39,7 @@ public class DificultadControllerTests
         );
     }
 
-    //Agregar_RetornaCreatedAtActionResult
-    [Fact]
-    public async Task Agregar_RetornaCreatedAtActionResult()
-    {
-        // Arrange
-        var nuevaDificultadDTO = new AgregarDificultadDTO { Descripcion = "Principiante" };
-        var dificultadCreada = new DificultadDTO { Id = 1, Descripcion = "Principiante" };
-
-        _mockAgregar
-            .Setup(caso => caso.Ejecutar(nuevaDificultadDTO))
-            .ReturnsAsync(dificultadCreada);
-
-        // Act
-        var resultado = await _controller.Agregar(nuevaDificultadDTO);
-
-        // Assert
-        var createdAtActionResult = resultado as CreatedAtActionResult;
-        createdAtActionResult.Should().NotBeNull();
-        createdAtActionResult!.StatusCode.Should().Be(201);
-        createdAtActionResult.Value.Should().BeEquivalentTo(dificultadCreada);
-    }
+    #region ObtenerTodos Tests
 
     //ObtenerTodos_RetornaOkResult_ConListaCompleta
     [Fact]
@@ -108,25 +88,25 @@ public class DificultadControllerTests
         okResult.Value.Should().BeEquivalentTo(listaDificultades);
     }
 
-    //ObtenerPorId_NoExiste_RetornaNotFound
+    //ObtenerTodos_ExcepcionGenerica_RetornaInternalServerError
     [Fact]
-    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    public async Task ObtenerTodos_ExcepcionGenerica_RetornaInternalServerError()
     {
         // Arrange
-        int dificultadId = 999;
-
-        _mockObtenerPorId
-            .Setup(caso => caso.Ejecutar(dificultadId))
-            .ReturnsAsync((DificultadDTO?)null);
+        _mockObtenerTodos.Setup(x => x.Ejecutar()).ThrowsAsync(new Exception());
 
         // Act
-        var resultado = await _controller.ObtenerPorId(dificultadId);
+        var resultado = await _controller.ObtenerTodos();
 
         // Assert
-        var notFoundResult = resultado as NotFoundResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(404);
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
     }
+
+    #endregion
+
+    #region ObtenerPorId Tests
 
     //ObtenerPorId_Existe_RetornaObjetoOkCreado
     [Fact]
@@ -149,6 +129,145 @@ public class DificultadControllerTests
         okResult!.StatusCode.Should().Be(200);
         okResult.Value.Should().BeEquivalentTo(dificultadDTO);
     }
+
+    //ObtenerPorId_IdCero_RetornaBadRequest
+    [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerPorId(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //ObtenerPorId_IdNegativo_RetornaBadRequest
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.ObtenerPorId(-5);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //ObtenerPorId_NoExiste_RetornaNotFound
+    [Fact]
+    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    {
+        // Arrange
+        int dificultadId = 999;
+
+        _mockObtenerPorId
+            .Setup(caso => caso.Ejecutar(dificultadId))
+            .ReturnsAsync((DificultadDTO?)null);
+
+        // Act
+        var resultado = await _controller.ObtenerPorId(dificultadId);
+
+        // Assert
+        var notFoundResult = resultado as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    //ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError
+    [Fact]
+    public async Task ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerPorId.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.ObtenerPorId(1);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Agregar Tests
+
+    //Agregar_RetornaCreatedAtActionResult
+    [Fact]
+    public async Task Agregar_RetornaCreatedAtActionResult()
+    {
+        // Arrange
+        var nuevaDificultadDTO = new AgregarDificultadDTO { Descripcion = "Principiante" };
+        var dificultadCreada = new DificultadDTO { Id = 1, Descripcion = "Principiante" };
+
+        _mockAgregar
+            .Setup(caso => caso.Ejecutar(nuevaDificultadDTO))
+            .ReturnsAsync(dificultadCreada);
+
+        // Act
+        var resultado = await _controller.Agregar(nuevaDificultadDTO);
+
+        // Assert
+        var createdAtActionResult = resultado as CreatedAtActionResult;
+        createdAtActionResult.Should().NotBeNull();
+        createdAtActionResult!.StatusCode.Should().Be(201);
+        createdAtActionResult.Value.Should().BeEquivalentTo(dificultadCreada);
+    }
+
+    //Agregar_DtoNulo_RetornaBadRequest
+    [Fact]
+    public async Task Agregar_DtoNulo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Agregar(null);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //Agregar_ModelStateInvalido_RetornaBadRequest
+    [Fact]
+    public async Task Agregar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("Descripcion", "Requerido");
+        var dto = new AgregarDificultadDTO();
+
+        // Act
+        var resultado = await _controller.Agregar(dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //Agregar_ExcepcionGenerica_RetornaInternalServerError
+    [Fact]
+    public async Task Agregar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        var dto = new AgregarDificultadDTO { Descripcion = "Difícil" };
+        _mockAgregar.Setup(x => x.Ejecutar(dto)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.Agregar(dto);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Actualizar Tests
 
     //Actualizar_RetornaOkObjectResult_ConObjetoActualizado
     [Fact]
@@ -173,25 +292,66 @@ public class DificultadControllerTests
         okResult.Value.Should().BeEquivalentTo(dificultadActualizada);
     }
 
-    //Actualizar_NoEncontrado_RetornaNotFoundResult
+    //Actualizar_IdCero_RetornaBadRequest
     [Fact]
-    public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
+    public async Task Actualizar_IdCero_RetornaBadRequest()
     {
         // Arrange
-        int dificultadId = 999;
-        var dificultadActualizarDTO = new DificultadDTO { Id = dificultadId, Descripcion = "No Existe" };
-
-        _mockActualizar
-            .Setup(caso => caso.Ejecutar(dificultadActualizarDTO))
-            .ReturnsAsync((DificultadDTO?)null);
+        var dto = new DificultadDTO { Id = 0 };
 
         // Act
-        var resultado = await _controller.Actualizar(dificultadId, dificultadActualizarDTO);
+        var resultado = await _controller.Actualizar(0, dto);
 
         // Assert
-        var notFoundResult = resultado as NotFoundResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(404);
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //Actualizar_IdNegativo_RetornaBadRequest
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new DificultadDTO { Id = -5 };
+
+        // Act
+        var resultado = await _controller.Actualizar(-5, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //Actualizar_DtoNulo_RetornaBadRequest
+    [Fact]
+    public async Task Actualizar_DtoNulo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Actualizar(1, null);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //Actualizar_ModelStateInvalido_RetornaBadRequest
+    [Fact]
+    public async Task Actualizar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("Descripcion", "Requerido");
+        var dto = new DificultadDTO { Id = 1 };
+
+        // Act
+        var resultado = await _controller.Actualizar(1, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
     }
 
     //Actualizar_IdNoCoincide_RetornaBadRequestResult
@@ -209,8 +369,49 @@ public class DificultadControllerTests
         var badRequestResult = resultado as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ID del grupo muscular no coincide.");
     }
+
+    //Actualizar_NoEncontrado_RetornaNotFoundResult
+    [Fact]
+    public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
+    {
+        // Arrange
+        int dificultadId = 999;
+        var dificultadActualizarDTO = new DificultadDTO { Id = dificultadId, Descripcion = "No Existe" };
+
+        _mockActualizar
+            .Setup(caso => caso.Ejecutar(dificultadActualizarDTO))
+            .ReturnsAsync((DificultadDTO?)null);
+
+        // Act
+        var resultado = await _controller.Actualizar(dificultadId, dificultadActualizarDTO);
+
+        // Assert
+        var notFoundResult = resultado as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    //Actualizar_ExcepcionGenerica_RetornaInternalServerError
+    [Fact]
+    public async Task Actualizar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        var dto = new DificultadDTO { Id = 1, Descripcion = "Difícil" };
+        _mockActualizar.Setup(x => x.Ejecutar(dto)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.Actualizar(1, dto);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Eliminar Tests
 
     //Eliminar_Existente_DeberiaRetornarNoContent
     [Fact]
@@ -231,4 +432,48 @@ public class DificultadControllerTests
         noContentResult.Should().NotBeNull();
         noContentResult!.StatusCode.Should().Be(204);
     }
+
+    //Eliminar_IdCero_RetornaBadRequest
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(0);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //Eliminar_IdNegativo_RetornaBadRequest
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(-3);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    //Eliminar_ExcepcionGenerica_RetornaInternalServerError
+    [Fact]
+    public async Task Eliminar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockEliminar.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.Eliminar(1);
+
+        // Assert
+        var statusCodeResult = resultado as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
 }

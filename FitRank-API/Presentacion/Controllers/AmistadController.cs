@@ -35,7 +35,7 @@ namespace FitRank_API.Controllers
         {
             var claim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (claim == null)
-                throw new Exception("No se pudo obtener el id de usuario del token.");
+                throw new UnauthorizedAccessException("No se pudo obtener el id de usuario del token.");
 
             return int.Parse(claim.Value);
         }
@@ -44,78 +44,140 @@ namespace FitRank_API.Controllers
         [HttpPost("solicitudes")]
         public async Task<IActionResult> EnviarSolicitud([FromBody] EnviarSolicitudAmistadDTO dto)
         {
-            var usuarioId = ObtenerUsuarioId();
+            if (dto == null)
+                return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
 
-            dto.SolicitanteId = usuarioId;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var resultado = await _enviarSolicitudCasoDeUso.Ejecutar(dto);
+            try
+            {
+                var usuarioId = ObtenerUsuarioId();
+                dto.SolicitanteId = usuarioId;
 
-            if (!resultado.Completado)
-                return BadRequest(resultado);
+                var resultado = await _enviarSolicitudCasoDeUso.Ejecutar(dto);
 
-            return Ok(resultado);
+                if (!resultado.Completado)
+                    return BadRequest(resultado);
+
+                return Ok(resultado);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { Mensaje = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         // GET api/amigos
         [HttpGet]
         public async Task<IActionResult> ObtenerAmigos()
         {
-            var usuarioId = ObtenerUsuarioId();
-
-            var amigos = await _obtenerAmigosCasoDeUso.Ejecutar(usuarioId);
-
-            return Ok(amigos);
+            try
+            {
+                var usuarioId = ObtenerUsuarioId();
+                var amigos = await _obtenerAmigosCasoDeUso.Ejecutar(usuarioId);
+                return Ok(amigos);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { Mensaje = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         // GET api/amigos/solicitudes
         [HttpGet("solicitudes")]
         public async Task<IActionResult> ObtenerSolicitudesPendientes()
         {
-            var usuarioId = ObtenerUsuarioId();
-
-            var solicitudes = await _obtenerSolicitudesCasoDeUso.Ejecutar(usuarioId);
-
-            return Ok(solicitudes);
+            try
+            {
+                var usuarioId = ObtenerUsuarioId();
+                var solicitudes = await _obtenerSolicitudesCasoDeUso.Ejecutar(usuarioId);
+                return Ok(solicitudes);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { Mensaje = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         // POST api/amigos/solicitudes/{amistadId}/aceptar
         [HttpPost("solicitudes/{amistadId:int}/aceptar")]
         public async Task<IActionResult> AceptarSolicitud([FromRoute] int amistadId)
         {
-            var usuarioId = ObtenerUsuarioId();
+            if (amistadId <= 0)
+                return BadRequest(new { Mensaje = "El ID de la amistad debe ser mayor a cero." });
 
-            var dto = new AceptarSolicitudAmistadDTO
+            try
             {
-                SocioId = usuarioId,
-                AmistadId = amistadId
-            };
+                var usuarioId = ObtenerUsuarioId();
 
-            var resultado = await _aceptarSolicitudCasoDeUso.Ejecutar(dto);
+                var dto = new AceptarSolicitudAmistadDTO
+                {
+                    SocioId = usuarioId,
+                    AmistadId = amistadId
+                };
 
-            if (!resultado.Completado)
-                return BadRequest(resultado);
+                var resultado = await _aceptarSolicitudCasoDeUso.Ejecutar(dto);
 
-            return Ok(resultado);
+                if (!resultado.Completado)
+                    return BadRequest(resultado);
+
+                return Ok(resultado);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { Mensaje = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         // DELETE api/amigos/{amigoId}
         [HttpDelete("{amigoId:int}")]
         public async Task<IActionResult> EliminarAmigo([FromRoute] int amigoId)
         {
-            var usuarioId = ObtenerUsuarioId();
+            if (amigoId <= 0)
+                return BadRequest(new { Mensaje = "El ID del amigo debe ser mayor a cero." });
 
-            var dto = new EliminarAmigoDTO
+            try
             {
-                SocioId = usuarioId,
-                AmigoId = amigoId
-            };
+                var usuarioId = ObtenerUsuarioId();
 
-            var completado = await _eliminarAmigoCasoDeUso.Ejecutar(dto);
+                var dto = new EliminarAmigoDTO
+                {
+                    SocioId = usuarioId,
+                    AmigoId = amigoId
+                };
 
-            if (!completado)
-                return BadRequest(new { Completado = false, Mensaje = "No se pudo eliminar la amistad." });
+                var completado = await _eliminarAmigoCasoDeUso.Ejecutar(dto);
 
-            return Ok(new { Completado = true, Mensaje = "Amistad eliminada correctamente." });
+                if (!completado)
+                    return BadRequest(new { Completado = false, Mensaje = "No se pudo eliminar la amistad." });
+
+                return Ok(new { Completado = true, Mensaje = "Amistad eliminada correctamente." });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { Mensaje = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
     }
 }

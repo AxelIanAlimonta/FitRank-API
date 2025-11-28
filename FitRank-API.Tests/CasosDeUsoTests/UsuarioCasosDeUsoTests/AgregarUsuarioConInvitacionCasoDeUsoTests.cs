@@ -2,9 +2,10 @@ using AutoMapper;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
 using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Application.Helpers;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -17,6 +18,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
         private readonly Mock<IUsuarioRepositorio> _mockUsuarioRepo;
         private readonly Mock<IInvitacionRepositorio> _mockInvitacionRepo;
         private readonly Mock<GenerarTokenCasoDeUso> _mockGenerarToken;
+        private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly IMapper _mapper;
         private readonly AgregarUsuarioConInvitacionCasoDeUso _casoDeUso;
 
@@ -25,6 +27,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo = new Mock<IUsuarioRepositorio>();
             _mockInvitacionRepo = new Mock<IInvitacionRepositorio>();
             _mockGenerarToken = new Mock<GenerarTokenCasoDeUso>(MockBehavior.Loose, It.IsAny<IConfiguration>(), It.IsAny<IUsuarioRepositorio>());
+            _mockPasswordService = new Mock<IPasswordService>();
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -36,7 +39,8 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
                 _mockUsuarioRepo.Object,
                 _mockInvitacionRepo.Object,
                 _mapper,
-                _mockGenerarToken.Object
+                _mockGenerarToken.Object,
+                _mockPasswordService.Object
             );
         }
 
@@ -74,6 +78,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.AgregarAsync(It.IsAny<Usuario>()))
                 .ReturnsAsync((Usuario u) => { u.Id = 10; return u; });
             _mockGenerarToken.Setup(g => g.Ejecutar(It.IsAny<Usuario>())).Returns("token_generado");
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);
@@ -193,6 +198,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.AgregarAsync(It.IsAny<Usuario>()))
                 .ReturnsAsync((Usuario u) => { u.Id = 10; return u; });
             _mockGenerarToken.Setup(g => g.Ejecutar(It.IsAny<Usuario>())).Returns("token");
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
@@ -232,14 +238,15 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.AgregarAsync(It.IsAny<Usuario>()))
                 .ReturnsAsync((Usuario u) => { u.Id = 10; socioGuardado = u as Socio; return u; });
             _mockGenerarToken.Setup(g => g.Ejecutar(It.IsAny<Usuario>())).Returns("token");
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("secure_hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
 
             // Assert
             socioGuardado.Should().NotBeNull();
-            socioGuardado!.PasswordHash.Should().NotBe(dto.Password);
-            BCrypt.Net.BCrypt.Verify(dto.Password, socioGuardado.PasswordHash).Should().BeTrue();
+            socioGuardado!.PasswordHash.Should().Be("secure_hashed_password");
+            _mockPasswordService.Verify(p => p.HashPassword(dto.Password), Times.Once);
         }
 
         [Fact]
@@ -277,6 +284,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.AgregarAsync(It.IsAny<Usuario>()))
                 .ReturnsAsync((Usuario u) => { u.Id = 10; socioGuardado = u as Socio; return u; });
             _mockGenerarToken.Setup(g => g.Ejecutar(It.IsAny<Usuario>())).Returns("token");
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
@@ -321,6 +329,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
                 .Callback<Usuario>(u => { u.Id = 10; socioGuardado = u as Socio; })
                 .ReturnsAsync((Usuario u) => u);
             _mockGenerarToken.Setup(g => g.Ejecutar(It.IsAny<Usuario>())).Returns("token");
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
@@ -364,6 +373,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             _mockUsuarioRepo.Setup(r => r.AgregarAsync(It.IsAny<Usuario>()))
                 .ReturnsAsync((Usuario u) => { u.Id = 20; return u; });
             _mockGenerarToken.Setup(g => g.Ejecutar(It.IsAny<Usuario>())).Returns("jwt_token_generated");
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);

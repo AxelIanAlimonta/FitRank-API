@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.GrupoMuscularDTOs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 

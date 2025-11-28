@@ -788,26 +788,6 @@ namespace FitRank_API.Migrations
                     b.ToTable("Notificaciones");
                 });
 
-            modelBuilder.Entity("FitRank_API.Domain.Entities.Persona", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("Edad")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Personas");
-                });
-
             modelBuilder.Entity("FitRank_API.Domain.Entities.Puntaje", b =>
                 {
                     b.Property<long>("Id")

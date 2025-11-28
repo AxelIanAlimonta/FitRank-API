@@ -12,7 +12,7 @@ namespace FitRank_API.Application.CasosDeUso.BatallasCasosDeUso
             _context = context;
         }
 
-        public async Task<bool> Ejecutar(int batallaId)
+        public virtual async Task<bool> Ejecutar(int batallaId)
         {
             var batalla = await _context.Batallas.FindAsync(batallaId);
             if (batalla == null) return false;

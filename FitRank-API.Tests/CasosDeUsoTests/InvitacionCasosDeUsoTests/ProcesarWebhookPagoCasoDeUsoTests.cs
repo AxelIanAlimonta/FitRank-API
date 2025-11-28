@@ -5,7 +5,7 @@ using FitRank_API.Application.DTOs.IngresoDTOs;
 using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Application.Helpers;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using SendGrid;

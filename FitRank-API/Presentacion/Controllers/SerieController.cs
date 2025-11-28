@@ -3,7 +3,7 @@ using FitRank_API.Application.DTOs.SerieDTOs;
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FitRank_API.Controllers
+namespace FitRank_API.Presentacion.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -37,66 +37,98 @@ namespace FitRank_API.Controllers
                 var lista = await _obtenerTodas.Ejecutar();
                 return Ok(lista);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerSeriePorId(long id)
         {
-            var serie = await _obtenerPorId.Ejecutar(id);
-            if (serie == null) return NotFound($"La serie con ID {id} no existe.");
-            return Ok(serie);
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID de la serie debe ser mayor a cero." });
+
+            try
+            {
+                var serie = await _obtenerPorId.Ejecutar(id);
+                if (serie == null)
+                    return NotFound(new { Mensaje = $"La serie con ID {id} no fue encontrada." });
+
+                return Ok(serie);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Agregar([FromBody] AgregarSerieDTO dto)
         {
-            if (dto == null) return BadRequest("El objeto no puede ser nulo.");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto no puede ser nulo." });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var nueva = await _crear.Ejecutar(dto);
                 return CreatedAtAction(nameof(ObtenerSeriePorId), new { id = nueva.Id }, nueva);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarSerieDTO dto)
         {
-            if (dto == null) return BadRequest("El objeto no puede ser nulo.");
-            if (id != dto.Id) return BadRequest("El ID en la URL no coincide con el ID en el cuerpo.");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID de la serie debe ser mayor a cero." });
+
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto no puede ser nulo." });
+
+            if (id != dto.Id)
+                return BadRequest(new { Mensaje = "El ID en la URL no coincide con el ID del objeto." });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var actualizada = await _actualizar.Ejecutar(dto);
-                if (actualizada == null) return NotFound($"La serie con ID {id} no existe.");
+                if (actualizada == null)
+                    return NotFound(new { Mensaje = $"La serie con ID {id} no fue encontrada." });
+
                 return Ok(actualizada);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID de la serie debe ser mayor a cero." });
+
             try
             {
                 var resultado = await _eliminar.Ejecutar(id);
-                if (!resultado) return NotFound($"La serie con ID {id} no existe.");
+                if (!resultado)
+                    return NotFound(new { Mensaje = $"La serie con ID {id} no fue encontrada." });
+
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error en el servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
     }

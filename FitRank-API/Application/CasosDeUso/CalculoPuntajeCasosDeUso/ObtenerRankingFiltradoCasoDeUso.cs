@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FitRank_API.Application.DTOs.RankingDTOs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.DTOs.PuntajeDTOs;
 using FitRank_API.Application.DTOs.RankingDTOs;
 

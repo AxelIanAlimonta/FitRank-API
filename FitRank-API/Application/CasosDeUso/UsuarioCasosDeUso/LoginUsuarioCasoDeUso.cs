@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using BCrypt.Net;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 
 namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
 {
@@ -10,11 +10,13 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
     {
         private readonly IUsuarioRepositorio _usuarioRepositorio;
         private readonly IMapper _mapper;
+        private readonly IPasswordService _passwordService;
 
-        public LoginUsuarioCasoDeUso(IUsuarioRepositorio usuarioRepositorio, IMapper mapper)
+        public LoginUsuarioCasoDeUso(IUsuarioRepositorio usuarioRepositorio, IMapper mapper, IPasswordService passwordService)
         {
             _usuarioRepositorio = usuarioRepositorio;
             _mapper = mapper;
+            _passwordService = passwordService;
         }
 
         public virtual async Task<(Usuario entidad, UsuarioAuthDTO dto)?> Ejecutar(LoginDTO dto)
@@ -24,7 +26,7 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             if (usuario == null)
                 return null;
 
-            if (!BCrypt.Net.BCrypt.Verify(dto.Password, usuario.PasswordHash))
+            if (!_passwordService.VerifyPassword(dto.Password, usuario.PasswordHash))
                 return null;
 
             if (!usuario.EsActivado)

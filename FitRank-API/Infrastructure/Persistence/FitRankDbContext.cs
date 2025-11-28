@@ -11,7 +11,6 @@ public class FitRankDbContext : DbContext
         : base(options)
     {
     }
-    public DbSet<Persona> Personas { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Socio> Socios { get; set; }
     public DbSet<Profesor> Profesores { get; set; }

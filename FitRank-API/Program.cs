@@ -1,4 +1,4 @@
-ï»¿using FitRank.API.Application.Rutinas.Abstractions;
+using FitRank.API.Application.Rutinas.Abstractions;
 using FitRank.API.Infrastructure.RulesEngineImpl;
 using FitRank_API.Application.CasosDeUso.AdministradorCasosDeUso;
 using FitRank_API.Application.CasosDeUso.AmistadCasosDeUso;
@@ -39,7 +39,7 @@ using FitRank_API.Application.Services;
 using FitRank_API.Application.UseCases;
 using FitRank_API.Application.UseCases.Actividad;
 using FitRank_API.Application.UseCases.Entrenamiento;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using FitRank_API.Infrastructure.Repositories;
 using FitRank_API.Infrastructure.Repositorios;
@@ -87,7 +87,7 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ConfiguraciÃ³n de base de datos - soporta formato URI de Render
+// Configuración de base de datos - soporta formato URI de Render
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Si la connection string viene en formato URI (Render), convertirla
@@ -136,9 +136,6 @@ builder.Services.AddScoped<ActualizarMaquinaCasoDeUso>();
 builder.Services.AddScoped<EliminarMaquinaCasoDeUso>();
 builder.Services.AddScoped<ObtenerMaquinaDetalleCasoDeUso>();
 
-builder.Services.AddScoped<IPersonaRepository, PersonaRepositoryImpl>();
-builder.Services.AddScoped<IPersonaService, PersonaServiceImpl>();
-
 builder.Services.AddScoped<IDificultadRepositorio, DificultadRepositorioImpl>();
 builder.Services.AddScoped<ObtenerTodasLasDificultadesCasoDeUso>();
 builder.Services.AddScoped<ObtenerDificultadPorIdCasoDeUso>();
@@ -164,6 +161,7 @@ builder.Services.AddScoped<CambiarEstadoRutinaCasoDeUso>();
 builder.Services.AddScoped<MarcarDesmarcarRutinaFavoritaCasoDeUso>();
 builder.Services.AddScoped<ObtenerRutinasFavoritasCasoDeUso>();
 builder.Services.AddScoped<ObtenerRutinasFavoritasGimnasioCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodasLasRutinasPorSocioCasoDeUso>();
 
 
 builder.Services.AddScoped<ISesionRepositorio, SesionRepositorioImpl>();
@@ -239,7 +237,6 @@ builder.Services.AddScoped<GenerarTokenCasoDeUso>();
 builder.Services.AddScoped<ObtenerUsuarioPorIdCasoDeUso>();
 builder.Services.AddScoped<EliminarUsuarioCasoDeUso>();
 builder.Services.AddScoped<AgregarUsuarioConInvitacionCasoDeUso>();
-builder.Services.AddScoped<GenerarTokenCasoDeUso>();
 
 
 builder.Services.AddScoped<IGimnasioRepositorio, GimnasioRepositorioImpl>();
@@ -286,6 +283,8 @@ builder.Services.AddScoped<EliminarProfesorCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodosLosProfesoresCasoDeUso>();
 builder.Services.AddScoped<ObtenerTodasLasRutinasPorProfesorCasoDeUso>();
 builder.Services.AddScoped<ObtenerEstadisticasProfesoresCasoDeUso>();
+builder.Services.AddScoped<ObtenerTodosPorGimnasioCasoDeUso>();
+
 
 builder.Services.AddScoped<IDiaDeLaSemanaRepositorio, DiaDeLaSemanaRepositorioImpl>();
 builder.Services.AddScoped<AgregarDiaDeLaSemanaCasoDeUso>();
@@ -336,6 +335,7 @@ builder.Services.AddScoped<EnviarNotificacionMasivaCasoDeUso>();
 builder.Services.AddScoped<ObtenerHistorialNotificacionesCasoDeUso>();
 builder.Services.AddScoped<ObtenerUsuariosParaNotificacionCasoDeUso>();
 builder.Services.AddScoped<EnviarNotificacionIndividualCasoDeUso>();
+builder.Services.AddScoped<ActualizarNotificacionCasoDeUso>();
 
 
 builder.Services.AddScoped<ISerieRepositorio, SerieRepositorioImpl>();
@@ -344,7 +344,6 @@ builder.Services.AddScoped<AgregarSerieCasoDeUso>();
 builder.Services.AddScoped<EliminarSerieCasoDeUso>();
 builder.Services.AddScoped<ObtenerSeriePorIdCasoDeUso>();
 builder.Services.AddScoped<ObtenerSeriesCasoDeUso>();
-
 
 
 
@@ -376,6 +375,7 @@ builder.Services.AddScoped<IRoutineBuilder, RoutineBuilderImpl>();
 
 builder.Services.AddScoped<GenerarRutinaIACasoDeUso>();
 builder.Services.AddScoped<ConfirmarRutinaIACasoDeUso>();
+
 
 builder.Services.AddScoped<ISolicitudRutinaProfesorRepositorio, SolicitudRutinaProfesorRepositorioImpl>();
 builder.Services.AddScoped<CrearSolicitudRutinaProfesorCasoDeUso>();
@@ -484,7 +484,7 @@ builder.Services.AddSingleton<ISendGridClient>(provider =>
     new SendGridClient(builder.Configuration["SendGrid:ApiKey"] ?? "SG.tu_clave")
 );
 
-// ConfiguraciÃ³n de Cloudflare R2 (compatible con AWS S3)
+// Configuración de Cloudflare R2 (compatible con AWS S3)
 builder.Services.AddSingleton<IAmazonS3>(provider =>
 {
     var config = provider.GetRequiredService<IConfiguration>();
@@ -508,8 +508,12 @@ builder.Services.AddSingleton<IAmazonS3>(provider =>
     return client;
 });
 
-// Registrar el servicio de imÃ¡genes
+// Registrar el servicio de imágenes
 builder.Services.AddScoped<IImagenService, ImagenService>();
+
+// Registrar el servicio de encriptación de contraseñas
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -580,3 +584,4 @@ app.MapControllers();
 app.MapHub<NotificacionesHub>("/hubs/notificaciones");
 
 app.Run();
+

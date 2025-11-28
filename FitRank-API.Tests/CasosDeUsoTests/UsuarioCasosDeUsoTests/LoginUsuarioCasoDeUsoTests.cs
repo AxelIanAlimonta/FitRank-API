@@ -1,8 +1,9 @@
 using AutoMapper;
 using FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso;
 using FitRank_API.Application.DTOs.UsuarioDTOs;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 using System.Linq.Expressions;
@@ -12,12 +13,14 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
     public class LoginUsuarioCasoDeUsoTests
     {
         private readonly Mock<IUsuarioRepositorio> _mockUsuarioRepo;
+        private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly IMapper _mapper;
         private readonly LoginUsuarioCasoDeUso _casoDeUso;
 
         public LoginUsuarioCasoDeUsoTests()
         {
             _mockUsuarioRepo = new Mock<IUsuarioRepositorio>();
+            _mockPasswordService = new Mock<IPasswordService>();
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -25,7 +28,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
             });
             _mapper = config.CreateMapper();
 
-            _casoDeUso = new LoginUsuarioCasoDeUso(_mockUsuarioRepo.Object, _mapper);
+            _casoDeUso = new LoginUsuarioCasoDeUso(_mockUsuarioRepo.Object, _mapper, _mockPasswordService.Object);
         }
 
         [Fact]
@@ -53,6 +56,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
 
             _mockUsuarioRepo.Setup(r => r.ObtenerPorCondicionAsync(It.IsAny<Expression<Func<Usuario, bool>>>()))
                 .ReturnsAsync(usuario);
+            _mockPasswordService.Setup(p => p.VerifyPassword(password, hashedPassword)).Returns(true);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);
@@ -108,6 +112,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
 
             _mockUsuarioRepo.Setup(r => r.ObtenerPorCondicionAsync(It.IsAny<Expression<Func<Usuario, bool>>>()))
                 .ReturnsAsync(usuario);
+            _mockPasswordService.Setup(p => p.VerifyPassword("PasswordIncorrecta!", hashedPassword)).Returns(false);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);
@@ -139,6 +144,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
 
             _mockUsuarioRepo.Setup(r => r.ObtenerPorCondicionAsync(It.IsAny<Expression<Func<Usuario, bool>>>()))
                 .ReturnsAsync(usuario);
+            _mockPasswordService.Setup(p => p.VerifyPassword(password, hashedPassword)).Returns(true);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);
@@ -170,13 +176,14 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
 
             _mockUsuarioRepo.Setup(r => r.ObtenerPorCondicionAsync(It.IsAny<Expression<Func<Usuario, bool>>>()))
                 .ReturnsAsync(usuario);
+            _mockPasswordService.Setup(p => p.VerifyPassword(password, hashedPassword)).Returns(true);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);
 
             // Assert
             resultado.Should().NotBeNull();
-            BCrypt.Net.BCrypt.Verify(password, usuario.PasswordHash).Should().BeTrue();
+            _mockPasswordService.Verify(p => p.VerifyPassword(password, hashedPassword), Times.Once);
         }
 
         [Fact]
@@ -225,6 +232,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.UsuarioCasosDeUsoTests
 
             _mockUsuarioRepo.Setup(r => r.ObtenerPorCondicionAsync(It.IsAny<Expression<Func<Usuario, bool>>>()))
                 .ReturnsAsync(usuario);
+            _mockPasswordService.Setup(p => p.VerifyPassword(password, hashedPassword)).Returns(true);
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);

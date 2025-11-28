@@ -1,5 +1,4 @@
 ﻿using FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso;
-using FitRank_API.Application.DTOs;
 using FitRank_API.Application.DTOs.EntrenamientoDTOs;
 using FitRank_API.Application.UseCases.Entrenamiento;
 using Microsoft.AspNetCore.Mvc;
@@ -45,89 +44,132 @@ namespace FitRank_API.Controllers
                 var entrenamientos = await _obtenerTodos.Ejecutar();
                 return Ok(entrenamientos);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             try
             {
                 var ent = await _obtenerPorId.Ejecutar(id);
-                return ent == null ? NotFound($"No se encontró ningún entrenamiento con ID {id}.") : Ok(ent);
+                return ent == null ? NotFound(new { Mensaje = "Entrenamiento no encontrado." }) : Ok(ent);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AgregarEntrenamientoDTO dto)
         {
-            if (dto == null) return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var nuevo = await _crear.Ejecutar(dto);
                 return CreatedAtAction(nameof(GetById), new { id = nuevo.Id }, nuevo);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarEntrenamientoDTO dto)
         {
-            if (dto == null) return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (id != dto.Id) return BadRequest("El ID en la URL no coincide con el ID en el cuerpo de la solicitud.");
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (id != dto.Id)
+                return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID del entrenamiento." });
+
             try
             {
                 var resultado = await _actualizar.Ejecutar(dto);
-                if (resultado == null) return NotFound($"No se encontró ningún entrenamiento con ID {id}.");
+                if (resultado == null)
+                    return NotFound(new { Mensaje = "Entrenamiento no encontrado." });
+
                 return Ok(resultado);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             try
             {
                 var resultado = await _eliminar.Ejecutar(id);
-                if (!resultado) return NotFound($"No se encontró ningún entrenamiento con ID {id}.");
+                if (!resultado)
+                    return NotFound(new { Mensaje = "Entrenamiento no encontrado." });
+
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error interno del servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("socio/{socioId}/historial")]
         public async Task<ActionResult<List<EntrenamientoHistorialDTO>>> ObtenerHistorial(long socioId)
         {
-            var result = await _obtenerHostialEntrenamientosCasoDeUso.EjecutarAsync(socioId);
-            return Ok(result);
+            if (socioId <= 0)
+                return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
+
+            try
+            {
+                var result = await _obtenerHostialEntrenamientosCasoDeUso.EjecutarAsync(socioId);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpGet("profesor/{profesorId}/historial")]
-        public async Task<ActionResult<List<EntrenamientoHistorialDTO>>> ObtenerHistorialProfesor(long profesorId,
-                                                                                                 [FromQuery] string? nombre = null)
+        public async Task<ActionResult<List<EntrenamientoHistorialDTO>>> ObtenerHistorialProfesor(
+            long profesorId,
+            [FromQuery] string? nombre = null)
         {
-            var result = await _obtenerHistorialProfesorCasoDeUso.EjecutarAsync(profesorId, nombre);
-            return Ok(result);
-        }
+            if (profesorId <= 0)
+                return BadRequest(new { Mensaje = "El ID del profesor debe ser mayor a cero." });
 
+            try
+            {
+                var result = await _obtenerHistorialProfesorCasoDeUso.EjecutarAsync(profesorId, nombre);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
+        }
     }
 }

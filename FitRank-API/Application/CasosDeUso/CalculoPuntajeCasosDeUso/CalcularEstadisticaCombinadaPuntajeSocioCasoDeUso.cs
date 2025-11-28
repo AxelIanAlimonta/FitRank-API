@@ -1,6 +1,6 @@
 ﻿using FitRank_API.Application.DTOs.CalcularPuntajeDTOs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;

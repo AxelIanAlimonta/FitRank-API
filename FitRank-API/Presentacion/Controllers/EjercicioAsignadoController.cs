@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Application.CasosDeUso.EjercicioAsignadoCasoDeUso;
 using FitRank_API.Application.DTOs.EjercicioAsignadoDTOs;
 
@@ -29,7 +28,6 @@ public class EjercicioAsignadoController : ControllerBase
         _obtenerEjerciciosAsignadosCasoDeUso = obtenerEjerciciosAsignadosCasoDeUso;
     }
 
-    //get
     [HttpGet]
     public async Task<IActionResult> ObtenerTodo()
     {
@@ -38,9 +36,9 @@ public class EjercicioAsignadoController : ControllerBase
             var ejerciciosAsignados = await _obtenerEjerciciosAsignadosCasoDeUso.Ejecutar();
             return Ok(ejerciciosAsignados);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Error interno del servidor.");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
@@ -48,58 +46,65 @@ public class EjercicioAsignadoController : ControllerBase
     [Route("{id:long}")]
     public async Task<IActionResult> ObtenerPorId(long id)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         try
         {
             var ejercicioAsignado = await _obtenerEjercicioAsignadoPorIdCasoDeUso.Ejecutar(id);
             if (ejercicioAsignado == null)
             {
-                return NotFound($"No se encontró ningún ejercicio asignado con ID {id}.");
+                return NotFound(new { Mensaje = "Ejercicio asignado no encontrado." });
             }
             return Ok(ejercicioAsignado);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
-    //póst
     [HttpPost]
     public async Task<IActionResult> Agregar([FromBody] AgregarEjercicioAsignadoDTO ejercicioAsignadoDTO)
     {
         if (ejercicioAsignadoDTO == null)
         {
-            return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
         try
         {
             var nuevoEjercicioAsignado = await _agregarEjercicioAsignadoCasoDeUso.Ejecutar(ejercicioAsignadoDTO);
             return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoEjercicioAsignado.Id }, nuevoEjercicioAsignado);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Error interno del servidor");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 
-
-    //put
     [HttpPut]
     [Route("{id:long}")]
     public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarEjercicioAsignadoDTO ejercicioAsignadoDTO)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         if (ejercicioAsignadoDTO == null)
         {
-            return BadRequest("El cuerpo de la solicitud no puede ser nulo.");
+            return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
         }
+
         if (id != ejercicioAsignadoDTO.Id)
         {
-            return BadRequest("El ID del ejercicio asignado no coincide con el ID proporcionado.");
+            return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID del ejercicio asignado." });
         }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -110,33 +115,35 @@ public class EjercicioAsignadoController : ControllerBase
             var ejercicioAsignadoActualizado = await _actualizarEjercicioAsignadoCasoDeUso.Ejecutar(ejercicioAsignadoDTO);
             if (ejercicioAsignadoActualizado == null)
             {
-                return NotFound($"No se encontró ningún ejercicio asignado con ID {id} para actualizar.");
+                return NotFound(new { Mensaje = "Ejercicio asignado no encontrado." });
             }
             return Ok(ejercicioAsignadoActualizado);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Error interno del servidor.");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
-
 
     [HttpDelete]
     [Route("{id:long}")]
     public async Task<IActionResult> Eliminar(long id)
     {
+        if (id <= 0)
+            return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
         try
         {
             var resultado = await _eliminarEjercicioAsignadoCasoDeUso.Ejecutar(id);
             if (!resultado)
             {
-                return NotFound($"No se encontró ningún ejercicio asignado con ID {id} para eliminar.");
+                return NotFound(new { Mensaje = "Ejercicio asignado no encontrado." });
             }
             return NoContent();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, "Error interno del servidor.");
+            return StatusCode(500, new { Mensaje = "Error interno del servidor." });
         }
     }
 }

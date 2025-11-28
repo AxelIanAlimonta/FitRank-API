@@ -3,7 +3,7 @@ using FitRank_API.Application.CasosDeUso.Invitacion;
 using FitRank_API.Application.DTOs.IngresoDTOs;
 using FitRank_API.Application.DTOs.Invitacion;
 using FitRank_API.Application.Hubs;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using MercadoPago.Client.Payment;
 using MercadoPago.Config;
 using MercadoPago.Resource.Payment;

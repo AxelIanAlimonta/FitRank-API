@@ -6,7 +6,7 @@ using FitRank_API.Application.CasosDeUso.GrupoMuscularCasosDeUso;
 using FitRank_API.Presentacion.Controllers;
 using FitRank_API.Application.DTOs.GrupoMuscularDTOs;
 using AutoMapper;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.DTOs;
 
 namespace FitRank_API.tests.ControllersTests;
@@ -40,54 +40,7 @@ public class GrupoMuscularControllerActualizarTests
         );
     }
 
-    [Fact]
-    public async Task Agregar_RetornaCreatedAtActionResult_ConGrupoMuscularCreado()
-    {
-        // Arrange
-        var agregarDTO = new AgregarGrupoMuscularDTO { Nombre = "Piernas" };
-        var obtenerDTO = new ObtenerGrupoMuscularDTO { Id = 1, Nombre = "Piernas" };
-        _mockAgregar.Setup(x => x.Ejecutar(agregarDTO)).ReturnsAsync(obtenerDTO);
-        // Act
-        var result = await _controller.Agregar(agregarDTO);
-        // Assert
-        var createdAtActionResult = result as CreatedAtActionResult;
-        createdAtActionResult.Should().NotBeNull();
-        createdAtActionResult!.StatusCode.Should().Be(201);
-        var returnedGrupoMuscular = createdAtActionResult.Value as ObtenerGrupoMuscularDTO;
-        returnedGrupoMuscular.Should().NotBeNull();
-        returnedGrupoMuscular!.Id.Should().Be(1);
-        returnedGrupoMuscular.Nombre.Should().Be("Piernas");
-    }
-
-
-    [Fact]
-    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
-    {
-        // Arrange
-        var agregarDTO = new AgregarGrupoMuscularDTO { Nombre = "Piernas" };
-        _mockAgregar.Setup(x => x.Ejecutar(agregarDTO)).ThrowsAsync(new Exception("Hubo un error en el servidor."));
-        //Act
-        var result = await _controller.Agregar(agregarDTO);
-        //Assert
-        var statusCodeResult = result as ObjectResult;
-        statusCodeResult.Should().NotBeNull();
-        statusCodeResult!.StatusCode.Should().Be(500);
-        statusCodeResult.Value.Should().Be("Hubo un error en el servidor.");
-    }
-
-    [Fact]
-    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
-    {
-        // Arrange
-        AgregarGrupoMuscularDTO agregarDTO = null!;
-        // Act
-        var result = await _controller.Agregar(agregarDTO);
-        // Assert
-        var badRequestResult = result as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El grupo muscular no puede ser nulo.");
-    }
+    #region ObtenerTodos Tests
 
     [Fact]
     public async Task ObtenerTodos_RetornaOkResult_ConListaDeGruposMusculares()
@@ -99,8 +52,10 @@ public class GrupoMuscularControllerActualizarTests
             new ObtenerGrupoMuscularDTO { Id = 2, Nombre = "Espalda" }
         };
         _mockObtenerTodos.Setup(x => x.Ejecutar()).ReturnsAsync(gruposMusculares);
+
         // Act
         var result = await _controller.ObtenerTodos();
+
         // Assert
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
@@ -118,8 +73,10 @@ public class GrupoMuscularControllerActualizarTests
         // Arrange
         var gruposMusculares = new List<ObtenerGrupoMuscularDTO>();
         _mockObtenerTodos.Setup(x => x.Ejecutar()).ReturnsAsync(gruposMusculares);
+
         // Act
         var result = await _controller.ObtenerTodos();
+
         // Assert
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
@@ -134,30 +91,19 @@ public class GrupoMuscularControllerActualizarTests
     {
         // Arrange
         _mockObtenerTodos.Setup(x => x.Ejecutar()).ThrowsAsync(new Exception("Error inesperado"));
+
         // Act
         var result = await _controller.ObtenerTodos();
+
         // Assert
         var objectResult = result as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error inesperado");
     }
 
-    [Fact]
-    public async Task ObtenerPorId_GrupoMuscularNoExiste_RetornaNotFound()
-    {
-        // Arrange
-        long grupoMuscularId = 1;
-        _mockObtenerPorId.Setup(x => x.Ejecutar(grupoMuscularId)).ReturnsAsync((ObtenerGrupoMuscularDTO?)null);
-        // Act
-        var result = await _controller.ObtenerPorId(grupoMuscularId);
+    #endregion
 
-        // Assert
-        var notFoundResult = result as NotFoundResult;
-
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(404);
-    }
+    #region ObtenerPorId Tests
 
     [Fact]
     public async Task ObtenerPorId_GrupoMuscularExiste_RetornaOkConGrupoMuscular()
@@ -166,8 +112,10 @@ public class GrupoMuscularControllerActualizarTests
         long grupoMuscularId = 1;
         var grupoMuscularDTO = new ObtenerGrupoMuscularDTO { Id = grupoMuscularId, Nombre = "Pecho" };
         _mockObtenerPorId.Setup(x => x.Ejecutar(grupoMuscularId)).ReturnsAsync(grupoMuscularDTO);
+
         // Act
         var result = await _controller.ObtenerPorId(grupoMuscularId);
+
         // Assert
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
@@ -179,12 +127,142 @@ public class GrupoMuscularControllerActualizarTests
     }
 
     [Fact]
+    public async Task ObtenerPorId_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var result = await _controller.ObtenerPorId(0);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var result = await _controller.ObtenerPorId(-5);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_GrupoMuscularNoExiste_RetornaNotFound()
+    {
+        // Arrange
+        long grupoMuscularId = 1;
+        _mockObtenerPorId.Setup(x => x.Ejecutar(grupoMuscularId)).ReturnsAsync((ObtenerGrupoMuscularDTO?)null);
+
+        // Act
+        var result = await _controller.ObtenerPorId(grupoMuscularId);
+
+        // Assert
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task ObtenerPorId_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerPorId.Setup(x => x.Ejecutar(1)).ThrowsAsync(new Exception());
+
+        // Act
+        var result = await _controller.ObtenerPorId(1);
+
+        // Assert
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Agregar Tests
+
+    [Fact]
+    public async Task Agregar_RetornaCreatedAtActionResult_ConGrupoMuscularCreado()
+    {
+        // Arrange
+        var agregarDTO = new AgregarGrupoMuscularDTO { Nombre = "Piernas" };
+        var obtenerDTO = new ObtenerGrupoMuscularDTO { Id = 1, Nombre = "Piernas" };
+        _mockAgregar.Setup(x => x.Ejecutar(agregarDTO)).ReturnsAsync(obtenerDTO);
+
+        // Act
+        var result = await _controller.Agregar(agregarDTO);
+
+        // Assert
+        var createdAtActionResult = result as CreatedAtActionResult;
+        createdAtActionResult.Should().NotBeNull();
+        createdAtActionResult!.StatusCode.Should().Be(201);
+        var returnedGrupoMuscular = createdAtActionResult.Value as ObtenerGrupoMuscularDTO;
+        returnedGrupoMuscular.Should().NotBeNull();
+        returnedGrupoMuscular!.Id.Should().Be(1);
+        returnedGrupoMuscular.Nombre.Should().Be("Piernas");
+    }
+
+    [Fact]
+    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
+    {
+        // Arrange
+        AgregarGrupoMuscularDTO agregarDTO = null!;
+
+        // Act
+        var result = await _controller.Agregar(agregarDTO);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("Nombre", "Requerido");
+        var dto = new AgregarGrupoMuscularDTO();
+
+        // Act
+        var result = await _controller.Agregar(dto);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
+    {
+        // Arrange
+        var agregarDTO = new AgregarGrupoMuscularDTO { Nombre = "Piernas" };
+        _mockAgregar.Setup(x => x.Ejecutar(agregarDTO)).ThrowsAsync(new Exception("Hubo un error en el servidor."));
+
+        // Act
+        var result = await _controller.Agregar(agregarDTO);
+
+        // Assert
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Actualizar Tests
+
+    [Fact]
     public async Task Actualizar_RetornaOkObjectResult_ConGrupoMuscularActualizado()
     {
         // Arrange
         var actualizarDTO = new ActualizarGrupoMuscularDTO { Id = 1, Nombre = "Espalda" };
         var obtenerDTO = new ObtenerGrupoMuscularDTO { Id = 1, Nombre = "Espalda" };
-
         _mockActualizar.Setup(x => x.Ejecutar(actualizarDTO)).ReturnsAsync(obtenerDTO);
 
         // Act
@@ -201,40 +279,29 @@ public class GrupoMuscularControllerActualizarTests
     }
 
     [Fact]
-    public async Task Actualizar_GrupoMuscularNoEncontrado_RetornaNotFoundResult()
+    public async Task Actualizar_IdCero_RetornaBadRequest()
     {
         // Arrange
-        var actualizarDTO = new ActualizarGrupoMuscularDTO { Id = 99, Nombre = "NoExiste" };
-        _mockActualizar.Setup(x => x.Ejecutar(actualizarDTO)).ReturnsAsync((ObtenerGrupoMuscularDTO?)null);
+        var dto = new ActualizarGrupoMuscularDTO { Id = 0 };
+
         // Act
-        var result = await _controller.Actualizar(99, actualizarDTO);
+        var result = await _controller.Actualizar(0, dto);
+
         // Assert
-        var notFoundResult = result as NotFoundResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(404);
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
     }
 
     [Fact]
-    public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
     {
         // Arrange
-        var actualizarDTO = new ActualizarGrupoMuscularDTO { Id = 1, Nombre = "Espalda" };
-        _mockActualizar.Setup(x => x.Ejecutar(actualizarDTO)).ThrowsAsync(new Exception("Hubo un error en el servidor."));
-        // Act
-        var result = await _controller.Actualizar(1, actualizarDTO);
-        // Assert
-        var statusCodeResult = result as ObjectResult;
-        statusCodeResult.Should().NotBeNull();
-        statusCodeResult!.StatusCode.Should().Be(500);
-    }
+        var dto = new ActualizarGrupoMuscularDTO { Id = -5 };
 
-    [Fact]
-    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
-    {
-        // Arrange
-        var actualizarDTO = new ActualizarGrupoMuscularDTO { Id = 1, Nombre = "Espalda" };
         // Act
-        var result = await _controller.Actualizar(2, actualizarDTO);
+        var result = await _controller.Actualizar(-5, dto);
+
         // Assert
         var badRequestResult = result as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
@@ -246,8 +313,10 @@ public class GrupoMuscularControllerActualizarTests
     {
         // Arrange
         ActualizarGrupoMuscularDTO actualizarDTO = null!;
+
         // Act
         var result = await _controller.Actualizar(1, actualizarDTO);
+
         // Assert
         var badRequestResult = result as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
@@ -255,13 +324,78 @@ public class GrupoMuscularControllerActualizarTests
     }
 
     [Fact]
+    public async Task Actualizar_ModelStateInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("Nombre", "Requerido");
+        var dto = new ActualizarGrupoMuscularDTO { Id = 1 };
+
+        // Act
+        var result = await _controller.Actualizar(1, dto);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
+    {
+        // Arrange
+        var actualizarDTO = new ActualizarGrupoMuscularDTO { Id = 1, Nombre = "Espalda" };
+
+        // Act
+        var result = await _controller.Actualizar(2, actualizarDTO);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_GrupoMuscularNoEncontrado_RetornaNotFoundResult()
+    {
+        // Arrange
+        var actualizarDTO = new ActualizarGrupoMuscularDTO { Id = 99, Nombre = "NoExiste" };
+        _mockActualizar.Setup(x => x.Ejecutar(actualizarDTO)).ReturnsAsync((ObtenerGrupoMuscularDTO?)null);
+
+        // Act
+        var result = await _controller.Actualizar(99, actualizarDTO);
+
+        // Assert
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
+    {
+        // Arrange
+        var actualizarDTO = new ActualizarGrupoMuscularDTO { Id = 1, Nombre = "Espalda" };
+        _mockActualizar.Setup(x => x.Ejecutar(actualizarDTO)).ThrowsAsync(new Exception("Hubo un error en el servidor."));
+
+        // Act
+        var result = await _controller.Actualizar(1, actualizarDTO);
+
+        // Assert
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull();
+        statusCodeResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Eliminar Tests
+
+    [Fact]
     public async Task Eliminar_GrupoMuscular_Existente_Deberia_Retornar_NoContent()
     {
         // Arrange
         long grupoMuscularId = 1;
-        _mockEliminar
-            .Setup(x => x.Ejecutar(grupoMuscularId))
-            .ReturnsAsync(true);
+        _mockEliminar.Setup(x => x.Ejecutar(grupoMuscularId)).ReturnsAsync(true);
 
         // Act
         var result = await _controller.Eliminar(grupoMuscularId);
@@ -271,19 +405,43 @@ public class GrupoMuscularControllerActualizarTests
     }
 
     [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var result = await _controller.Eliminar(0);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var result = await _controller.Eliminar(-3);
+
+        // Assert
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
     public async Task Eliminar_GrupoMuscular_NoExistente_Deberia_Retornar_NotFound()
     {
         // Arrange
         long grupoMuscularId = 1;
-        _mockEliminar
-            .Setup(x => x.Ejecutar(grupoMuscularId))
-            .ReturnsAsync(false);
+        _mockEliminar.Setup(x => x.Ejecutar(grupoMuscularId)).ReturnsAsync(false);
 
         // Act
         var result = await _controller.Eliminar(grupoMuscularId);
 
         // Assert
-        result.Should().BeOfType<NotFoundResult>();
+        var notFoundResult = result as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
     }
 
     [Fact]
@@ -291,9 +449,7 @@ public class GrupoMuscularControllerActualizarTests
     {
         // Arrange
         long grupoMuscularId = 1;
-        _mockEliminar
-            .Setup(x => x.Ejecutar(grupoMuscularId))
-            .ThrowsAsync(new Exception("Error inesperado"));
+        _mockEliminar.Setup(x => x.Ejecutar(grupoMuscularId)).ThrowsAsync(new Exception("Error inesperado"));
 
         // Act
         var result = await _controller.Eliminar(grupoMuscularId);
@@ -302,6 +458,7 @@ public class GrupoMuscularControllerActualizarTests
         var objectResult = result as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error inesperado");
     }
+
+    #endregion
 }

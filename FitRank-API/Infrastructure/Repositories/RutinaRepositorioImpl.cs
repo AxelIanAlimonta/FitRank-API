@@ -2,7 +2,7 @@
 using FitRank_API.Application.DTOs.RutinaDTOs;
 using FitRank_API.Application.DTOs.SesionDTOs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 

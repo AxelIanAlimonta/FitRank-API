@@ -16,7 +16,6 @@ namespace FitRank_API.Presentacion.Controllers
         private readonly ObtenerMaquinaPorIdCasoDeUso _obtenerMaquinaPorIdCasoDeUso;
         private readonly ObtenerMaquinaDetalleCasoDeUso _obtenerMaquinaDetalleCasoDeUso;
 
-      
         public MaquinaController(
             ObtenerMaquinasCasoDeUso obtenerMaquinasCasoDeUso,
             AgregarMaquinaCasoDeUso agregarMaquinaCasoDeUso,
@@ -33,7 +32,6 @@ namespace FitRank_API.Presentacion.Controllers
             _obtenerMaquinaDetalleCasoDeUso = obtenerMaquinaDetalleCasoDeUso;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> ObtenerTodas()
         {
@@ -42,52 +40,76 @@ namespace FitRank_API.Presentacion.Controllers
                 var maquinas = await _obtenerMaquinasCasoDeUso.Ejecutar();
                 return Ok(maquinas);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error de servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(long id)
         {
-            var maquina = await _obtenerMaquinaPorIdCasoDeUso.Ejecutar(id);
-            if (maquina == null)
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            try
             {
-                return NotFound();
+                var maquina = await _obtenerMaquinaPorIdCasoDeUso.Ejecutar(id);
+                if (maquina == null)
+                {
+                    return NotFound(new { Mensaje = "Máquina no encontrada." });
+                }
+                return Ok(maquina);
             }
-            return Ok(maquina);
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AgregarMaquinaDTO dto)
         {
-            
-            var gimnasioClaim = User.FindFirst(ClaimTypes.GroupSid);
+            if (dto == null)
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
 
-            if (gimnasioClaim == null)
-                return Unauthorized("No se encontró el gimnasio en el token.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            long gimnasioId = long.Parse(gimnasioClaim.Value);
+            try
+            {
+                var gimnasioClaim = User.FindFirst(ClaimTypes.GroupSid);
 
-            // Ejecutar caso de uso
-            var result = await _agregarMaquinaCasoDeUso.Ejecutar(dto, gimnasioId);
+                if (gimnasioClaim == null || string.IsNullOrWhiteSpace(gimnasioClaim.Value))
+                    return Unauthorized(new { Mensaje = "No se encontró el gimnasio en el token." });
 
-            return Ok(result);
+                if (!long.TryParse(gimnasioClaim.Value, out var gimnasioId) || gimnasioId <= 0)
+                    return BadRequest(new { Mensaje = "El ID del gimnasio en el token es inválido." });
+
+                var result = await _agregarMaquinaCasoDeUso.Ejecutar(dto, gimnasioId);
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
         }
 
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarMaquinaDTO actualizarLogroDTO)
+        public async Task<IActionResult> Actualizar(long id, [FromBody] ActualizarMaquinaDTO actualizarMaquinaDTO)
         {
-            if (actualizarLogroDTO == null)
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
+            if (actualizarMaquinaDTO == null)
             {
-                return BadRequest("El objeto no puede ser nulo.");
+                return BadRequest(new { Mensaje = "El objeto de la solicitud no puede ser nulo." });
             }
 
-            if (id != actualizarLogroDTO.Id)
+            if (id != actualizarMaquinaDTO.Id)
             {
-                return BadRequest("El ID de la ruta no coincide con el ID del cuerpo de la solicitud.");
+                return BadRequest(new { Mensaje = "El ID de la URL no coincide con el ID de la máquina." });
             }
 
             if (!ModelState.IsValid)
@@ -97,44 +119,55 @@ namespace FitRank_API.Presentacion.Controllers
 
             try
             {
-                var maquinaActualizada = await _actualizarMaquinaCasoDeUso.Ejecutar(actualizarLogroDTO);
+                var maquinaActualizada = await _actualizarMaquinaCasoDeUso.Ejecutar(actualizarMaquinaDTO);
                 if (maquinaActualizada == null)
                 {
-                    return NotFound("Maquina no encontrada.");
+                    return NotFound(new { Mensaje = "Máquina no encontrada." });
                 }
                 return Ok(maquinaActualizada);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error de servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
-
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(long id)
         {
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
+
             try
             {
                 var exito = await _eliminarMaquinaCasoDeUso.Ejecutar(id);
                 if (!exito)
                 {
-                    return NotFound("Maquina no encontrada.");
+                    return NotFound(new { Mensaje = "Máquina no encontrada." });
                 }
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, "Error de servidor.");
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpGet("{id}/detalles")]
         public async Task<IActionResult> ObtenerDetalles(long id)
         {
-            var result = await _obtenerMaquinaDetalleCasoDeUso.Ejecutar(id);
-            return Ok(result);
-        }
+            if (id <= 0)
+                return BadRequest(new { Mensaje = "El ID debe ser mayor a cero." });
 
+            try
+            {
+                var result = await _obtenerMaquinaDetalleCasoDeUso.Ejecutar(id);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Mensaje = "Error interno del servidor." });
+            }
+        }
     }
 }

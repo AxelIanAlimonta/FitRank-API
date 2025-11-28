@@ -1,6 +1,6 @@
 ﻿using FitRank_API.Application.DTOs.RutinaDTOs;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using System.Text.Json;
 
 namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso

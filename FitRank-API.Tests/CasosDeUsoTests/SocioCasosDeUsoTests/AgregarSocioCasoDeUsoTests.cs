@@ -1,8 +1,9 @@
 using AutoMapper;
 using FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 using FitRank_API.Application.DTOs.SocioDTOs;
+using FitRank_API.Application.Interfaces;
 using FitRank_API.Domain.Entities;
-using FitRank_API.Infrastructure.Interfaces;
+using FitRank_API.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 
@@ -11,12 +12,14 @@ namespace FitRank_API.Tests.CasosDeUsoTests.SocioCasosDeUsoTests
     public class AgregarSocioCasoDeUsoTests
     {
         private readonly Mock<ISocioRepositorio> _mockRepo;
+        private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly IMapper _mapper;
         private readonly AgregarSocioCasoDeUso _casoDeUso;
 
         public AgregarSocioCasoDeUsoTests()
         {
             _mockRepo = new Mock<ISocioRepositorio>();
+            _mockPasswordService = new Mock<IPasswordService>();
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -25,7 +28,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.SocioCasosDeUsoTests
             });
             _mapper = config.CreateMapper();
 
-            _casoDeUso = new AgregarSocioCasoDeUso(_mockRepo.Object, _mapper);
+            _casoDeUso = new AgregarSocioCasoDeUso(_mockRepo.Object, _mapper, _mockPasswordService.Object);
         }
 
         [Fact]
@@ -53,6 +56,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.SocioCasosDeUsoTests
                 EsActivado = true
             };
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Socio>())).ReturnsAsync(socioCreado);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);
@@ -81,14 +85,15 @@ namespace FitRank_API.Tests.CasosDeUsoTests.SocioCasosDeUsoTests
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Socio>()))
                 .Callback<Socio>(s => socioGuardado = s)
                 .ReturnsAsync((Socio s) => s);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_socio_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
 
             // Assert
             socioGuardado.Should().NotBeNull();
-            socioGuardado!.PasswordHash.Should().NotBe(dto.Password);
-            BCrypt.Net.BCrypt.Verify(dto.Password, socioGuardado.PasswordHash).Should().BeTrue();
+            socioGuardado!.PasswordHash.Should().Be("hashed_socio_password");
+            _mockPasswordService.Verify(p => p.HashPassword(dto.Password), Times.Once);
         }
 
         [Fact]
@@ -105,6 +110,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.SocioCasosDeUsoTests
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Socio>()))
                 .Callback<Socio>(s => socioGuardado = s)
                 .ReturnsAsync((Socio s) => s);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
@@ -127,6 +133,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.SocioCasosDeUsoTests
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Socio>()))
                 .Callback<Socio>(s => socioGuardado = s)
                 .ReturnsAsync((Socio s) => s);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             await _casoDeUso.Ejecutar(dto);
@@ -152,6 +159,7 @@ namespace FitRank_API.Tests.CasosDeUsoTests.SocioCasosDeUsoTests
                 Email = "test@test.com" 
             };
             _mockRepo.Setup(r => r.AgregarAsync(It.IsAny<Socio>())).ReturnsAsync(socioCreado);
+            _mockPasswordService.Setup(p => p.HashPassword(dto.Password)).Returns("hashed_password");
 
             // Act
             var resultado = await _casoDeUso.Ejecutar(dto);

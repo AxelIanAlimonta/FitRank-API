@@ -3,20 +3,15 @@ using Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using FitRank_API.Presentacion.Controllers;
-using FitRank_API.Application.DTOs;
 using AutoMapper;
-using FitRank_API.Infrastructure.Interfaces;
-using FitRank_API.Application.DTOs;
-using FitRank_API.Controllers;
+using FitRank_API.Domain.Interfaces;
 using FitRank_API.Application.CasosDeUso.SerieCasosDeUso;
 using FitRank_API.Application.DTOs.SerieDTOs;
-using FitRank_API.Domain.Entities;
 
 namespace FitRank_API.tests.ControllersTests;
 
 public class SerieControllerTests
 {
-
     private readonly SerieController _controller;
     private readonly Mock<ActualizarSerieCasoDeUso> _mockActualizar;
     private readonly Mock<AgregarSerieCasoDeUso> _mockAgregar;
@@ -42,33 +37,30 @@ public class SerieControllerTests
             _mockActualizar.Object,
             _mockEliminar.Object
         );
-
     }
 
-    //Agregar_RetornaCreatedAtActionResult
+    #region Agregar Tests
+
     [Fact]
-    public async Task Agregar_RetornaCreatedAtActionResult()
+    public async Task Agregar_DtoNulo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Agregar(null!);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Agregar_Exitoso_RetornaCreatedAtAction()
     {
         // Arrange
-        var nuevaSerieDTO = new AgregarSerieDTO
-        {
-            NumeroDeSerie = 1,
-            Repeticiones = 10,
-            Peso = 50.0,
-            EjercicioAsignadoId = 1
-        };
-        var serieDTO = new ObtenerSerieDTO
-        {
-            Id = 1,
-            NumeroDeSerie = 1,
-            Repeticiones = 10,
-            Peso = 50.0,
-            EjercicioAsignadoId = 1
-        };
+        var nuevaSerieDTO = new AgregarSerieDTO { NumeroDeSerie = 1, Repeticiones = 10, Peso = 50.0 };
+        var serieDTO = new ObtenerSerieDTO { Id = 1, NumeroDeSerie = 1, Repeticiones = 10, Peso = 50.0 };
 
-        _mockAgregar
-            .Setup(s => s.Ejecutar(nuevaSerieDTO))
-            .ReturnsAsync(serieDTO);
+        _mockAgregar.Setup(s => s.Ejecutar(nuevaSerieDTO)).ReturnsAsync(serieDTO);
 
         // Act
         var resultado = await _controller.Agregar(nuevaSerieDTO);
@@ -80,22 +72,12 @@ public class SerieControllerTests
         createdAtActionResult.Value.Should().BeEquivalentTo(serieDTO);
     }
 
-    //Agregar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
-    public async Task Agregar_LanzaExcepcion_RetornaStatusCode500()
+    public async Task Agregar_ExcepcionGenerica_RetornaInternalServerError()
     {
         // Arrange
-        var nuevaSerieDTO = new AgregarSerieDTO
-        {
-            NumeroDeSerie = 1,
-            Repeticiones = 10,
-            Peso = 50.0,
-            EjercicioAsignadoId = 1
-        };
-
-        _mockAgregar
-            .Setup(s => s.Ejecutar(nuevaSerieDTO))
-            .ThrowsAsync(new Exception("Error en el servidor."));
+        var nuevaSerieDTO = new AgregarSerieDTO { NumeroDeSerie = 1 };
+        _mockAgregar.Setup(s => s.Ejecutar(nuevaSerieDTO)).ThrowsAsync(new Exception());
 
         // Act
         var resultado = await _controller.Agregar(nuevaSerieDTO);
@@ -104,127 +86,102 @@ public class SerieControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error en el servidor.");
     }
 
-    //Agregar_RetornaBadRequest_CuandoDTOEsNulo
+    #endregion
+
+    #region ObtenerTodaslasSeries Tests
+
     [Fact]
-    public async Task Agregar_RetornaBadRequest_CuandoDTOEsNulo()
+    public async Task ObtenerTodos_Exitoso_RetornaOk()
+    {
+        // Arrange
+        var listaSeriesDTO = new List<ObtenerSerieDTO>
+        {
+            new ObtenerSerieDTO { Id = 1, NumeroDeSerie = 1 },
+            new ObtenerSerieDTO { Id = 2, NumeroDeSerie = 2 }
+        };
+
+        _mockObtenerTodos.Setup(s => s.Ejecutar()).ReturnsAsync(listaSeriesDTO);
+
+        // Act
+        var resultado = await _controller.ObtenerTodaslasSeries();
+
+        // Assert
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(listaSeriesDTO);
+    }
+
+    [Fact]
+    public async Task ObtenerTodos_ListaVacia_RetornaOk()
+    {
+        // Arrange
+        var listaSeriesDTO = new List<ObtenerSerieDTO>();
+        _mockObtenerTodos.Setup(s => s.Ejecutar()).ReturnsAsync(listaSeriesDTO);
+
+        // Act
+        var resultado = await _controller.ObtenerTodaslasSeries();
+
+        // Assert
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(listaSeriesDTO);
+    }
+
+    [Fact]
+    public async Task ObtenerTodos_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        _mockObtenerTodos.Setup(s => s.Ejecutar()).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.ObtenerTodaslasSeries();
+
+        // Assert
+        var objectResult = resultado as ObjectResult;
+        objectResult.Should().NotBeNull();
+        objectResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region ObtenerSeriePorId Tests
+
+    [Fact]
+    public async Task ObtenerSeriePorId_IdCero_RetornaBadRequest()
     {
         // Act
-        var resultado = await _controller.Agregar(null);
+        var resultado = await _controller.ObtenerSeriePorId(0);
 
         // Assert
         var badRequestResult = resultado as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El objeto no puede ser nulo.");
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaCompleta
     [Fact]
-    public async Task ObtenerTodos_RetornaOkResult_ConListaCompleta()
+    public async Task ObtenerSeriePorId_IdNegativo_RetornaBadRequest()
     {
-        // Arrange
-        var listaSeriesDTO = new List<ObtenerSerieDTO>
-        {
-            new ObtenerSerieDTO { Id = 1, NumeroDeSerie = 1, Repeticiones = 10, Peso = 50.0, EjercicioAsignadoId = 1 },
-            new ObtenerSerieDTO { Id = 2, NumeroDeSerie = 2, Repeticiones = 8, Peso = 60.0, EjercicioAsignadoId = 1 }
-        };
-
-        _mockObtenerTodos
-            .Setup(s => s.Ejecutar())
-            .ReturnsAsync(listaSeriesDTO);
-
         // Act
-        var resultado = await _controller.ObtenerTodaslasSeries();
+        var resultado = await _controller.ObtenerSeriePorId(-5);
 
         // Assert
-        var okResult = resultado as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(listaSeriesDTO);
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
     }
 
-    //ObtenerTodos_RetornaOkResult_ConListaVacia
     [Fact]
-    public async Task ObtenerTodos_RetornaOkResult_ConListaVacia()
-    {
-        // Arrange
-        var listaSeriesDTO = new List<ObtenerSerieDTO>();
-
-        _mockObtenerTodos
-            .Setup(s => s.Ejecutar())
-            .ReturnsAsync(listaSeriesDTO);
-
-        // Act
-        var resultado = await _controller.ObtenerTodaslasSeries();
-
-        // Assert
-        var okResult = resultado as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(listaSeriesDTO);
-    }
-
-    //ObtenerTodos_LanzaExcepcion_RetornaStatus500
-    [Fact]
-    public async Task ObtenerTodos_LanzaExcepcion_RetornaStatus500()
-    {
-        // Arrange
-        _mockObtenerTodos
-            .Setup(s => s.Ejecutar())
-            .ThrowsAsync(new Exception("Error en el servidor."));
-
-        // Act
-        var resultado = await _controller.ObtenerTodaslasSeries();
-
-        // Assert
-        var objectResult = resultado as ObjectResult;
-        objectResult.Should().NotBeNull();
-        objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error en el servidor.");
-    }
-
-    //ObtenerPorId_NoExiste_RetornaNotFound
-    [Fact]
-    public async Task ObtenerPorId_NoExiste_RetornaNotFound()
+    public async Task ObtenerSeriePorId_Existoso_RetornaOk()
     {
         // Arrange
         int serieId = 1;
+        var serieDTO = new ObtenerSerieDTO { Id = serieId, NumeroDeSerie = 1 };
 
-        _mockObtenerPorId
-            .Setup(s => s.Ejecutar(serieId))
-            .ReturnsAsync((ObtenerSerieDTO?)null);
-
-        // Act
-        var resultado = await _controller.ObtenerSeriePorId(serieId);
-
-        // Assert
-        var notFoundResult = resultado as NotFoundObjectResult;
-        notFoundResult.Should().NotBeNull();
-        notFoundResult!.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"La serie con ID {serieId} no existe.");
-    }
-
-    //ObtenerPorId_Existe_RetornaObjetoOkCreado
-    [Fact]
-    public async Task ObtenerPorId_Existe_RetornaObjetoOkCreado()
-    {
-        // Arrange
-        int serieId = 1;
-        var serieDTO = new ObtenerSerieDTO
-        {
-            Id = serieId,
-            NumeroDeSerie = 1,
-            Repeticiones = 10,
-            Peso = 50.0,
-            EjercicioAsignadoId = 1
-        };
-
-        _mockObtenerPorId
-            .Setup(s => s.Ejecutar(serieId))
-            .ReturnsAsync(serieDTO);
+        _mockObtenerPorId.Setup(s => s.Ejecutar(serieId)).ReturnsAsync(serieDTO);
 
         // Act
         var resultado = await _controller.ObtenerSeriePorId(serieId);
@@ -236,115 +193,89 @@ public class SerieControllerTests
         okResult.Value.Should().BeEquivalentTo(serieDTO);
     }
 
-    //Actualizar_RetornaOkObjectResult_ConObjetoActualizado
     [Fact]
-    public async Task Actualizar_RetornaOkObjectResult_ConObjetoActualizado()
+    public async Task ObtenerSeriePorId_NoExiste_RetornaNotFound()
     {
         // Arrange
-        int serieId = 1;
-        var actualizarSerieDTO = new ActualizarSerieDTO
-        {
-            Id = serieId,
-            NumeroDeSerie = 2,
-            Repeticiones = 12,
-            Peso = 55.0,
-            EjercicioAsignadoId = 1
-        };
-        var serieDTO = new ObtenerSerieDTO
-        {
-            Id = serieId,
-            NumeroDeSerie = 2,
-            Repeticiones = 12,
-            Peso = 55.0,
-            EjercicioAsignadoId = 1
-        };
-
-        _mockActualizar
-            .Setup(s => s.Ejecutar(actualizarSerieDTO))
-            .ReturnsAsync(serieDTO);
+        int serieId = 999;
+        _mockObtenerPorId.Setup(s => s.Ejecutar(serieId)).ReturnsAsync((ObtenerSerieDTO?)null);
 
         // Act
-        var resultado = await _controller.Actualizar(serieId, actualizarSerieDTO);
-
-        // Assert
-        var okResult = resultado as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(serieDTO);
-    }
-
-    //Actualizar_NoEncontrado_RetornaNotFoundResult
-    [Fact]
-    public async Task Actualizar_NoEncontrado_RetornaNotFoundResult()
-    {
-        // Arrange
-        int serieId = 1;
-        var actualizarSerieDTO = new ActualizarSerieDTO
-        {
-            Id = serieId,
-            NumeroDeSerie = 2,
-            Repeticiones = 12,
-            Peso = 55.0,
-            EjercicioAsignadoId = 1
-        };
-
-        _mockActualizar
-            .Setup(s => s.Ejecutar(actualizarSerieDTO))
-            .ReturnsAsync((ObtenerSerieDTO?)null);
-
-        // Act
-        var resultado = await _controller.Actualizar(serieId, actualizarSerieDTO);
+        var resultado = await _controller.ObtenerSeriePorId(serieId);
 
         // Assert
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult!.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"La serie con ID {serieId} no existe.");
     }
 
-    //Actualizar_LanzaExcepcion_RetornaStatusCode500
     [Fact]
-    public async Task Actualizar_LanzaExcepcion_RetornaStatusCode500()
+    public async Task ObtenerSeriePorId_ExcepcionGenerica_RetornaInternalServerError()
     {
         // Arrange
-        int serieId = 1;
-        var actualizarSerieDTO = new ActualizarSerieDTO
-        {
-            Id = serieId,
-            NumeroDeSerie = 2,
-            Repeticiones = 12,
-            Peso = 55.0,
-            EjercicioAsignadoId = 1
-        };
-
-        _mockActualizar
-            .Setup(s => s.Ejecutar(actualizarSerieDTO))
-            .ThrowsAsync(new Exception("Error al actualizar la serie"));
+        _mockObtenerPorId.Setup(s => s.Ejecutar(1)).ThrowsAsync(new Exception());
 
         // Act
-        var resultado = await _controller.Actualizar(serieId, actualizarSerieDTO);
+        var resultado = await _controller.ObtenerSeriePorId(1);
 
         // Assert
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error en el servidor.");
     }
 
-    //Actualizar_IdNoCoincide_RetornaBadRequestResult
+    #endregion
+
+    #region Actualizar Tests
+
     [Fact]
-    public async Task Actualizar_IdNoCoincide_RetornaBadRequestResult()
+    public async Task Actualizar_IdCero_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarSerieDTO { Id = 0 };
+
+        // Act
+        var resultado = await _controller.Actualizar(0, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNegativo_RetornaBadRequest()
+    {
+        // Arrange
+        var dto = new ActualizarSerieDTO { Id = -3 };
+
+        // Act
+        var resultado = await _controller.Actualizar(-3, dto);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_DtoNulo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Actualizar(1, null!);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Actualizar_IdNoCoincide_RetornaBadRequest()
     {
         // Arrange
         int serieId = 1;
-        var actualizarSerieDTO = new ActualizarSerieDTO
-        {
-            Id = serieId,
-            NumeroDeSerie = 2,
-            Repeticiones = 12,
-            Peso = 55.0,
-            EjercicioAsignadoId = 1
-        };
+        var actualizarSerieDTO = new ActualizarSerieDTO { Id = serieId };
 
         // Act
         var resultado = await _controller.Actualizar(serieId + 1, actualizarSerieDTO);
@@ -353,36 +284,98 @@ public class SerieControllerTests
         var badRequestResult = resultado as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El ID en la URL no coincide con el ID en el cuerpo.");
     }
 
-    //Actualizar_DTONulo_RetornaBadRequestResult
     [Fact]
-    public async Task Actualizar_DTONulo_RetornaBadRequestResult()
+    public async Task Actualizar_Exitoso_RetornaOk()
     {
         // Arrange
         int serieId = 1;
+        var actualizarSerieDTO = new ActualizarSerieDTO { Id = serieId, NumeroDeSerie = 2 };
+        var serieDTO = new ObtenerSerieDTO { Id = serieId, NumeroDeSerie = 2 };
+
+        _mockActualizar.Setup(s => s.Ejecutar(actualizarSerieDTO)).ReturnsAsync(serieDTO);
 
         // Act
-        var resultado = await _controller.Actualizar(serieId, null);
+        var resultado = await _controller.Actualizar(serieId, actualizarSerieDTO);
+
+        // Assert
+        var okResult = resultado as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(serieDTO);
+    }
+
+    [Fact]
+    public async Task Actualizar_NoEncontrado_RetornaNotFound()
+    {
+        // Arrange
+        int serieId = 999;
+        var actualizarSerieDTO = new ActualizarSerieDTO { Id = serieId };
+
+        _mockActualizar.Setup(s => s.Ejecutar(actualizarSerieDTO)).ReturnsAsync((ObtenerSerieDTO?)null);
+
+        // Act
+        var resultado = await _controller.Actualizar(serieId, actualizarSerieDTO);
+
+        // Assert
+        var notFoundResult = resultado as NotFoundObjectResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult!.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public async Task Actualizar_ExcepcionGenerica_RetornaInternalServerError()
+    {
+        // Arrange
+        int serieId = 1;
+        var actualizarSerieDTO = new ActualizarSerieDTO { Id = serieId };
+
+        _mockActualizar.Setup(s => s.Ejecutar(actualizarSerieDTO)).ThrowsAsync(new Exception());
+
+        // Act
+        var resultado = await _controller.Actualizar(serieId, actualizarSerieDTO);
+
+        // Assert
+        var objectResult = resultado as ObjectResult;
+        objectResult.Should().NotBeNull();
+        objectResult!.StatusCode.Should().Be(500);
+    }
+
+    #endregion
+
+    #region Eliminar Tests
+
+    [Fact]
+    public async Task Eliminar_IdCero_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(0);
 
         // Assert
         var badRequestResult = resultado as BadRequestObjectResult;
         badRequestResult.Should().NotBeNull();
         badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("El objeto no puede ser nulo.");
     }
 
-    //Eliminar_Existente_DeberiaRetornarNoContent
     [Fact]
-    public async Task Eliminar_Existente_DeberiaRetornarNoContent()
+    public async Task Eliminar_IdNegativo_RetornaBadRequest()
+    {
+        // Act
+        var resultado = await _controller.Eliminar(-7);
+
+        // Assert
+        var badRequestResult = resultado as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task Eliminar_Exitoso_RetornaNoContent()
     {
         // Arrange
         int serieId = 1;
-
-        _mockEliminar
-            .Setup(s => s.Ejecutar(serieId))
-            .ReturnsAsync(true);
+        _mockEliminar.Setup(s => s.Ejecutar(serieId)).ReturnsAsync(true);
 
         // Act
         var resultado = await _controller.Eliminar(serieId);
@@ -393,16 +386,12 @@ public class SerieControllerTests
         noContentResult!.StatusCode.Should().Be(204);
     }
 
-    //Eliminar_NoExistente_DeberiaRetornarNotFound
     [Fact]
-    public async Task Eliminar_NoExistente_DeberiaRetornarNotFound()
+    public async Task Eliminar_NoExistente_RetornaNotFound()
     {
         // Arrange
-        int serieId = 1;
-
-        _mockEliminar
-            .Setup(s => s.Ejecutar(serieId))
-            .ReturnsAsync(false);
+        int serieId = 999;
+        _mockEliminar.Setup(s => s.Ejecutar(serieId)).ReturnsAsync(false);
 
         // Act
         var resultado = await _controller.Eliminar(serieId);
@@ -411,19 +400,14 @@ public class SerieControllerTests
         var notFoundResult = resultado as NotFoundObjectResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult!.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be($"La serie con ID {serieId} no existe.");
     }
 
-    //Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500
     [Fact]
-    public async Task Eliminar_CuandoOcurreErrorEnServidor_DeberiaRetornarStatusCode500()
+    public async Task Eliminar_ExcepcionGenerica_RetornaInternalServerError()
     {
         // Arrange
         int serieId = 1;
-
-        _mockEliminar
-            .Setup(s => s.Ejecutar(serieId))
-            .ThrowsAsync(new Exception("Error al eliminar la serie"));
+        _mockEliminar.Setup(s => s.Ejecutar(serieId)).ThrowsAsync(new Exception());
 
         // Act
         var resultado = await _controller.Eliminar(serieId);
@@ -432,6 +416,7 @@ public class SerieControllerTests
         var objectResult = resultado as ObjectResult;
         objectResult.Should().NotBeNull();
         objectResult!.StatusCode.Should().Be(500);
-        objectResult.Value.Should().Be("Error en el servidor.");
     }
+
+    #endregion
 }
