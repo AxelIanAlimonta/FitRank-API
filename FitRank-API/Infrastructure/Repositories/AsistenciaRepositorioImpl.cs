@@ -122,5 +122,14 @@ public class AsistenciaRepositorioImpl : IAsistenciaRepositorio
             .OrderByDescending(a => a.HoraEntrada)
             .FirstOrDefaultAsync();
     }
+    public async Task<Asistencia?> ObtenerUltimaAsistenciaAbiertaAsync(long usuarioId, long gimnasioId)
+    {
+        return await _context.Asistencias
+            .Where(a => a.UsuarioId == usuarioId
+                        && a.GimnasioId == gimnasioId
+                        && a.HoraSalida == null)
+            .OrderByDescending(a => a.HoraEntrada)
+            .FirstOrDefaultAsync();
+    }
 
 }
