@@ -10,5 +10,24 @@
         public DateTime Fecha { get; set; }
         public string? Observaciones { get; set; }
         public bool Confirmado { get; set; }
+
+  
+        public UsuarioIngresoDTO? Usuario { get; set; }
+    }
+
+    public class UsuarioIngresoDTO
+    {
+        public long Id { get; set; }
+        public string Nombre { get; set; } = "";
+        public string Apellido { get; set; } = "";
+
+      
+        public string? FotoDePerfil { get; set; }
+
+     
+        public DateTime? CuotaPagadaHasta { get; set; }
+
+        public string? Email { get; set; }
+        public string? Telefono { get; set; }
     }
 }
