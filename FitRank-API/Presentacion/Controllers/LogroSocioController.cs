@@ -23,8 +23,8 @@ namespace FitRank_API.Presentacion.Controllers
         // Logros ya obtenidos por el socio en ese gimnasio
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LogroSocioDTO>>> ObtenerLogrosObtenidosPorSocio(
-            int socioId, 
-            int gimnasioId)
+            long socioId, 
+            long gimnasioId)
         {
             if (socioId <= 0)
                 return BadRequest(new { Mensaje = "El ID del socio debe ser mayor a cero." });
