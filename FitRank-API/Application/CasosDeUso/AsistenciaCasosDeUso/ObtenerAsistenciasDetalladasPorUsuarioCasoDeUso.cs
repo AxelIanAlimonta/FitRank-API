@@ -36,10 +36,8 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
                 };
             }
 
-            // 🔹 Obtener asistencias
             var asistencias = await _asistenciaRepositorio.ObtenerPorUsuarioAsync(usuarioId);
 
-            // 🔹 Mapear a DTOs
             var asistenciasDto = _mapper.Map<List<AsistenciaDetalleUsuarioDTO>>(asistencias);
 
             var socioDto = _mapper.Map<SocioDTO>(socio);

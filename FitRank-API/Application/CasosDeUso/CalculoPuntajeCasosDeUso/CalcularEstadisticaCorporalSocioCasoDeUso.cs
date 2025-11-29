@@ -25,7 +25,6 @@ namespace FitRank_API.Application.UseCases
             if (socio == null || socio.MedidasCorporales == null || !socio.MedidasCorporales.Any())
                 return null;
 
-            // Tomamos la última medida
             var ultimaMedida = socio.MedidasCorporales
                 .OrderByDescending(m => m.Fecha)
                 .First();

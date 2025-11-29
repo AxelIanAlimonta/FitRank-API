@@ -25,7 +25,6 @@ namespace FitRank_API.Application.CasosDeUso.BatallasCasosDeUso
                 : DateTime.Now;
 
 
-            // 🔥 Recalcular puntos por seguridad y validación
             var puntosA = await _context.Actividades
                 .Where(a => a.Entrenamiento.SocioId == batalla.SocioAId &&
                             a.Entrenamiento.Fecha >= batalla.FechaInicio &&
@@ -37,12 +36,7 @@ namespace FitRank_API.Application.CasosDeUso.BatallasCasosDeUso
                             a.Entrenamiento.Fecha >= batalla.FechaInicio &&
                             a.Entrenamiento.Fecha <= fechaFin)
                 .SumAsync(a => (double?)a.Punto) ?? 0;
-            //if (batalla.Estado == BatallaEstado.Activa)
-            // {
-            //calcular la cantidad de dias que faltan para que finalice
-            //   var diasTranscurridos = (DateTime.Now - batalla.FechaInicio).TotalDays;
 
-            //}
 
             return new ProgresoBatallaDTO
             {

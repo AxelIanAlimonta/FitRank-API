@@ -44,15 +44,12 @@ namespace FitRank_API.Application.UseCases.Batallas
                             a.Entrenamiento.Fecha <= fechaFin)
                 .SumAsync(a => (double?)a.Punto) ?? 0;
 
-            // Guardamos puntajes finales
             batalla.PuntosA = puntosA;
             batalla.PuntosB = puntosB;
             batalla.Estado = BatallaEstado.Finalizada;
             batalla.FechaFin = fechaFin;
 
 
-            // Determinar ganador
-            //string ganador;
             int? ganadorId = null;
             if (puntosA > puntosB) ganadorId = batalla.SocioAId;
             else if (puntosB > puntosA) ganadorId = batalla.SocioBId;

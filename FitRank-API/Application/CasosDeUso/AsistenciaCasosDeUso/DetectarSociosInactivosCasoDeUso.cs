@@ -46,7 +46,6 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
                     });
                 }
             }
-            // 🔹 HARDCODE PARA PRUEBA — Simula un socio inactivo de ejemplo
             resultado.Add(new SocioInactivoDTO
             {
                 Id = 2,

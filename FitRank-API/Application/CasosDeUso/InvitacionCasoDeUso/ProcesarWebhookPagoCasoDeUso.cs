@@ -41,7 +41,6 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
 
 
 
-        // ⚠️ Ahora recibe un long, NO el body
         public virtual async Task Ejecutar(long paymentId)
         {
             try
@@ -53,34 +52,32 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
 
                 if (payment == null)
                 {
-                    Console.WriteLine("⚠ Pago no encontrado en MP.");
+                    Console.WriteLine(" Pago no encontrado en MP.");
                     return;
                 }
 
                 if (payment.Status != "approved")
                 {
-                    Console.WriteLine("⚠ Pago recibido pero no aprobado.");
+                    Console.WriteLine(" Pago recibido pero no aprobado.");
                     return;
                 }
 
-                // 🎯 Recuperamos la invitación asociada
                 long invitacionId = long.Parse(payment.ExternalReference);
                 var invitacion = await _invitacionRepo.ObtenerPorIdAsync(invitacionId);
 
                 if (invitacion == null)
                 {
-                    Console.WriteLine($"❌ Invitación {invitacionId} no encontrada.");
+                    Console.WriteLine($"Invitación {invitacionId} no encontrada.");
                     return;
                 }
 
                 var socio = await _usuarioRepo.ObtenerPorIdAsync(invitacion.UsuarioId ?? 0);
                 if (socio == null)
                 {
-                    Console.WriteLine("❌ Socio no encontrado.");
+                    Console.WriteLine("Socio no encontrado.");
                     return;
                 }
 
-                // 💰 Registrar ingreso
                 await _agregarIngresoCaso.Ejecutar(new AgregarIngresoDTO
                 {
                     GimnasioId = invitacion.GimnasioId,
@@ -90,7 +87,6 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
                     Observaciones = "Pago acreditado por Mercado Pago"
                 });
 
-                // 📩 Reenviar QR y activación
                 await _agregarInvitacionCaso.ProcesarInvitacionQrAsync(
                     new GenerarInvitacionDTO
                     {
@@ -103,12 +99,10 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
                     invitacion
                 );
 
-                // ✔ Actualizar estado
                 invitacion.Estado = "Pagado";
                 invitacion.MpPaymentId = paymentId.ToString();
                 await _invitacionRepo.ActualizarAsync(invitacion);
 
-                // 🔥 Notificar SOLO al usuario que pagó
                 await _hubContext.Clients.Group($"user-{socio.Id}")
                     .SendAsync("pagoAcreditado", new
                     {
@@ -117,14 +111,14 @@ namespace FitRank_API.Application.CasosDeUso.MercadoPago
                         fecha = DateTime.Now
                     });
 
-                Console.WriteLine($"📢 Notificación enviada al usuario {socio.Id}");
+                Console.WriteLine($"Notificación enviada al usuario {socio.Id}");
 
 
-                Console.WriteLine("💚 PAGO PROCESADO OK");
+                Console.WriteLine("PAGO PROCESADO OK");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Error procesando pago MP: " + ex);
+                Console.WriteLine(" Error procesando pago MP: " + ex);
             }
         }
     }

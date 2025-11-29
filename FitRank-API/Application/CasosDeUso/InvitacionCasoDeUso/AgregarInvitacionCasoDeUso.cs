@@ -55,17 +55,16 @@ namespace FitRank_API.Application.CasosDeUso.Invitacion
                 var usuarioExistente = await _usuarioRepositorio.ObtenerPorEmailAsync(dto.Email);
 
                 var ex = new Exception("EMAIL_DUPLICADO");
-                ex.Data["socioId"] = usuarioExistente.Id;    // <-- enviamos el ID
+                ex.Data["socioId"] = usuarioExistente.Id;    
                 throw ex;
             }
 
-            // 🟣 Validación por DNI
             if (await _usuarioRepositorio.ExisteDniAsync(dto.Dni))
             {
                 var usuarioExistente = await _usuarioRepositorio.ObtenerPorDniAsync(dto.Dni);
 
                 var ex = new Exception("DNI_DUPLICADO");
-                ex.Data["socioId"] = usuarioExistente.Id;    // <-- enviamos el ID
+                ex.Data["socioId"] = usuarioExistente.Id;    
                 throw ex;
             }
 

@@ -26,7 +26,6 @@ public class OtorgarLogroPorNombreClaveCasoDeUso
 
     public virtual async Task<LogroOtorgadoDTO> Ejecutar(OtorgarLogroPorNombreClaveDTO dto)
     {
-        // DTO base: siempre devolvemos socio + gym
         var salida = new LogroOtorgadoDTO
         {
             SocioId = dto.SocioId,
@@ -34,7 +33,6 @@ public class OtorgarLogroPorNombreClaveCasoDeUso
             Otorgado = false
         };
 
-        // 1. Buscar logro global
         var logro = await _logroRepositorio.ObtenerPorNombreClaveAsync(dto.NombreClave);
 
         if (logro is null || !logro.Estado)
@@ -47,7 +45,6 @@ public class OtorgarLogroPorNombreClaveCasoDeUso
         salida.Nombre = logro.Nombre;
         salida.NombreClave = logro.NombreClave;
 
-        // 2. Verificar config del gimnasio
         var logroGimnasio = await _logroGimnasioRepositorio
             .ObtenerPorGimnasioYLogroAsync(dto.GimnasioId, logro.Id);
 
@@ -57,7 +54,6 @@ public class OtorgarLogroPorNombreClaveCasoDeUso
             return salida;
         }
 
-        // 3. Verificar si el socio ya lo tiene
         var yaLoTiene = await _logroSocioRepositorio
             .ExisteAsync(logro.Id, dto.GimnasioId, dto.SocioId);
 
@@ -67,7 +63,6 @@ public class OtorgarLogroPorNombreClaveCasoDeUso
             return salida;
         }
 
-        // 4. Crear el LogroSocio (ACÁ recién se otorga)
         var logroSocio = new LogroSocio
         {
             LogroId = logro.Id,
@@ -78,7 +73,6 @@ public class OtorgarLogroPorNombreClaveCasoDeUso
 
         var creado = await _logroSocioRepositorio.CrearAsync(logroSocio);
 
-        // 5. Completar salida
         salida.Otorgado = true;
         salida.FechaOtorgado = creado.FechaObtenido;
         salida.Motivo = null;

@@ -17,7 +17,6 @@ namespace FitRank_API.Application.CasosDeUso.SocioCasosDeUso
             var socio = await _repo.ObtenerPorIdAsync(socioId);
             if (socio == null) return false;
 
-            // Solo editás estos campos
             socio.Nombre = dto.Nombre;
             socio.Apellido = dto.Apellido;
             socio.Sexo = dto.Sexo;

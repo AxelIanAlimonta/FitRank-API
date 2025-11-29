@@ -24,19 +24,16 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
 
             var hace30 = DateTime.UtcNow.AddDays(-30);
 
-            // --- Aplicamos el filtro de 30 días ---
             foreach (var entrenamientoDTO in historial)
             {
                 foreach (var actividadDTO in entrenamientoDTO.Actividades)
                 {
-                    // Buscar todas las actividades reales del mismo ejercicio asignado
                     var actividadesReales = entrenamientos
                         .SelectMany(e => e.Actividades)
                         .Where(a => a.EjercicioAsignadoId == actividadDTO.IdEjercicioAsignado)
                         .OrderBy(a => a.Entrenamiento.Fecha)
                         .ToList();
 
-                    // Mapearlas al historial
                     actividadDTO.ProgresoHistorico =
                         _mapper.Map<List<ProgresoEjercicioDTO>>(actividadesReales)
                         .Where(p => p.Fecha >= hace30)

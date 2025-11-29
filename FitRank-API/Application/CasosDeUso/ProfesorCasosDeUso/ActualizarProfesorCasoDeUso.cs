@@ -23,21 +23,18 @@ namespace FitRank_API.Application.CasosDeUso.ProfesorCasosDeUso
             if (profesor == null)
                 return null;
 
-            // 🟣 Validación EMAIL
             if (profesor.Email != dto.Email) 
             {
                 if (await _profesorRepositorio.ExisteEmailAsync(dto.Email))
                     throw new Exception("EMAIL_DUPLICADO");
             }
 
-            // 🟣 Validación DNI
-            if (profesor.Dni != dto.Dni) // solo validar si lo cambió
+            if (profesor.Dni != dto.Dni) 
             {
                 if (await _profesorRepositorio.ExisteDniAsync(dto.Dni))
                     throw new Exception("DNI_DUPLICADO");
             }
 
-            // 🟣 Mapear cambios
             _mapper.Map(dto, profesor);
 
             var actualizado = await _profesorRepositorio.ActualizarAsync(profesor);

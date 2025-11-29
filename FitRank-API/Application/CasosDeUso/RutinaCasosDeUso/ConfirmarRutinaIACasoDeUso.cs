@@ -19,12 +19,10 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             if (body is null || body.Rutina is null)
                 return ResultadoConfirmarRutinaDTO.Fallo("Body vacío.");
 
-            // Validar socio y ejercicios dentro del repositorio
             var validacion = await _rutinaRepositorio.ValidarReferenciasAsync(body);
             if (!validacion.Ok)
                 return ResultadoConfirmarRutinaDTO.Fallo(validacion.Mensaje);
 
-            // Convertir snapshots a strings JSON
             string? snapJson = null;
             string? rulesJson = null;
             try
@@ -36,7 +34,6 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
             }
             catch { }
 
-            // Crear entidad de Rutina
             var rutina = new Rutina
             {
                 Nombre = body.Rutina.Nombre,
@@ -51,7 +48,6 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
                 Sesiones = new List<Sesion>()
             };
 
-            // Guardar usando el repositorio
             await _rutinaRepositorio.GuardarRutinaCompletaAsync(rutina, body.Rutina.SesionesPlan);
 
             return ResultadoConfirmarRutinaDTO.Exito(rutina.Id);

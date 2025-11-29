@@ -8,7 +8,6 @@ namespace FitRank_API.Application.CasosDeUso.SocioCasoDeUso;
 public class ActualizarSocioCasoDeUso
 {
     private readonly ISocioRepositorio _socioRepositorio;
-    //mapper
     private readonly IMapper _mapper;
     public ActualizarSocioCasoDeUso(ISocioRepositorio socioRepositorio, IMapper mapper)
     {

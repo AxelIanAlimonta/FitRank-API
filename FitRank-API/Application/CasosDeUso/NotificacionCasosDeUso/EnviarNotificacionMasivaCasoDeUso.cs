@@ -80,7 +80,6 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
 
                 count++;
 
-                // ⭐ EMITIR AL USUARIO POR SIGNALR
                 await _hub.Clients.Group($"user-{id}")
                     .SendAsync("NotificacionRecibida", new
                     {

@@ -24,7 +24,6 @@ public class AgregarGimnasioCasoDeUso
 
     public virtual async Task<ObtenerGimnasioDTO> Ejecutar(AgregarGimnasioDTO dto)
     {
-        // 1️⃣ Validar si el admin existe (si viene)
         Administrador? admin = null;
         if (dto.AdministradorId.HasValue)
         {
@@ -34,11 +33,9 @@ public class AgregarGimnasioCasoDeUso
 
         }
 
-        // 2️⃣ Mapear y asignar admin (si aplica)
         var gimnasioEntidad = _mapper.Map<Gimnasio>(dto);
         gimnasioEntidad.AdministradorId = admin?.Id;
 
-        // 3️⃣ Guardar
         var gimnasioCreado = await _gimnasioRepositorio.AgregarGimnasio(gimnasioEntidad);
 
         if (admin != null)
@@ -47,7 +44,6 @@ public class AgregarGimnasioCasoDeUso
             await _adminRepositorio.ActualizarAsync(admin);
         }
 
-        // 4️⃣ Devolver DTO de salida
         return _mapper.Map<ObtenerGimnasioDTO>(gimnasioCreado);
     }
 }

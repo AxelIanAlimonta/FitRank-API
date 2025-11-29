@@ -23,7 +23,6 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Obtener el gimnasio real del usuario
             long? gimnasioId = _gimnasioRepositorio.ObtenerGimnasioIdPorUsuario(user.Id);
 
             var claims = new List<Claim>

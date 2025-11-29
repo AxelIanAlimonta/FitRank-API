@@ -26,10 +26,8 @@ namespace FitRank_API.Application.CasosDeUso.BatallasCasosDeUso
 
             foreach (var b in batallas)
             {
-                // Determinar quién es el otro jugador
                 long oponenteId = b.SocioAId == socioId ? b.SocioBId : b.SocioAId;
 
-                // Obtener nombre del oponente (si ya tenés entidad Socio)
                 var oponente = await _context.Socios
                     .Where(s => s.Id == oponenteId)
                     .Select(s => s.Nombre + " " + s.Apellido)

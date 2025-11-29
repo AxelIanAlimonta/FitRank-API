@@ -98,7 +98,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
         tipo = "entrada",
         usuarioId = user.Id,
         nombre = $"{user.Nombre} {user.Apellido}",
-        foto = user.FotoDePerfil,  // solo s
+        foto = user.FotoDePerfil,  
         fecha = DateTime.Now
     });
 
@@ -106,7 +106,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
                     return new QrValidationResponseDTO
                     {
                         Valido = true,
-                        Mensaje = "✅ Acceso permitido — entrada registrada",
+                        Mensaje = "Acceso permitido — entrada registrada",
                         AsistenciaId = (int)nueva.Id,
                         UsuarioId = userId,
                         User = new UsuarioAuthDTO
@@ -138,7 +138,7 @@ namespace FitRank_API.Application.CasosDeUso.AsistenciaCasosDeUso
                     return new QrValidationResponseDTO
                     {
                         Valido = true,
-                        Mensaje = "👋 Salida registrada correctamente",
+                        Mensaje = " Salida registrada correctamente",
                         AsistenciaId = (int)asistenciaHoy.Id
                     };
                 }

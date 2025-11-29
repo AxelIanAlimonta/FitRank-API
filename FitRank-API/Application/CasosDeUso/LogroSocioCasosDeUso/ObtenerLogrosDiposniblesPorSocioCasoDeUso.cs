@@ -22,7 +22,6 @@ namespace FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso
 
         public virtual async Task<IEnumerable<LogroDisponibleDTO>> Ejecutar(int socioId, int gimnasioId)
         {
-            // 1) Config de logros del gimnasio (incluye Logro)
             var configGimnasio = await _logroGimnasioRepositorio
                 .ObtenerPorGimnasioAsync(gimnasioId);
 
@@ -30,7 +29,6 @@ namespace FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso
                 .Where(lg => lg.EstaActivo && lg.Logro != null)
                 .ToList();
 
-            // 2) Logros que el socio YA tiene en ese gimnasio
             var logrosSocio = await _logroSocioRepositorio
                 .ObtenerPorSocioYGimnasioAsync(socioId, gimnasioId);
 
@@ -38,7 +36,6 @@ namespace FitRank_API.Application.CasosDeUso.LogroSocioCasosDeUso
                 .Select(ls => ls.LogroId)
                 .ToHashSet();
 
-            // 3) Filtrar: habilitados que el socio todavía no ganó
             var disponibles = logrosHabilitados
                 .Where(lg => !idsLogrosSocio.Contains(lg.LogroId))
                 .ToList();

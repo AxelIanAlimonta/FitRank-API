@@ -25,7 +25,6 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
 
         public virtual async Task<ObtenerEntrenamientoConPuntaje> Ejecutar(RegistrarEntrenamientoConActividadesDTO dto)
         {
-            // 1️⃣ Crear entrenamiento
             var entrenamiento = new Entrenamiento
             {
                 SocioId = dto.SocioId,
@@ -37,10 +36,8 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
             double puntajeTotal = 0;
             var resultados = new List<ObtenerActividadConPuntajeDTO>();
 
-            // 2️⃣ Recorrer actividades y calcular puntaje
             foreach (var actividadDto in dto.Actividades)
             {
-                // Obtener serie y socio
                 var serie = await _actividadRepo.ObtenerSeriePorIdAsync(actividadDto.SerieId);
                 var socio = await _entrenamientoRepo.ObtenerSocioPorIdAsync(dto.SocioId);
                 var ultimaMedida = socio.MedidasCorporales.OrderByDescending(m => m.Fecha).First();
@@ -58,7 +55,6 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
                 if (ejercicio == null || socio == null)
                     continue;
 
-                // Calcular puntos
                 var calculo = new CalculoGenerico();
                 var resultado = calculo.CalcularPuntos(
                     ejercicio,
@@ -71,7 +67,6 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
                     multiplicadorReps
                 );
 
-                // Crear actividad
                 var actividad = new Actividad
                 {
                     SerieId = actividadDto.SerieId,
@@ -95,7 +90,6 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
                 });
             }
 
-            // 3️⃣ Devolver resumen
             return new ObtenerEntrenamientoConPuntaje
             {
                 EntrenamientoId = entrenamiento.Id,

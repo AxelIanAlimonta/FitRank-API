@@ -27,7 +27,6 @@ namespace FitRank_API.Application.UseCases
             if (socio == null || socio.Entrenamientos == null || !socio.Entrenamientos.Any())
                 return null;
 
-            // Tomar todas las actividades del socio
             var actividades = socio.Entrenamientos
                 .SelectMany(e => e.Actividades ?? Enumerable.Empty<Domain.Entities.Actividad>())
                 .ToList();
@@ -35,10 +34,8 @@ namespace FitRank_API.Application.UseCases
             if (!actividades.Any())
                 return null;
 
-            // Puntaje total
             double puntajeTotal = actividades.Sum(a => a.Punto ?? 0);
 
-            // Opcional: puntaje por grupo muscular
             var puntajePorGrupo = actividades
                 .Where(a => a.EjercicioAsignado != null)
                 .GroupBy(a => a.EjercicioAsignado.Ejercicio.GrupoMuscularId)

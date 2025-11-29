@@ -22,7 +22,6 @@ namespace FitRank_API.Application.CasosDeUso.ReporteCasosDeUso
             if (reporteExistente == null)
                 return null;
 
-            // Solo actualizamos campos permitidos
             reporteExistente.Titulo = actualizarReporteDTO.Titulo;
             reporteExistente.Descripcion = actualizarReporteDTO.Descripcion;
 

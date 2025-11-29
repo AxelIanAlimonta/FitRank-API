@@ -42,7 +42,6 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
             var gymId = await ObtenerGimnasioDeUsuario(userId);
             if (gymId == null) return Enumerable.Empty<HistorialNotificacionDTO>();
 
-            // obtener listado
             var socios = await _socioRepo.ObtenerTodosPorGimnasio(gymId.Value);
             var profes = await _profRepo.ObtenerPorGimnasioAsync(gymId.Value);
             var admins = await _adminRepo.ObtenerTodosPorGimnasio(gymId.Value);
@@ -54,7 +53,6 @@ namespace FitRank_API.Application.CasosDeUso.NotificacionCasosDeUso
 
             var notificaciones = await _notiRepo.ObtenerNotificacionesDelGimnasio(ids);
 
-            // 🔥 Mapeo manual para evitar loops
             var resultado = notificaciones.Select(n => new HistorialNotificacionDTO
             {
                 Id = n.Id,

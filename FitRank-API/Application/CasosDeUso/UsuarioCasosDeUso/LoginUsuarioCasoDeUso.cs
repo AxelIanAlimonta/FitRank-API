@@ -32,7 +32,6 @@ namespace FitRank_API.Application.CasosDeUso.UsuarioCasosDeUso
             if (!usuario.EsActivado)
                 return null;
 
-            // mapear a DTO para que el frontend reciba lo que necesita
             var usuarioDto = _mapper.Map<UsuarioAuthDTO>(usuario);
 
             return (usuario, usuarioDto);

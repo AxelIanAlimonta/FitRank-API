@@ -15,7 +15,6 @@ public class ObtenerRutinasFavoritasGimnasioCasoDeUso
 
     public async Task<List<RutinaFavoritaGimDTO>> Ejecutar(long gimnasioId)
     {
-        // 1️⃣ Obtener todos los socios del gimnasio
         var socios = await _repoSocio.ObtenerTodosPorGimnasio(gimnasioId);
 
         var socioIds = socios.Select(s => s.Id).ToList();
@@ -23,9 +22,8 @@ public class ObtenerRutinasFavoritasGimnasioCasoDeUso
         
         var rutinas = await _repo.ObtenerRutinasFavoritasPorSociosAsync(socioIds);
 
-        // 3️⃣ Hacer ranking global
         var ranking = rutinas
-            .GroupBy(r => r.Nombre) // agrupamos por nombre
+            .GroupBy(r => r.Nombre) 
             .Select(g => new RutinaFavoritaGimDTO
             {
                 Nombre = g.Key,

@@ -16,7 +16,7 @@ namespace FitRank_API.Application.UseCases
         private readonly IEntrenamientoRepositorio _entrenamientoRepo;
         private readonly IEjercicioAsignadoRepositorio _ejercicioAsignadoRepo;
         private readonly ISesionRepositorio _sesionRepo;
-        private readonly FitRankDbContext _context; // si usás EF directamente
+        private readonly FitRankDbContext _context; 
         private readonly IRutinaRepositorio _rutinaRepo;
 
         public RegistrarActividadCasoDeUso(
@@ -37,7 +37,6 @@ namespace FitRank_API.Application.UseCases
 
         public virtual async Task<Domain.Entities.Actividad> Ejecutar(RegistrarActividadDTO dto)
         {
-            // 1️⃣ Obtener la serie y socio
             var serie = await _actividadRepo.ObtenerSeriePorIdAsync(dto.SerieId);
             var ejercicioAsignado = await _ejercicioAsignadoRepo.ObtenerPorIdAsync(serie.EjercicioAsignadoId);
             var sesion = await _sesionRepo.ObtenerPorIdAsync(ejercicioAsignado.SesionId);
@@ -45,7 +44,6 @@ namespace FitRank_API.Application.UseCases
             var socio = await _entrenamientoRepo.ObtenerSocioPorIdAsync(rutina.SocioId);
             var ultimaMedida = socio.MedidasCorporales.OrderByDescending(m => m.Fecha).FirstOrDefault();
 
-            // 2️⃣ Configuración del grupo muscular
             var configGrupo = await _context.ConfiguracionesGrupoMuscular
                 .FirstOrDefaultAsync(c => c.GrupoMuscularId == serie.EjercicioAsignado.Ejercicio.GrupoMuscularId);
 
@@ -58,7 +56,6 @@ namespace FitRank_API.Application.UseCases
             if (ejercicio == null || socio == null)
                 throw new Exception("No se pudo obtener socio o ejercicio.");
 
-            // 3️⃣ Calcular puntos
             var calculo = new CalculoGenerico();
             var resultado = calculo.CalcularPuntos(
                 ejercicio,
@@ -71,7 +68,6 @@ namespace FitRank_API.Application.UseCases
                 multiplicadorReps
             );
 
-            // 4️⃣ Verificar entrenamiento activo
             var entrenamiento = await _entrenamientoRepo.ObtenerEntrenamientoActivoPorSocioIdAsync(socio.Id);
 
             if (entrenamiento == null)
@@ -80,12 +76,11 @@ namespace FitRank_API.Application.UseCases
                 {
                     SocioId = socio.Id,
                     Fecha = DateTime.Now,
-                    Duracion = dto.Duracion // si lo tenés
+                    Duracion = dto.Duracion 
                 };
                 await _entrenamientoRepo.AgregarAsync(entrenamiento);
             }
 
-           // 5 Registrar actividad
             var actividad = new Domain.Entities.Actividad
             {
                 EntrenamientoId = entrenamiento.Id,
@@ -93,13 +88,11 @@ namespace FitRank_API.Application.UseCases
                 EjercicioAsignadoId = ejercicioAsignado.Id,
                 Peso = dto.Peso,
                 Repeticiones = dto.Repeticiones,
-                Duracion = dto.Duracion, // si lo tenés
+                Duracion = dto.Duracion, 
                 Punto = resultado.Puntos
             };
 
-            // 6 Verificar que haya batallas activas
             var batallas = _context.Batallas
-                //Activa es una opcion de enum
 
                 .Where(b => b.Estado == BatallaEstado.Activa && (b.SocioAId == socio.Id || b.SocioBId == socio.Id));
 

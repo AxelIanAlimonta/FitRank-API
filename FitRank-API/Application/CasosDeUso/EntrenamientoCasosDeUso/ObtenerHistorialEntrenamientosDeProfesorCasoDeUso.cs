@@ -23,13 +23,11 @@ namespace FitRank_API.Application.CasosDeUso.EntrenamientoCasosDeUso
 
             var hace30 = DateTime.UtcNow.AddDays(-30);
 
-            // 🚀 Precomputamos todas las actividades por ejercicio
             var todasLasActividades = entrenamientos
                 .SelectMany(e => e.Actividades)
                 .GroupBy(a => a.EjercicioAsignadoId)
                 .ToDictionary(g => g.Key, g => g.OrderBy(a => a.Entrenamiento.Fecha).ToList());
 
-            // 🔁 Para cada actividad del DTO, seteamos el progreso histórico
             foreach (var entrenamientoDTO in historial)
             {
                 foreach (var actividadDTO in entrenamientoDTO.Actividades)

@@ -32,7 +32,6 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
         {
             var socios = await _socioRepositorio.ObtenerSociosParaRankingAsync(gimnasioId);
 
-            // Si hay grupo muscular, validar existencia
             GrupoMuscular? grupo = null;
             if (grupoId.HasValue && grupoId > 0)
             {
@@ -45,7 +44,6 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
             {
                 var entrenamientos = s.Entrenamientos?.AsEnumerable() ?? Enumerable.Empty<Entrenamiento>();
 
-                // FILTRO POR FECHAS (si se enviaron)
                 if (desde.HasValue)
                 {
                     entrenamientos = entrenamientos.Where(e =>
@@ -59,11 +57,9 @@ namespace FitRank_API.Application.CasosDeUso.CalculoPuntajeCasosDeUso
                 }
 
 
-                // Expandir actividades
                 var actividades = entrenamientos
                     .SelectMany(e => e.Actividades ?? Enumerable.Empty<Actividad>());
 
-                // FILTRO POR GRUPO MUSCULAR (si se envió)
                 if (grupoId.HasValue && grupoId > 0)
                 {
                     actividades = actividades.Where(a =>

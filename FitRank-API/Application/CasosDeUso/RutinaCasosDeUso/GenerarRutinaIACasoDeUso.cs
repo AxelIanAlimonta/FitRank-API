@@ -20,22 +20,19 @@ namespace FitRank_API.Application.CasosDeUso.RutinaCasosDeUso
 
         public virtual async Task<ResultadoGenerarRutinaDTO> EjecutarAsync(RutinaRequestDTO input)
         {
-            // Ejecuta las reglas del motor
             var decisiones = await _rulesRunner.RunAsync(input);
 
-            // Si las reglas indican derivación, devolvemos un resultado especial
             if (decisiones.DerivarProfesional)
             {
                 return new ResultadoGenerarRutinaDTO
                 {
                     RequiereDerivacion = true,
-                    Mensaje = "Se requiere derivación/validación profesional", //mensaje especifico del porque no se pudo crear la rutina
+                    Mensaje = "Se requiere derivación/validación profesional", 
                     Decisiones = decisiones,
                     Rutina = null
                 };
             }
 
-            // Si no hay derivación, construimos la rutina
             var rutina = await _builder.BuildAsync(input, decisiones);
 
             return new ResultadoGenerarRutinaDTO
