@@ -10,7 +10,7 @@ namespace FitRank_API.Application.Mappings
         {
             CreateMap<Socio, RankingDTO>()
                 .ForMember(dest => dest.NombreCompleto, opt => opt.MapFrom(src => src.Nombre + " " + src.Apellido))
-                .ForMember(dest => dest.PuntajeTotal, opt => opt.Ignore()); // lo calculás en LINQ o servicio
+                .ForMember(dest => dest.PuntajeTotal, opt => opt.Ignore());
 
             CreateMap<Socio, PosicionDTO>()
                 .ForMember(dest => dest.NombreCompleto, opt => opt.MapFrom(src => src.Nombre + " " + src.Apellido))

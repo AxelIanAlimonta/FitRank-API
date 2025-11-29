@@ -23,7 +23,7 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
             foreach (var f in files)
             {
                 var txt = File.ReadAllText(f);
-                // valida json:
+
                 using var _ = JsonDocument.Parse(txt);
                 var arr = JsonSerializer.Deserialize<List<Workflow>>(txt);
                 if (arr is not null) workflows.AddRange(arr);
@@ -32,7 +32,6 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
             _re = new RulesEngine.RulesEngine(workflows.ToArray());
             _workflowNames = workflows.Select(w => w.WorkflowName).Distinct().ToArray();
 
-            // Debug útil:
             Console.WriteLine("Workflows cargados: " + string.Join(", ", _workflowNames));
         }
 
@@ -53,7 +52,7 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
             {
                 var tags = await EvaluateAsync(wf, input);
                 map[wf] = tags;
-                Console.WriteLine($"{wf}: {string.Join(", ", tags)}"); // debug
+                Console.WriteLine($"{wf}: {string.Join(", ", tags)}"); 
             }
             return map;
         }

@@ -40,7 +40,6 @@ namespace FitRank_API.Controllers
             return int.Parse(claim.Value);
         }
 
-        // POST api/amigos/solicitudes
         [HttpPost("solicitudes")]
         public async Task<IActionResult> EnviarSolicitud([FromBody] EnviarSolicitudAmistadDTO dto)
         {
@@ -72,7 +71,6 @@ namespace FitRank_API.Controllers
             }
         }
 
-        // GET api/amigos
         [HttpGet]
         public async Task<IActionResult> ObtenerAmigos()
         {
@@ -92,7 +90,6 @@ namespace FitRank_API.Controllers
             }
         }
 
-        // GET api/amigos/solicitudes
         [HttpGet("solicitudes")]
         public async Task<IActionResult> ObtenerSolicitudesPendientes()
         {
@@ -112,7 +109,6 @@ namespace FitRank_API.Controllers
             }
         }
 
-        // POST api/amigos/solicitudes/{amistadId}/aceptar
         [HttpPost("solicitudes/{amistadId:int}/aceptar")]
         public async Task<IActionResult> AceptarSolicitud([FromRoute] int amistadId)
         {
@@ -146,7 +142,6 @@ namespace FitRank_API.Controllers
             }
         }
 
-        // DELETE api/amigos/{amigoId}
         [HttpDelete("{amigoId:int}")]
         public async Task<IActionResult> EliminarAmigo([FromRoute] int amigoId)
         {

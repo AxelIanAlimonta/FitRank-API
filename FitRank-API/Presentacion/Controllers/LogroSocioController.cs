@@ -19,8 +19,6 @@ namespace FitRank_API.Presentacion.Controllers
             _obtenerLogrosDisponiblesSocioCasoDeUso = obtenerLogrosDisponiblesSocioCasoDeUso;
         }
 
-        // GET: api/socios/1/gimnasios/10/logrossocio
-        // Logros ya obtenidos por el socio en ese gimnasio
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LogroSocioDTO>>> ObtenerLogrosObtenidosPorSocio(
             long socioId, 
@@ -43,8 +41,6 @@ namespace FitRank_API.Presentacion.Controllers
             }
         }
 
-        // GET: api/socios/1/gimnasios/10/logrossocio/disponibles
-        // Logros que el gimnasio tiene habilitados pero el socio aún no ganó
         [HttpGet("disponibles")]
         public async Task<ActionResult<IEnumerable<LogroDisponibleDTO>>> ObtenerLogrosDisponiblesPorSocio(
             int socioId, 

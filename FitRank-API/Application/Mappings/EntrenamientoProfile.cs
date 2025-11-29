@@ -14,7 +14,6 @@ public class EntrenamientoProfile : Profile
         CreateMap<Entrenamiento, ObtenerEntrenamientoDTO>().ReverseMap();
 
 
-        // Entrenamiento → EntrenamientoHistorialDTO
         CreateMap<Entrenamiento, EntrenamientoHistorialDTO>()
             .ForMember(dest => dest.IdEntrenamiento, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.NombreSesion, opt => opt.MapFrom((src, dest) =>
@@ -35,10 +34,9 @@ public class EntrenamientoProfile : Profile
                 opt => opt.MapFrom(src => src.Actividades.Sum(a => a.Punto ?? 0)));
 
 
-        // Actividad → ActividadHistorialDTO
         CreateMap<Actividad, ActividadHistorialDTO>()
             .ForMember(dest => dest.IdActividad,
-                opt => opt.MapFrom(src => src.Id)) // <--- ESTA ES LA CLAVE
+                opt => opt.MapFrom(src => src.Id)) 
             .ForMember(dest => dest.IdEjercicioAsignado,
                 opt => opt.MapFrom(src => src.EjercicioAsignadoId))
             .ForMember(dest => dest.NombreEjercicio,
@@ -48,7 +46,6 @@ public class EntrenamientoProfile : Profile
             .ForMember(dest => dest.ProgresoHistorico, opt => opt.Ignore());
 
 
-        // Construcción de Progreso Histórico REAL
         CreateMap<Actividad, ProgresoEjercicioDTO>()
             .ForMember(dest => dest.Fecha,
                 opt => opt.MapFrom(src => src.Entrenamiento.Fecha))

@@ -40,7 +40,6 @@ public class SocioRepositorioImpl : ISocioRepositorio
             return null;
         }
 
-        // Actualiza las propiedades necesarias
         socioExistente.Nombre = socio.Nombre;
         socioExistente.Apellido = socio.Apellido;
         socioExistente.Email = socio.Email;
@@ -55,7 +54,6 @@ public class SocioRepositorioImpl : ISocioRepositorio
         return socioExistente;
     }
 
-    //eliminar socio
     public async Task<bool> EliminarAsync(long id)
     {
         var socioExistente = await _context.Socios.FindAsync(id);

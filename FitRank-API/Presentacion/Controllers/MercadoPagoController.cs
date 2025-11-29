@@ -50,21 +50,18 @@ namespace FitRank_API.Presentacion.Controllers
                 string topic = "";
                 string id = "";
 
-                // ✔ 1) Intentar leer FORM-DATA
                 if (Request.HasFormContentType)
                 {
                     topic = Request.Form["topic"];
                     id = Request.Form["id"];
                 }
 
-                // ✔ 2) Intentar leer QUERYSTRING (MUY IMPORTANTE)
                 if (string.IsNullOrEmpty(topic))
                     topic = Request.Query["topic"];
 
                 if (string.IsNullOrEmpty(id))
                     id = Request.Query["id"];
 
-                // ✔ 3) Intentar leer JSON si todo lo anterior vino vacío
                 if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(id))
                 {
                     using var reader = new StreamReader(Request.Body);

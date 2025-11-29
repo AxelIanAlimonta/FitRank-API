@@ -3,13 +3,12 @@ using FitRank_API.Application.DTOs.RutinaDTOs;
 
 namespace FitRank.API.Infrastructure.RulesEngineImpl
 {
-    // Input "plano" para reglas (evita enums y Math.* en JSON)
     public sealed class RulesInput
     {
         public int Edad { get; init; }
         public double PesoKg { get; init; }
         public int AlturaCm { get; init; }
-        public double Imc { get; init; }                 // <- calculado acá
+        public double Imc { get; init; }                
         public string Nivel { get; init; } = "";
         public int SesionesPorSemana { get; init; }
         public int MinutosPorSesion { get; init; }
@@ -69,7 +68,6 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
                     decisions.Tags.Add(t);
             }
 
-            // --- SALUD / SAFETY ---
             var safety = Get(porWf, "Salud", "safety");
             AddAll(safety);
             if (safety.Contains("DERIVAR_PROFESIONAL", StringComparer.OrdinalIgnoreCase)) decisions.DerivarProfesional = true;
@@ -79,7 +77,6 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
                 if (t.StartsWith("EVITAR_", StringComparison.OrdinalIgnoreCase)) decisions.Exclusiones.Add(t);
             }
 
-            // --- MODIFICADORES ---
             var modifiers = Get(porWf, "Modificadores", "modifiers");
             AddAll(modifiers);
             if (modifiers.Contains("INTENSIDAD_BAJA", StringComparer.OrdinalIgnoreCase)) decisions.Intensidad = "INTENSIDAD_BAJA";
@@ -95,7 +92,6 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
             if (modifiers.Contains("PREF_CARDIO_IMPACTO_BAJO", StringComparer.OrdinalIgnoreCase)) decisions.Ajustes.Add("PREF_CARDIO_IMPACTO_BAJO");
             if (modifiers.Contains("ENFOQUE_NUTRICION", StringComparer.OrdinalIgnoreCase)) decisions.Ajustes.Add("ENFOQUE_NUTRICION");
 
-            // --- OBJETIVO ---
             var objective = Get(porWf, "Objetivo", "objective");
             AddAll(objective);
             if (objective.Contains("OBJETIVO_HIPERTROFIA", StringComparer.OrdinalIgnoreCase)) decisions.Objetivo = "OBJETIVO_HIPERTROFIA";
@@ -119,7 +115,6 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
                     _ => "CARDIO_APOYO_ALTO"
                 };
 
-            // --- SPLIT ---
             var split = Get(porWf, "Split", "split", "Division", "División");
             AddAll(split);
             if (split.Contains("DIVISION_CUERPO_COMPLETO", StringComparer.OrdinalIgnoreCase)) decisions.Division = "DIVISION_CUERPO_COMPLETO";
@@ -133,7 +128,6 @@ namespace FitRank.API.Infrastructure.RulesEngineImpl
             else if (split.Contains("SESION_LARGA", StringComparer.OrdinalIgnoreCase)) decisions.TamanoSesion = "SESION_LARGA";
             else decisions.TamanoSesion = "SESION_NORMAL";
 
-            // --- EQUIPO / PREFERENCIAS ---
             var equipment = Get(porWf, "Preferencias", "equipment", "Equipo");
             AddAll(equipment);
             if (equipment.Contains("EQUIPO_MAQUINAS", StringComparer.OrdinalIgnoreCase)) decisions.EquipoPreferido.Add("EQUIPO_MAQUINAS");

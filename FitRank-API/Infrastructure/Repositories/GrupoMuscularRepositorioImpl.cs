@@ -22,7 +22,6 @@ public class GrupoMuscularRepositorioImpl : IGrupoMuscularRepositorio
 
     public async Task<GrupoMuscular?> ObtenerPorIdAsync(long id)
     {
-        //return await _context.GruposMusculares.FindAsync(id);
         return await _context.GruposMusculares.FirstOrDefaultAsync(g => g.Id == id);
 
     }

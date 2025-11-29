@@ -90,7 +90,7 @@ namespace FitRank_API.Presentacion.Controllers
                 }
                 catch
                 {
-                    // Silenciar errores de SignalR para no afectar la respuesta
+                    
                 }
 
                 return Ok(new

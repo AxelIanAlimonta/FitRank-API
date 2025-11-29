@@ -43,7 +43,6 @@ namespace FitRank_API.Infrastructure.Repositorios
             return usuario;
         }
 
-        // 🔹 Obtener por condición, incluyendo tipos derivados
         public async Task<Usuario?> ObtenerPorCondicionAsync(Expression<Func<Usuario, bool>> predicate)
         {
             return await _context.Usuarios
@@ -53,19 +52,16 @@ namespace FitRank_API.Infrastructure.Repositorios
 
         public async Task<Usuario?> ActualizarAsync(Usuario usuario)
         {
-            // Trae la entidad existente (trackeada por EF)
             var existente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == usuario.Id);
 
             if (existente == null)
                 return null;
 
-            // ⚡ Actualizá manualmente los campos importantes
             existente.Nombre = usuario.Nombre;
             existente.Apellido = usuario.Apellido;
             existente.Dni = usuario.Dni;
             existente.NombreUsuario = usuario.NombreUsuario;
 
-            // 🔐 Aseguramos que la nueva contraseña se guarde correctamente
             if (!string.IsNullOrEmpty(usuario.PasswordHash) && usuario.PasswordHash != existente.PasswordHash)
             {
                 existente.PasswordHash = usuario.PasswordHash;
@@ -75,7 +71,6 @@ namespace FitRank_API.Infrastructure.Repositorios
             existente.Sexo = usuario.Sexo;
             existente.QrToken = usuario.QrToken;
 
-            // ⚡ Token y activación
             existente.TokenRecuperacion = usuario.TokenRecuperacion;
             existente.TokenExpira = usuario.TokenExpira;
             existente.EsActivado = usuario.EsActivado;
@@ -87,7 +82,6 @@ namespace FitRank_API.Infrastructure.Repositorios
             existente.CuotaPagadaHasta = usuario.CuotaPagadaHasta;
             existente.Telefono = usuario.Telefono;
 
-            // 🚀 Guardamos todo
             await _context.SaveChangesAsync();
 
             Console.WriteLine($"[ActualizarAsync] Usuario {existente.Email} actualizado correctamente ✅");

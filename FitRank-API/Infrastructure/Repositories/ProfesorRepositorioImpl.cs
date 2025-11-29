@@ -56,7 +56,6 @@ namespace FitRank_API.Infrastructure.Repositories
             existe.Telefono = profesor.Telefono;
             existe.EsActivado = profesor.EsActivado;
 
-            // Atributos propios de Profesor
             existe.Matricula = profesor.Matricula;
             existe.Sueldo = profesor.Sueldo;
 

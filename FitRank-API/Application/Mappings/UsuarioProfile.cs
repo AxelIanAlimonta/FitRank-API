@@ -21,7 +21,6 @@ namespace FitRank_API.Application.Mappings
             CreateMap<Usuario, ActivarResponseDTO>().ReverseMap();
             CreateMap<Usuario, ActivarCuentaDTO>().ReverseMap();
 
-            // Mapeos para notificaciones
             CreateMap<Usuario, UsuarioNotificacionDTO>()
                 .ForMember(dest => dest.NombreCompleto, opt => opt.MapFrom(src => src.Nombre))
                 .ForMember(dest => dest.Rol, opt => opt.MapFrom(src => src.GetType().Name))

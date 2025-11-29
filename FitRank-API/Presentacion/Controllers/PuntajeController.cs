@@ -57,7 +57,6 @@ namespace FitRank_API.Presentacion.Controllers
             }
         }
 
-        //Es un endpoint que trae el puntaje total de un socio y el puntaje de sus grupos musculares
         [HttpGet ("{socioId}/puntaje-combinado")]
         public async Task<IActionResult> ObtenerPuntajeCombinado(long socioId)
         {

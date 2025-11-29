@@ -35,7 +35,6 @@ namespace FitRank_API.Application.Services
             }
             catch (BCrypt.Net.SaltParseException)
             {
-                // El hash no es válido o está corrupto
                 return false;
             }
         }

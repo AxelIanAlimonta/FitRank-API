@@ -10,7 +10,6 @@ public class LogroProfile : Profile
 {
     public LogroProfile()
     {
-        // ------- LOGRO GLOBAL -------
 
         CreateMap<AgregarLogroDTO, Logro>();
 
@@ -23,7 +22,6 @@ public class LogroProfile : Profile
 
         CreateMap<Logro, ObtenerLogroDTO>();
 
-        // ------- LOGRO GIMNASIO -------
 
         CreateMap<LogroGimnasio, LogroGimnasioDTO>()
             .ForMember(d => d.GimnasioId, o => o.MapFrom(s => s.GimnasioId))
@@ -36,7 +34,6 @@ public class LogroProfile : Profile
 
         CreateMap<ActualizarLogroGimnasioDTO, LogroGimnasio>();
 
-        // ------- LOGRO SOCIO (lista de logros del socio) -------
 
         CreateMap<LogroSocio, LogroSocioDTO>()
             .ForMember(d => d.LogroId, o => o.MapFrom(s => s.LogroId))
@@ -46,7 +43,6 @@ public class LogroProfile : Profile
             .ForMember(d => d.Imagen, o => o.MapFrom(s => s.Logro.Imagen))
             .ForMember(d => d.FechaOtorgado, o => o.MapFrom(s => s.FechaObtenido));
 
-        // ------- LOGRO OTORGADO (respuesta de /otorgar) -------
 
         CreateMap<LogroSocio, LogroOtorgadoDTO>()
             .ForMember(d => d.LogroId, o => o.MapFrom(s => s.LogroId))
@@ -55,7 +51,7 @@ public class LogroProfile : Profile
             .ForMember(d => d.FechaOtorgado, o => o.MapFrom(s => s.FechaObtenido))
             .ForMember(d => d.Nombre, o => o.MapFrom(s => s.Logro.Nombre))
             .ForMember(d => d.NombreClave, o => o.MapFrom(s => s.Logro.NombreClave))
-            .ForMember(d => d.Otorgado, o => o.Ignore()) // lo seteás a mano en el caso de uso
-            .ForMember(d => d.Motivo, o => o.Ignore());  // idem
+            .ForMember(d => d.Otorgado, o => o.Ignore()) 
+            .ForMember(d => d.Motivo, o => o.Ignore());  
     }
 }

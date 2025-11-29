@@ -15,7 +15,7 @@ namespace FitRank_API.Application.Mappings
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.MetodoPago, opt => opt.MapFrom(src => src.MetodoPago ?? "Efectivo"))
                 .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => "Pendiente"))
-                .ForMember(dest => dest.DatosPrellenados, opt => opt.Ignore()) // se genera aparte como JSON
+                .ForMember(dest => dest.DatosPrellenados, opt => opt.Ignore())
                 .ForMember(dest => dest.CreadaEn, opt => opt.MapFrom(_ => DateTime.Now))
                 .ForMember(dest => dest.ExpiraEn, opt => opt.MapFrom(_ => DateTime.Now.AddHours(24)));
 

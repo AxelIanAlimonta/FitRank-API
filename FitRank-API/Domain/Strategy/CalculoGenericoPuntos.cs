@@ -14,7 +14,6 @@ namespace FitRank_API.Domain.Strategy
             double multiplicadorPeso,
             double multiplicadorReps)
         {
-            // ✅ 1. Determinar peso máximo permitido (según progreso)
             double pesoMaximoPermitido = LogicaProgresion.ObtenerPesoMaximoPermitido(ejercicio, socio);
             bool pesoAjustado = false;
             string? advertencia = null;
@@ -26,13 +25,10 @@ namespace FitRank_API.Domain.Strategy
                 advertencia = $"El peso ingresado supera el máximo permitido ({pesoMaximoPermitido} kg). Se ajustó automáticamente.";
             }
 
-            // ✅ 2. Calcular factor del socio usando altura y su último peso
             double factorUsuario = ((ultimaMedida.PesoKg / 70.0) * 0.5) + ((socio.Altura / 175.0) * 0.5);
 
-            // ✅ 3. Puntaje base
             double puntosBase = (series * repeticiones * multiplicadorReps) + (peso * multiplicadorPeso);
 
-            // ✅ 4. Ajustar por factor usuario
             double puntosFinales = puntosBase * factorUsuario;
 
             return new ResultadoCalculo

@@ -35,7 +35,6 @@ namespace FitRank_API.Application.Services
                     throw new ArgumentException("El archivo no puede estar vacío");
                 }
 
-                // Validar tipo de archivo
                 var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
                 var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
                 
@@ -44,7 +43,6 @@ namespace FitRank_API.Application.Services
                     throw new ArgumentException($"Tipo de archivo no permitido. Extensiones permitidas: {string.Join(", ", extensionesPermitidas)}");
                 }
 
-                // Generar nombre único
                 var nombreArchivo = $"{Guid.NewGuid()}{extension}";
                 var key = $"{carpeta}/{nombreArchivo}";
 
@@ -164,7 +162,6 @@ namespace FitRank_API.Application.Services
                 }
                 catch
                 {
-                    // Si no se puede obtener metadata, agregar info básica
                     imagenes.Add(new ImagenResponseDto
                     {
                         Key = obj.Key,
@@ -202,19 +199,15 @@ namespace FitRank_API.Application.Services
 
         public async Task<ImagenUploadResponseDto> ActualizarImagenAsync(string key, IFormFile archivo)
         {
-            // Primero eliminar la imagen anterior
             await EliminarImagenAsync(key);
 
-            // Extraer la carpeta del key original
             var carpeta = Path.GetDirectoryName(key)?.Replace("\\", "/") ?? "imagenes";
 
-            // Subir la nueva imagen
             return await SubirImagenAsync(archivo, carpeta);
         }
 
         public string ObtenerUrlPublica(string key)
         {
-            // Cloudflare R2 con dominio público configurado
             return $"{_publicUrl.TrimEnd('/')}/{key}";
         }
     }

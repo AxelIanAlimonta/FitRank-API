@@ -131,7 +131,6 @@ namespace FitRank_API.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        //obtener pofesor mas solicitado
         public async Task<Profesor?> ObtenerProfesorMasSolicitadoAsync()
         {
             return await _context.SolicitudesRutinaProfesor
@@ -142,7 +141,6 @@ namespace FitRank_API.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        //obtener profesor con mas pendientes
         public async Task<Profesor?> ObtenerProfesorConMasPendientesAsync()
         {
             return await _context.SolicitudesRutinaProfesor
@@ -153,7 +151,6 @@ namespace FitRank_API.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        //obtener Profesor más cumplidor (más solicitudes resueltas)
         public async Task<Profesor?> ObtenerProfesorMasCumplidorAsync()
         {
             return await _context.SolicitudesRutinaProfesor
@@ -164,7 +161,6 @@ namespace FitRank_API.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        //obtener Profesor con mejor promedio de valoraciones y el promedio
         public async Task<(Profesor?, double?)?> ObtenerProfesorMejorPromedioValoracionesAsync()
         {
             var valoraciones = await _context.SolicitudesRutinaProfesor

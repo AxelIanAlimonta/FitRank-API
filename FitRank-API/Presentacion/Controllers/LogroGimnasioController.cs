@@ -19,8 +19,6 @@ namespace FitRank_API.Presentacion.Controllers
             _actualizarLogroGimnasioCasoDeUso = actualizarLogroGimnasioCasoDeUso;
         }
 
-        // GET: api/gimnasios/10/logrosgimnasio
-        // Devuelve todos los logros globales + estado de configuración para ese gimnasio
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LogroGimnasioDTO>>> ObtenerLogrosGimnasio(int gimnasioId)
         {
@@ -38,8 +36,6 @@ namespace FitRank_API.Presentacion.Controllers
             }
         }
 
-        // PUT: api/gimnasios/10/logrosgimnasio/5
-        // Actualiza la config de un logro para ese gimnasio (ej: EstaHabilitado)
         [HttpPut("{logroId:int}")]
         public async Task<ActionResult<LogroGimnasioDTO>> ActualizarLogrosGimnasio(
             int gimnasioId, 
